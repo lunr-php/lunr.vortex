@@ -2,7 +2,7 @@
   "require": {
     "psr/log": "~1.1.0",
     "m2mobi/apns-php": "dev-master",
-    "phpmailer/phpmailer": "~6.4.0",
+    "phpmailer/phpmailer": "~6.5.0",
     "rmccue/requests": "~1.8.0",
     "php": "~7.2||8.0",
     "lunr/halo": "dev-master",
