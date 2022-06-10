@@ -2,17 +2,16 @@
   "require": {
     "psr/log": "~1.1.0",
     "m2mobi/apns-php": "dev-master",
-    "phpmailer/phpmailer": "~6.4.0",
+    "phpmailer/phpmailer": "~6.4",
     "rmccue/requests": "~1.8.0",
     "php": ">=7.4",
-    "lunr/halo": "dev-master",
-    "lunr/config": "dev-master",
     "ext-xml": "*"
   },
   "require-dev": {
-    "phpunit/phpunit": "~9.0",
-    "phpstan/phpstan": "~0.12",
-    "ext-xdebug": ">=2.6"
+    "lunr/halo": "dev-master",
+    "lunr/config": "dev-master",
+    "phpunit/phpunit": ">=8.5",
+    "ext-xdebug": ">=3.0"
   },
   "config": {
     "optimize-autoloader": true
