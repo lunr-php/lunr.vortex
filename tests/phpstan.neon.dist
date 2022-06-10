@@ -1,6 +1,6 @@
 parameters:
     bootstrapFiles:
-        - ../decomposer.autoload.inc.php
+        - test.bootstrap.inc.php
     excludes_analyse:
         - ../src/*/Tests/*
     ignoreErrors:
