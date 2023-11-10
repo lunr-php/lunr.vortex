@@ -6,7 +6,7 @@
   "type": "library",
   "license": "MIT",
   "require": {
-    "psr/log": "~1.1.0",
+    "psr/log": "~1.1.0 || ~3.0.0",
     "m2mobi/apns-php": "dev-master",
     "phpmailer/phpmailer": "~6.4",
     "rmccue/requests": "~2.0",
