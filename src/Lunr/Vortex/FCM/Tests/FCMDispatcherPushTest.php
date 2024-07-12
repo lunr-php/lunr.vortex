@@ -64,12 +64,12 @@ class FCMDispatcherPushTest extends FCMDispatcherTest
      *
      * @covers Lunr\Vortex\FCM\FCMDispatcher::push
      */
-    public function testPushWithEmptyEndpointsThrowException(): void
+    public function testPushWithEmptyEndpointsAndNoOtherTargetThrowException(): void
     {
         $endpoints = [];
 
         $this->expectException('InvalidArgumentException');
-        $this->expectExceptionMessage('No endpoints provided!');
+        $this->expectExceptionMessage('No target provided!');
 
         $this->class->push($this->payload, $endpoints);
     }
@@ -553,6 +553,210 @@ class FCMDispatcherPushTest extends FCMDispatcherTest
         $this->assertSame($result->get_status('endpoint3'), PushNotificationStatus::TemporaryError);
 
         $this->unmock_function('curl_errno');
+    }
+
+    /**
+     * Test that push() sends correct request with topic and no endpoints.
+     *
+     * @covers Lunr\Vortex\FCM\FCMDispatcher::push
+     */
+    public function testPushRequestWithNoEndpointsToTopic(): void
+    {
+        $this->set_reflection_property_value('oauth_token', 'oauth_token');
+        $this->set_reflection_property_value('project_id', 'fcm-project');
+
+        $endpoints = [];
+
+        $response_200 = $this->getMockBuilder('WpOrg\Requests\Response')->getMock();
+
+        $response_200->status_code = 200;
+
+        $headers = [
+            'Content-Type'  => 'application/json',
+            'Authorization' => 'Bearer oauth_token',
+        ];
+
+        $url  = 'https://fcm.googleapis.com/v1/projects/fcm-project/messages:send';
+        $post = '{"collapse_key":"abcde-12345","topic":"topic"}';
+
+        $options = [
+            'timeout'          => 30,
+            'connect_timeout'  => 30,
+            'protocol_version' => 2.0,
+        ];
+
+        $this->payload->expects($this->exactly(3))
+                      ->method('has_topic')
+                      ->willReturn(TRUE);
+
+        $this->payload->expects($this->never())
+                      ->method('set_token');
+
+        $this->payload->expects($this->once())
+                      ->method('get_json_payload')
+                      ->willReturn($post);
+
+        $this->http->expects($this->once())
+                   ->method('post')
+                   ->with($url, $headers, $post, $options)
+                   ->willReturn($response_200);
+
+        $this->class->push($this->payload, $endpoints);
+    }
+
+    /**
+     * Test that push() sends correct request with topic and multiple endpoints.
+     *
+     * @covers Lunr\Vortex\FCM\FCMDispatcher::push
+     */
+    public function testPushRequestWithMultipleEndpointsToTopic(): void
+    {
+        $this->set_reflection_property_value('oauth_token', 'oauth_token');
+        $this->set_reflection_property_value('project_id', 'fcm-project');
+
+        $endpoints = [ 'endpoint', 'endpoint1', 'endpoint2', 'endpoint3' ];
+
+        $response_200 = $this->getMockBuilder('WpOrg\Requests\Response')->getMock();
+
+        $response_200->status_code = 200;
+
+        $headers = [
+            'Content-Type'  => 'application/json',
+            'Authorization' => 'Bearer oauth_token',
+        ];
+
+        $url  = 'https://fcm.googleapis.com/v1/projects/fcm-project/messages:send';
+        $post = '{"collapse_key":"abcde-12345","topic":"topic"}';
+
+        $options = [
+            'timeout'          => 30,
+            'connect_timeout'  => 30,
+            'protocol_version' => 2.0,
+        ];
+
+        $this->payload->expects($this->exactly(2))
+                      ->method('has_topic')
+                      ->willReturn(TRUE);
+
+        $this->payload->expects($this->never())
+                      ->method('set_token');
+
+        $this->payload->expects($this->once())
+                      ->method('get_json_payload')
+                      ->willReturn($post);
+
+        $this->http->expects($this->once())
+                   ->method('post')
+                   ->with($url, $headers, $post, $options)
+                   ->willReturn($response_200);
+
+        $this->class->push($this->payload, $endpoints);
+    }
+
+    /**
+     * Test that push() sends correct request with condition and no endpoints.
+     *
+     * @covers Lunr\Vortex\FCM\FCMDispatcher::push
+     */
+    public function testPushRequestWithNoEndpointsToCondition(): void
+    {
+        $this->set_reflection_property_value('oauth_token', 'oauth_token');
+        $this->set_reflection_property_value('project_id', 'fcm-project');
+
+        $endpoints = [];
+
+        $response_200 = $this->getMockBuilder('WpOrg\Requests\Response')->getMock();
+
+        $response_200->status_code = 200;
+
+        $headers = [
+            'Content-Type'  => 'application/json',
+            'Authorization' => 'Bearer oauth_token',
+        ];
+
+        $url  = 'https://fcm.googleapis.com/v1/projects/fcm-project/messages:send';
+        $post = '{"collapse_key":"abcde-12345","condition":"condition"}';
+
+        $options = [
+            'timeout'          => 30,
+            'connect_timeout'  => 30,
+            'protocol_version' => 2.0,
+        ];
+
+        $this->payload->expects($this->exactly(3))
+                      ->method('has_topic')
+                      ->willReturn(FALSE);
+
+        $this->payload->expects($this->exactly(3))
+                      ->method('has_condition')
+                      ->willReturn(TRUE);
+
+        $this->payload->expects($this->never())
+                      ->method('set_token');
+
+        $this->payload->expects($this->once())
+                      ->method('get_json_payload')
+                      ->willReturn($post);
+
+        $this->http->expects($this->once())
+                   ->method('post')
+                   ->with($url, $headers, $post, $options)
+                   ->willReturn($response_200);
+
+        $this->class->push($this->payload, $endpoints);
+    }
+
+    /**
+     * Test that push() sends correct request with condition and multiple endpoints.
+     *
+     * @covers Lunr\Vortex\FCM\FCMDispatcher::push
+     */
+    public function testPushRequestWithMultipleEndpointsToCondition(): void
+    {
+        $this->set_reflection_property_value('oauth_token', 'oauth_token');
+        $this->set_reflection_property_value('project_id', 'fcm-project');
+
+        $endpoints = [ 'endpoint', 'endpoint1', 'endpoint2', 'endpoint3' ];
+
+        $response_200 = $this->getMockBuilder('WpOrg\Requests\Response')->getMock();
+
+        $response_200->status_code = 200;
+
+        $headers = [
+            'Content-Type'  => 'application/json',
+            'Authorization' => 'Bearer oauth_token',
+        ];
+
+        $url  = 'https://fcm.googleapis.com/v1/projects/fcm-project/messages:send';
+        $post = '{"collapse_key":"abcde-12345","topic":"topic"}';
+
+        $options = [
+            'timeout'          => 30,
+            'connect_timeout'  => 30,
+            'protocol_version' => 2.0,
+        ];
+
+        $this->payload->expects($this->exactly(2))
+                      ->method('has_topic')
+                      ->willReturn(FALSE);
+
+        $this->payload->expects($this->exactly(2))
+                      ->method('has_condition')
+                      ->willReturn(TRUE);
+
+        $this->payload->expects($this->never())
+                      ->method('set_token');
+
+        $this->payload->expects($this->once())
+                      ->method('get_json_payload')
+                      ->willReturn($post);
+
+        $this->http->expects($this->once())
+                   ->method('post')
+                   ->with($url, $headers, $post, $options)
+                   ->willReturn($response_200);
+
+        $this->class->push($this->payload, $endpoints);
     }
 
 }

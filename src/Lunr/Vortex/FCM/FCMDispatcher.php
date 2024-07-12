@@ -23,7 +23,6 @@ use Psr\Log\LoggerInterface;
 use RuntimeException;
 use UnexpectedValueException;
 use WpOrg\Requests\Exception as RequestsException;
-use WpOrg\Requests\Requests;
 use WpOrg\Requests\Response;
 use WpOrg\Requests\Session;
 
@@ -233,9 +232,9 @@ class FCMDispatcher implements PushNotificationMultiDispatcherInterface
             throw new InvalidArgumentException('Invalid payload object!');
         }
 
-        if ($endpoints === [])
+        if ($endpoints === [] && !$payload->has_topic() && !$payload->has_condition())
         {
-            throw new InvalidArgumentException('No endpoints provided!');
+            throw new InvalidArgumentException('No target provided!');
         }
 
         $fcm_response = $this->get_response();
@@ -258,6 +257,13 @@ class FCMDispatcher implements PushNotificationMultiDispatcherInterface
             $http_response = $this->get_new_response_object_for_failed_request($http_code);
 
             $fcm_response->add_batch_response($this->get_batch_response([ $http_response ], $this->logger, $endpoints), $endpoints);
+
+            return $fcm_response;
+        }
+
+        if ($payload->has_topic() || $payload->has_condition())
+        {
+            $fcm_response->add_batch_response($this->push_batch($payload, $endpoints), $endpoints);
 
             return $fcm_response;
         }
@@ -301,20 +307,39 @@ class FCMDispatcher implements PushNotificationMultiDispatcherInterface
 
         $responses = [];
 
-        foreach ($endpoints as $endpoint)
+        if ($payload->has_topic() || $payload->has_condition())
         {
             try
             {
-                $responses[$endpoint] = $this->http->post(
+                $responses[] = $this->http->post(
                     $url,
                     $headers,
-                    $payload->set_token($endpoint)->get_json_payload(JSON_UNESCAPED_UNICODE),
+                    $payload->get_json_payload(JSON_UNESCAPED_UNICODE),
                     $options
                 );
             }
             catch (RequestsException $e)
             {
-                $responses[$endpoint] = $e;
+                $responses[] = $e;
+            }
+        }
+        else
+        {
+            foreach ($endpoints as $endpoint)
+            {
+                try
+                {
+                    $responses[$endpoint] = $this->http->post(
+                        $url,
+                        $headers,
+                        $payload->set_token($endpoint)->get_json_payload(JSON_UNESCAPED_UNICODE),
+                        $options
+                    );
+                }
+                catch (RequestsException $e)
+                {
+                    $responses[$endpoint] = $e;
+                }
             }
         }
 
