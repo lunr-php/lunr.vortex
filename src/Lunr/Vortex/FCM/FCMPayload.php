@@ -10,6 +10,7 @@
 
 namespace Lunr\Vortex\FCM;
 
+use BadMethodCallException;
 use InvalidArgumentException;
 
 /**
@@ -175,6 +176,16 @@ class FCMPayload
      */
     public function set_topic(string $topic): static
     {
+        if (isset($this->elements['token']))
+        {
+            throw new BadMethodCallException('Set FCM topic failed: Token is already set');
+        }
+
+        if (isset($this->elements['condition']))
+        {
+            throw new BadMethodCallException('Set FCM topic failed: Condition is already set');
+        }
+
         $this->elements['topic'] = $topic;
 
         return $this;
@@ -193,6 +204,16 @@ class FCMPayload
      */
     public function set_condition(string $condition): static
     {
+        if (isset($this->elements['token']))
+        {
+            throw new BadMethodCallException('Set FCM condition failed: Token is already set');
+        }
+
+        if (isset($this->elements['topic']))
+        {
+            throw new BadMethodCallException('Set FCM condition failed: Topic is already set');
+        }
+
         $this->elements['condition'] = $condition;
 
         return $this;
@@ -222,6 +243,16 @@ class FCMPayload
      */
     public function set_token(string $token): static
     {
+        if (isset($this->elements['topic']))
+        {
+            throw new BadMethodCallException('Set FCM token failed: Topic is already set');
+        }
+
+        if (isset($this->elements['condition']))
+        {
+            throw new BadMethodCallException('Set FCM token failed: Condition is already set');
+        }
+
         $this->elements['token'] = $token;
 
         return $this;

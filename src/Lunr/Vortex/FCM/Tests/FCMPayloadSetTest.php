@@ -101,6 +101,44 @@ class FCMPayloadSetTest extends FCMPayloadTest
     }
 
     /**
+     * Test set_topic() works correctly.
+     *
+     * @covers \Lunr\Vortex\FCM\FCMPayload::set_topic
+     */
+    public function testSetTopicWhenTokenIsAlreadySet(): void
+    {
+        $this->set_reflection_property_value('elements', [ 'token' => 'test_token' ]);
+
+        $this->expectException('BadMethodCallException');
+        $this->expectExceptionMessage('Set FCM topic failed: Token is already set');
+
+        $this->class->set_topic('News');
+
+        $value = $this->get_reflection_property_value('elements');
+
+        $this->assertArrayNotHasKey('topic', $value);
+    }
+
+    /**
+     * Test set_topic() works correctly.
+     *
+     * @covers \Lunr\Vortex\FCM\FCMPayload::set_topic
+     */
+    public function testSetTopicWhenConditionIsAlreadySet(): void
+    {
+        $this->set_reflection_property_value('elements', [ 'condition' => 'test_condition' ]);
+
+        $this->expectException('BadMethodCallException');
+        $this->expectExceptionMessage('Set FCM topic failed: Condition is already set');
+
+        $this->class->set_topic('News');
+
+        $value = $this->get_reflection_property_value('elements');
+
+        $this->assertArrayNotHasKey('topic', $value);
+    }
+
+    /**
      * Test fluid interface of set_topic().
      *
      * @covers \Lunr\Vortex\FCM\FCMPayload::set_topic
@@ -123,6 +161,44 @@ class FCMPayloadSetTest extends FCMPayloadTest
 
         $this->assertArrayHasKey('condition', $value);
         $this->assertEquals("'TopicA' in topics && 'TopicB' in topics", $value['condition']);
+    }
+
+    /**
+     * Test set_condition() works correctly.
+     *
+     * @covers \Lunr\Vortex\FCM\FCMPayload::set_condition
+     */
+    public function testSetConditionWhenTokenIsAlreadySet(): void
+    {
+        $this->set_reflection_property_value('elements', [ 'token' => 'test_token' ]);
+
+        $this->expectException('BadMethodCallException');
+        $this->expectExceptionMessage('Set FCM condition failed: Token is already set');
+
+        $this->class->set_condition("'TopicA' in topics && 'TopicB' in topics");
+
+        $value = $this->get_reflection_property_value('elements');
+
+        $this->assertArrayNotHasKey('condition', $value);
+    }
+
+    /**
+     * Test set_condition() works correctly.
+     *
+     * @covers \Lunr\Vortex\FCM\FCMPayload::set_condition
+     */
+    public function testSetConditionWhenTopicIsAlreadySet(): void
+    {
+        $this->set_reflection_property_value('elements', [ 'topic' => 'test_topic' ]);
+
+        $this->expectException('BadMethodCallException');
+        $this->expectExceptionMessage('Set FCM condition failed: Topic is already set');
+
+        $this->class->set_condition("'TopicA' in condition && 'TopicB' in topics");
+
+        $value = $this->get_reflection_property_value('elements');
+
+        $this->assertArrayNotHasKey('condition', $value);
     }
 
     /**
@@ -174,6 +250,44 @@ class FCMPayloadSetTest extends FCMPayloadTest
 
         $this->assertArrayHasKey('token', $value);
         $this->assertEquals('endpoint_token', $value['token']);
+    }
+
+    /**
+     * Test set_token() works correctly.
+     *
+     * @covers \Lunr\Vortex\FCM\FCMPayload::set_token
+     */
+    public function testSetTokenWhenTopicIsAlreadySet()
+    {
+        $this->set_reflection_property_value('elements', [ 'topic' => 'test_topic' ]);
+
+        $this->expectException('BadMethodCallException');
+        $this->expectExceptionMessage('Set FCM token failed: Topic is already set');
+
+        $this->class->set_token('endpoint_token');
+
+        $value = $this->get_reflection_property_value('elements');
+
+        $this->assertArrayNotHasKey('token', $value);
+    }
+
+    /**
+     * Test set_token() works correctly.
+     *
+     * @covers \Lunr\Vortex\FCM\FCMPayload::set_token
+     */
+    public function testSetTokenWhenConditionIsAlreadySet()
+    {
+        $this->set_reflection_property_value('elements', [ 'condition' => 'test_condition' ]);
+
+        $this->expectException('BadMethodCallException');
+        $this->expectExceptionMessage('Set FCM token failed: Condition is already set');
+
+        $this->class->set_token('endpoint_token');
+
+        $value = $this->get_reflection_property_value('elements');
+
+        $this->assertArrayNotHasKey('token', $value);
     }
 
     /**
