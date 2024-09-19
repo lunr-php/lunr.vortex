@@ -10,6 +10,8 @@
 
 namespace Lunr\Vortex\FCM\Tests;
 
+use RuntimeException;
+
 /**
  * This class contains tests for the setters of the FCMDispatcher class.
  *
@@ -82,6 +84,53 @@ class FCMDispatcherSetTest extends FCMDispatcherTest
     public function testSetPrivateKeyReturnsSelfReference(): void
     {
         $this->assertEquals($this->class, $this->class->set_private_key('key'));
+    }
+
+    /**
+     * Test that set_private_key_from_file() returns exception when the file failed to read.
+     *
+     * @covers Lunr\Vortex\FCM\FCMDispatcher::set_private_key_from_file
+     */
+    public function testSetPrivateKeyFromFileReturnExceptionIfFileFailedToRead(): void
+    {
+        $this->mock_function('file_get_contents', fn() => FALSE);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('File does not exists or is not readable!');
+
+        $this->class->set_private_key_from_file('private.key');
+
+        $this->unmock_function('file_get_contents');
+    }
+
+    /**
+     * Test that set_private_key_from_file() sets the private_key.
+     *
+     * @covers Lunr\Vortex\FCM\FCMDispatcher::set_private_key_from_file
+     */
+    public function testSetPrivateKeyFromFileSetsPrivateKey(): void
+    {
+        $this->mock_function('file_get_contents', fn() => 'key');
+
+        $this->class->set_private_key_from_file('private.key');
+
+        $this->assertPropertyEquals('private_key', 'key');
+
+        $this->unmock_function('file_get_contents');
+    }
+
+    /**
+     * Test the return of set_private_key_from_file().
+     *
+     * @covers Lunr\Vortex\FCM\FCMDispatcher::set_private_key_from_file
+     */
+    public function testSetPrivateKeyFromFileReturnsSelfReference(): void
+    {
+        $this->mock_function('file_get_contents', fn() => 'key');
+
+        $this->assertEquals($this->class, $this->class->set_private_key_from_file('private.key'));
+
+        $this->unmock_function('file_get_contents');
     }
 
     /**
