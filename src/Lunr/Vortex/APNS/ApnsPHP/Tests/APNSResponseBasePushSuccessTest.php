@@ -53,51 +53,6 @@ class APNSResponseBasePushSuccessTest extends APNSResponseTest
         $errors            = [
             1 => [
                 'MESSAGE'             => $this->apns_message,
-                'BINARY_NOTIFICATION' => 'blablibla',
-                'ERRORS'              => [
-                    [
-                        'command'       => 8,
-                        'statusCode'    => 8,
-                        'identifier'    => 100,
-                        'time'          => 1465997381,
-                        'statusMessage' => 'Invalid token',
-                    ],
-                ],
-            ],
-        ];
-        $statuses          = [ 'endpoint1' => PushNotificationStatus::InvalidEndpoint ];
-
-        $this->apns_message->expects($this->once())
-                           ->method('getRecipient')
-                           ->willReturn('endpoint1');
-
-        $this->logger->expects($this->once())
-                     ->method('warning')
-                     ->with(
-                        'Dispatching APNS notification failed for endpoint {endpoint}: {error}',
-                        [ 'endpoint' => 'endpoint1', 'error' => 'Invalid token' ]
-                     );
-
-        $this->class = new APNSResponse($this->logger, $endpoints, $invalid_endpoints, $errors, '{}');
-
-        parent::baseSetUp($this->class);
-
-        $this->assertPropertyEquals('statuses', $statuses);
-    }
-
-    /**
-     * Test constructor behavior for success of push notification with single error.
-     *
-     * @covers Lunr\Vortex\APNS\ApnsPHP\APNSResponse::__construct
-     */
-    public function testPushSuccessWithSingleErrorHttpReason(): void
-    {
-        $endpoints         = [ 'endpoint1' ];
-        $invalid_endpoints = [];
-        $errors            = [
-            1 => [
-                'MESSAGE'             => $this->apns_message,
-                'BINARY_NOTIFICATION' => 'blablibla',
                 'ERRORS'              => [
                     [
                         'command'       => 8,
@@ -169,131 +124,6 @@ class APNSResponseBasePushSuccessTest extends APNSResponseTest
         $message2 = $new_message();
         $message3 = $new_message();
         $message4 = $new_message();
-
-        $endpoints         = [ 'endpoint1', 'endpoint2', 'endpoint3', 'endpoint4' ];
-        $invalid_endpoints = [];
-        $errors            = [
-            1 => [
-                'MESSAGE'             => $message1,
-                'BINARY_NOTIFICATION' => 'blablibla',
-                'ERRORS'              => [
-                    [
-                        'command'       => 8,
-                        'statusCode'    => 8,
-                        'identifier'    => 100,
-                        'time'          => 1465997381,
-                        'statusMessage' => 'Invalid token',
-                    ],
-                ],
-            ],
-            2 => [
-                'MESSAGE'             => $message2,
-                'BINARY_NOTIFICATION' => 'blablibla',
-                'ERRORS'              => [
-                    [
-                        'command'       => 5,
-                        'statusCode'    => 5,
-                        'identifier'    => 101,
-                        'time'          => 1465997382,
-                        'statusMessage' => 'Invalid token size',
-                    ],
-                ],
-            ],
-            3 => [
-                'MESSAGE'             => $message3,
-                'BINARY_NOTIFICATION' => 'blablibla',
-                'ERRORS'              => [
-                    [
-                        'command'       => 1,
-                        'statusCode'    => 1,
-                        'identifier'    => 102,
-                        'time'          => 1465997383,
-                        'statusMessage' => 'Processing error',
-                    ],
-                ],
-            ],
-            4 => [
-                'MESSAGE'             => $message4,
-                'BINARY_NOTIFICATION' => 'blablibla',
-                'ERRORS'              => [
-                    [
-                        'command'       => 10,
-                        'statusCode'    => 10,
-                        'identifier'    => 103,
-                        'time'          => 1465997390,
-                        'statusMessage' => 'Shutdown',
-                    ],
-                ],
-            ],
-        ];
-        $statuses          = [
-            'endpoint1' => PushNotificationStatus::InvalidEndpoint,
-            'endpoint2' => PushNotificationStatus::InvalidEndpoint,
-            'endpoint3' => PushNotificationStatus::TemporaryError,
-            'endpoint4' => PushNotificationStatus::Unknown,
-        ];
-
-        $message1->expects($this->once())
-                 ->method('getRecipient')
-                 ->willReturn('endpoint1');
-
-        $message2->expects($this->once())
-                 ->method('getRecipient')
-                 ->willReturn('endpoint2');
-
-        $message3->expects($this->once())
-                 ->method('getRecipient')
-                 ->willReturn('endpoint3');
-
-        $message4->expects($this->once())
-                 ->method('getRecipient')
-                 ->willReturn('endpoint4');
-
-        $this->logger->expects($this->exactly(4))
-                     ->method('warning')
-                     ->withConsecutive(
-                        [
-                            'Dispatching APNS notification failed for endpoint {endpoint}: {error}',
-                            [ 'endpoint' => 'endpoint1', 'error' => 'Invalid token' ],
-                        ],
-                        [
-                            'Dispatching APNS notification failed for endpoint {endpoint}: {error}',
-                            [ 'endpoint' => 'endpoint2', 'error' => 'Invalid token size' ],
-                        ],
-                        [
-                            'Dispatching APNS notification failed for endpoint {endpoint}: {error}',
-                            [ 'endpoint' => 'endpoint3', 'error' => 'Processing error' ],
-                        ],
-                        [
-                            'Dispatching APNS notification failed for endpoint {endpoint}: {error}',
-                            [ 'endpoint' => 'endpoint4', 'error' => 'Shutdown' ],
-                        ]
-                     );
-
-        $this->class = new APNSResponse($this->logger, $endpoints, $invalid_endpoints, $errors, '{}');
-
-        parent::baseSetUp($this->class);
-
-        $this->assertPropertyEquals('statuses', $statuses);
-    }
-
-    /**
-     * Test constructor behavior for success of push notification with multiple errors.
-     *
-     * @covers Lunr\Vortex\APNS\ApnsPHP\APNSResponse::__construct
-     */
-    public function testPushSuccessWithMultipleErrorsHttpReason(): void
-    {
-        $new_message = function () {
-            return $this->getMockBuilder('ApnsPHP\Message')
-                        ->disableOriginalConstructor()
-                        ->getMock();
-        };
-
-        $message1 = $new_message();
-        $message2 = $new_message();
-        $message3 = $new_message();
-        $message4 = $new_message();
         $message5 = $new_message();
         $message6 = $new_message();
         $message7 = $new_message();
@@ -303,7 +133,6 @@ class APNSResponseBasePushSuccessTest extends APNSResponseTest
         $errors            = [
             1 => [
                 'MESSAGE'             => $message1,
-                'BINARY_NOTIFICATION' => 'blablibla',
                 'ERRORS'              => [
                     [
                         'command'       => 8,
@@ -316,7 +145,6 @@ class APNSResponseBasePushSuccessTest extends APNSResponseTest
             ],
             2 => [
                 'MESSAGE'             => $message2,
-                'BINARY_NOTIFICATION' => 'blablibla',
                 'ERRORS'              => [
                     [
                         'command'       => 5,
@@ -329,7 +157,6 @@ class APNSResponseBasePushSuccessTest extends APNSResponseTest
             ],
             3 => [
                 'MESSAGE'             => $message3,
-                'BINARY_NOTIFICATION' => 'blablibla',
                 'ERRORS'              => [
                     [
                         'command'       => 1,
@@ -342,7 +169,6 @@ class APNSResponseBasePushSuccessTest extends APNSResponseTest
             ],
             4 => [
                 'MESSAGE'             => $message4,
-                'BINARY_NOTIFICATION' => 'blablibla',
                 'ERRORS'              => [
                     [
                         'command'       => 10,
@@ -355,7 +181,6 @@ class APNSResponseBasePushSuccessTest extends APNSResponseTest
             ],
             5 => [
                 'MESSAGE'             => $message5,
-                'BINARY_NOTIFICATION' => 'blablibla',
                 'ERRORS'              => [
                     [
                         'command'       => 10,
@@ -368,7 +193,6 @@ class APNSResponseBasePushSuccessTest extends APNSResponseTest
             ],
             6 => [
                 'MESSAGE'             => $message6,
-                'BINARY_NOTIFICATION' => 'blablibla',
                 'ERRORS'              => [
                     [
                         'command'       => 10,
@@ -381,7 +205,6 @@ class APNSResponseBasePushSuccessTest extends APNSResponseTest
             ],
             7 => [
                 'MESSAGE'             => $message7,
-                'BINARY_NOTIFICATION' => 'blablibla',
                 'ERRORS'              => [
                     [
                         'command'       => 10,
@@ -496,14 +319,13 @@ class APNSResponseBasePushSuccessTest extends APNSResponseTest
         $errors            = [
             4 => [
                 'MESSAGE'             => $message4,
-                'BINARY_NOTIFICATION' => 'blablibla',
                 'ERRORS'              => [
                     [
                         'command'       => 1,
-                        'statusCode'    => 1,
+                        'statusCode'    => 410,
                         'identifier'    => 4,
                         'time'          => 1465997390,
-                        'statusMessage' => 'Processing error',
+                        'statusMessage' => '{"reason": "ExpiredProviderToken"}',
                     ],
                 ],
             ],
@@ -524,7 +346,7 @@ class APNSResponseBasePushSuccessTest extends APNSResponseTest
                      ->method('warning')
                      ->with(
                         'Dispatching APNS notification failed for endpoint {endpoint}: {error}',
-                        [ 'endpoint' => 'endpoint4', 'error' => 'Processing error' ]
+                        [ 'endpoint' => 'endpoint4', 'error' => 'ExpiredProviderToken' ]
                      );
 
         $this->class = new APNSResponse($this->logger, $endpoints, $invalid_endpoints, $errors, '{}');
