@@ -13,6 +13,7 @@ namespace Lunr\Vortex\APNS\ApnsPHP\Tests;
 use ApnsPHP\Exception as ApnsPHPException;
 use ApnsPHP\Message\Exception as MessageException;
 use ApnsPHP\Push\Exception as PushException;
+use Lunr\Vortex\APNS\APNSPriority;
 use Lunr\Vortex\Email\EmailPayload;
 use Lunr\Vortex\FCM\FCMPayload;
 use Lunr\Vortex\JPush\JPushMessagePayload;
@@ -116,20 +117,20 @@ class APNSDispatcherPushTest extends APNSDispatcherTest
         $endpoints = [];
 
         $payload = [
-            'title' => 'title',
-            'body' => 'message',
-            'thread_id' => '59ADAE4572BF42A682F46170DA5A74EC',
-            'sound' => 'yo.mp3',
-            'category' => 'messages_for_test',
-            'mutable_content' => TRUE,
+            'title'             => 'title',
+            'body'              => 'message',
+            'thread_id'         => '59ADAE4572BF42A682F46170DA5A74EC',
+            'sound'             => 'yo.mp3',
+            'category'          => 'messages_for_test',
+            'mutable_content'   => TRUE,
             'content_available' => TRUE,
-            'topic' => 'com.company.app',
-            'priority' => 5,
-            'collapse_key' => 'key',
-            'identifier' => 'identifier',
-            'yo' => 'he',
-            'badge' => 7,
-            'custom_data' => [
+            'topic'             => 'com.company.app',
+            'priority'          => APNSPriority::Normal,
+            'collapse_key'      => 'key',
+            'identifier'        => 'identifier',
+            'yo'                => 'he',
+            'badge'             => 7,
+            'custom_data'       => [
                 'key1' => 'value1',
                 'key2' => 'value2'
             ],
@@ -157,7 +158,7 @@ class APNSDispatcherPushTest extends APNSDispatcherTest
 
         $this->apns_message->expects($this->exactly(1))
                            ->method('setPriority')
-                           ->with($payload['priority']);
+                           ->with($payload['priority']->value);
 
         $this->apns_message->expects($this->exactly(1))
                            ->method('setCollapseId')

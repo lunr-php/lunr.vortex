@@ -13,20 +13,18 @@ namespace Lunr\Vortex\APNS;
 /**
  * APNS Priority Types.
  */
-class APNSPriority
+enum APNSPriority: int
 {
 
     /**
      * Deliver notification immediately.
-     * @var int
      */
-    public const HIGH = 10;
+    case High = 10;
 
     /**
      * Deliver notification with normal priority.
-     * @var int
      */
-    public const NORMAL = 5;
+    case Normal = 5;
 
 }
 

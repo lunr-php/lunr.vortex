@@ -134,7 +134,7 @@ class APNSDispatcher implements PushNotificationMultiDispatcherInterface
 
             if (isset($payload['priority']))
             {
-                $this->apns_message->setPriority($payload['priority']);
+                $this->apns_message->setPriority($payload['priority']->value);
             }
 
             if (isset($payload['collapse_key']))
