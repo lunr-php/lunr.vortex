@@ -13,56 +13,48 @@ namespace Lunr\Vortex\APNS\ApnsPHP;
 /**
  * Apple Push Notification Service status codes.
  */
-class APNSHttpStatus
+enum APNSHttpStatus: int
 {
 
     /**
-     * No error encountered.
-     * @var integer
+     * No error encountered
      */
-    public const SUCCESS = 200;
+    case Success = 200;
 
     /**
-     * Bad request error.
-     * @var integer
+     * Bad request error
      */
-    public const ERROR_BAD_REQUEST = 400;
+    case BadRequestError = 400;
 
     /**
-     * Certificate or token error.
-     * @var integer
+     * Certificate or token error
      */
-    public const ERROR_AUTHENTICATION = 403;
+    case AuthenticationError = 403;
 
     /**
-     * The device token is inactive for the specified topic.
-     * @var integer
+     * The device token is inactive for the specified topic
      */
-    public const ERROR_UNREGISTERED = 410;
+    case UnregisteredError = 410;
 
     /**
-     * The message payload was too large.
-     * @var integer
+     * The message payload was too large
      */
-    public const ERROR_PAYLOAD_TOO_LARGE = 413;
+    case PayloadTooLargeError = 413;
 
     /**
-     * The provider token is being updated too often.
-     * @var integer
+     * The provider token is being updated too often
      */
-    public const TOO_MANY_REQUESTS = 429;
+    case TooManyRequestsError = 429;
 
     /**
-     * Unknown internal error.
-     * @var integer
+     * Unknown internal error
      */
-    public const ERROR_INTERNAL_ERROR = 500;
+    case InternalError = 500;
 
     /**
-     * Shutdown error.
-     * @var integer
+     * Shutdown error
      */
-    public const ERROR_SHUTDOWN = 503;
+    case ShutdownError = 503;
 
 }
 

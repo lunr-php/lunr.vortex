@@ -13,98 +13,83 @@ namespace Lunr\Vortex\APNS\ApnsPHP;
 /**
  * Apple Push Notification Service status reasons.
  */
-class APNSHttpStatusReason
+enum APNSHttpStatusReason: string
 {
 
     /**
      * Bad token error.
-     * @var string
      */
-    public const ERROR_BAD_TOKEN = 'BadDeviceToken';
+    case BadTokenError = 'BadDeviceToken';
 
     /**
      * Bad collapse ID error.
-     * @var string
      */
-    public const ERROR_BAD_COLLAPSE_ID = 'BadCollapseId';
+    case BadCollapseIdError = 'BadCollapseId';
 
     /**
      * Bad expiration date error.
-     * @var string
      */
-    public const ERROR_BAD_EXPIRATION_DATE = 'BadExpirationDate';
+    case BadExpirationDateError = 'BadExpirationDate';
 
     /**
      * Bad message ID error.
-     * @var string
      */
-    public const ERROR_BAD_MESSAGE_ID = 'BadMessageId';
+    case BadMessageIdError = 'BadMessageId';
 
     /**
      * Bad priority error.
-     * @var string
      */
-    public const ERROR_BAD_PRIORITY = 'BadPriority';
+    case BadPriorityError = 'BadPriority';
 
     /**
      * Bad topic error.
-     * @var string
      */
-    public const ERROR_BAD_TOPIC = 'BadTopic';
+    case BadTopicError = 'BadTopic';
 
     /**
      * Token not for current topic error.
-     * @var string
      */
-    public const ERROR_NON_MATCHING_TOKEN = 'DeviceTokenNotForTopic';
+    case NonMatchingTokenError = 'DeviceTokenNotForTopic';
 
     /**
      * Idle timeout.
-     * @var string
      */
-    public const ERROR_IDLE_TIMEOUT = 'IdleTimeout';
+    case IdleTimeoutError = 'IdleTimeout';
 
     /**
      * Topic not allowed error.
-     * @var string
      */
-    public const ERROR_TOPIC_BLOCKED = 'TopicDisallowed';
+    case TopicBlockedError = 'TopicDisallowed';
 
     /**
      * Certificate is not valid.
-     * @var string
      */
-    public const ERROR_CERTIFICATE_INVALID = 'BadCertificate';
+    case CertificateInvalidError = 'BadCertificate';
 
     /**
      * Certificate does not match requested environment.
-     * @var string
      */
-    public const ERROR_CERTIFICATE_ENVIRONMENT = 'BadCertificateEnvironment';
+    case CertificateEnvironmentError = 'BadCertificateEnvironment';
 
     /**
      * JWT Provider token is expired.
-     * @var string
      */
-    public const ERROR_EXPIRED_AUTH_TOKEN = 'ExpiredProviderToken';
+    case AuthTokenExpiredError = 'ExpiredProviderToken';
 
     /**
      * JWT Provider token is invalid.
-     * @var string
      */
-    public const ERROR_INVALID_AUTH_TOKEN = 'InvalidProviderToken';
+    case InvalidAuthTokenError = 'InvalidProviderToken';
 
     /**
      * JWT Provider token is missing.
-     * @var string
      */
-    public const ERROR_MISSING_AUTH_TOKEN = 'MissingProviderToken';
+    case MissingAuthTokenError = 'MissingProviderToken';
 
     /**
      * Action is forbidden.
-     * @var string
      */
-    public const ERROR_FORBIDDEN = 'Forbidden';
+    case ForbiddenError = 'Forbidden';
 
 }
 
