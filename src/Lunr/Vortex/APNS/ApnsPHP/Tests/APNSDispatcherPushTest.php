@@ -12,6 +12,7 @@ namespace Lunr\Vortex\APNS\ApnsPHP\Tests;
 
 use ApnsPHP\Exception as ApnsPHPException;
 use ApnsPHP\Message\Exception as MessageException;
+use ApnsPHP\Message\Priority;
 use ApnsPHP\Push\Exception as PushException;
 use Lunr\Vortex\Email\EmailPayload;
 use Lunr\Vortex\FCM\FCMPayload;
@@ -124,7 +125,7 @@ class APNSDispatcherPushTest extends APNSDispatcherTest
             'mutable_content' => TRUE,
             'content_available' => TRUE,
             'topic' => 'com.company.app',
-            'priority' => 5,
+            'priority' => Priority::ConsiderPowerUsage,
             'collapse_key' => 'key',
             'identifier' => 'identifier',
             'yo' => 'he',

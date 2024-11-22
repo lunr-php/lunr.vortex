@@ -9,9 +9,6 @@
 
 namespace Lunr\Vortex\FCM;
 
-use Lunr\Vortex\APNS\APNSPriority;
-use ReflectionClass;
-
 /**
  * Firebase Cloud Messaging Push Notification APNS Payload Generator.
  *
@@ -114,13 +111,10 @@ class FCMApnsPayload
      */
     public function set_priority(string $priority): static
     {
-        $priority = strtoupper($priority);
-
-        $priority_class = new ReflectionClass(APNSPriority::class);
-        $priorities     = $priority_class->getConstants();
-        if (in_array($priority, array_keys($priorities)))
+        $value = FCMApnsPriority::tryFromString($priority);
+        if ($value !== NULL)
         {
-            $this->elements['headers']['apns-priority'] = $priorities[$priority];
+            $this->elements['headers']['apns-priority'] = (string) $value->value;
         }
 
         return $this;
