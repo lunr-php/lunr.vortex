@@ -10,10 +10,10 @@
 
 namespace Lunr\Vortex\APNS\ApnsPHP\Tests;
 
-use ApnsPHP\Message;
 use ApnsPHP\Push;
 use Lunr\Halo\LunrBaseTest;
 use Lunr\Vortex\APNS\APNSAlertPayload;
+use Lunr\Vortex\APNS\APNSLiveActivityPayload;
 use Lunr\Vortex\APNS\ApnsPHP\APNSDispatcher;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\MockObject\Stub;
@@ -47,16 +47,16 @@ abstract class APNSDispatcherTest extends LunrBaseTest
     protected $apns_push;
 
     /**
-     * Mock instance of an APNS Message class.
-     * @var Message
-     */
-    protected $apns_message;
-
-    /**
      * Mock instance of the APNS Payload class.
      * @var APNSAlertPayload&MockObject
      */
-    protected APNSAlertPayload&MockObject $payload;
+    protected APNSAlertPayload&MockObject $alert_payload;
+
+    /**
+     * Mock instance of the APNS LA Payload class.
+     * @var APNSLiveActivityPayload&MockObject
+     */
+    protected APNSLiveActivityPayload&MockObject $la_payload;
 
     /**
      * Testcase Constructor.
@@ -69,7 +69,9 @@ abstract class APNSDispatcherTest extends LunrBaseTest
                                 ->disableOriginalConstructor()
                                 ->getMock();
 
-        $this->payload = $this->getMockBuilder('Lunr\Vortex\APNS\APNSAlertPayload')->getMock();
+        $this->alert_payload = $this->getMockBuilder('Lunr\Vortex\APNS\APNSAlertPayload')->getMock();
+
+        $this->la_payload = $this->getMockBuilder('Lunr\Vortex\APNS\APNSLiveActivityPayload')->getMock();
 
         $this->class = new APNSDispatcher($this->logger, $this->apns_push);
 
@@ -83,7 +85,7 @@ abstract class APNSDispatcherTest extends LunrBaseTest
     {
         unset($this->logger);
         unset($this->apns_push);
-        unset($this->payload);
+        unset($this->alert_payload);
         unset($this->class);
 
         parent::tearDown();
