@@ -33,13 +33,6 @@ class APNSDispatcher implements PushNotificationMultiDispatcherInterface
     protected Push $apns_push;
 
     /**
-     * Apns Message instance
-     *
-     * @var Message
-     */
-    protected Message $apns_message;
-
-    /**
      * Shared instance of a Logger class.
      *
      * @var LoggerInterface
@@ -56,8 +49,6 @@ class APNSDispatcher implements PushNotificationMultiDispatcherInterface
     {
         $this->logger    = $logger;
         $this->apns_push = $apns_push;
-
-        $this->reset();
     }
 
     /**
@@ -66,18 +57,7 @@ class APNSDispatcher implements PushNotificationMultiDispatcherInterface
     public function __destruct()
     {
         unset($this->apns_push);
-        unset($this->apns_message);
         unset($this->logger);
-    }
-
-    /**
-     * Reset the variable members of the class.
-     *
-     * @return void
-     */
-    protected function reset(): void
-    {
-        unset($this->apns_message);
     }
 
     /**
@@ -106,84 +86,7 @@ class APNSDispatcher implements PushNotificationMultiDispatcherInterface
         }
 
         // Create message
-        $payload = $payload->get_payload();
-
-        $this->apns_message = $this->get_new_apns_message();
-
-        try
-        {
-            if (isset($payload['title']))
-            {
-                $this->apns_message->setTitle($payload['title']);
-            }
-
-            if (isset($payload['body']))
-            {
-                $this->apns_message->setText($payload['body']);
-            }
-
-            if (isset($payload['thread_id']))
-            {
-                $this->apns_message->setThreadID($payload['thread_id']);
-            }
-
-            if (isset($payload['topic']))
-            {
-                $this->apns_message->setTopic($payload['topic']);
-            }
-
-            if (isset($payload['priority']))
-            {
-                $this->apns_message->setPriority($payload['priority']);
-            }
-
-            if (isset($payload['collapse_key']))
-            {
-                $this->apns_message->setCollapseId($payload['collapse_key']);
-            }
-
-            if (isset($payload['identifier']))
-            {
-                $this->apns_message->setCustomIdentifier($payload['identifier']);
-            }
-
-            if (isset($payload['sound']))
-            {
-                $this->apns_message->setSound($payload['sound']);
-            }
-
-            if (isset($payload['category']))
-            {
-                $this->apns_message->setCategory($payload['category']);
-            }
-
-            if (isset($payload['badge']))
-            {
-                $this->apns_message->setBadge($payload['badge']);
-            }
-
-            if (isset($payload['content_available']))
-            {
-                $this->apns_message->setContentAvailable($payload['content_available']);
-            }
-
-            if (isset($payload['mutable_content']))
-            {
-                $this->apns_message->setMutableContent($payload['mutable_content']);
-            }
-
-            if (isset($payload['custom_data']))
-            {
-                foreach ($payload['custom_data'] as $key => $value)
-                {
-                    $this->apns_message->setCustomProperty($key, $value);
-                }
-            }
-        }
-        catch (MessageException $e)
-        {
-            $this->logger->warning($e->getMessage());
-        }
+        $message = $this->build_message_for_payload($payload);
 
         // Add endpoints
         $invalid_endpoints = [];
@@ -192,7 +95,7 @@ class APNSDispatcher implements PushNotificationMultiDispatcherInterface
         {
             try
             {
-                $this->apns_message->addRecipient($endpoint);
+                $message->addRecipient($endpoint);
             }
             catch (MessageException $e)
             {
@@ -205,7 +108,7 @@ class APNSDispatcher implements PushNotificationMultiDispatcherInterface
         // Send message
         try
         {
-            $this->apns_push->add($this->apns_message);
+            $this->apns_push->add($message);
             $this->apns_push->connect();
             $this->apns_push->send();
             $this->apns_push->disconnect();
@@ -221,11 +124,90 @@ class APNSDispatcher implements PushNotificationMultiDispatcherInterface
         }
 
         // Return response
-        $response = new APNSResponse($this->logger, $endpoints, $invalid_endpoints, $errors, (string) $this->apns_message);
+        return new APNSResponse($this->logger, $endpoints, $invalid_endpoints, $errors, (string) $message);
+    }
 
-        $this->reset();
+    /**
+     * Build a Message object for a given payload
+     *
+     * @param APNSPayload $payload The payload to build from
+     *
+     * @return Message The filled message
+     */
+    private function build_message_for_payload(APNSPayload $payload): Message
+    {
+        $payload = $payload->get_payload();
+        $message = $this->get_new_apns_message();
 
-        return $response;
+        if (isset($payload['title']))
+        {
+            $message->setTitle($payload['title']);
+        }
+
+        if (isset($payload['body']))
+        {
+            $message->setText($payload['body']);
+        }
+
+        if (isset($payload['thread_id']))
+        {
+            $message->setThreadID($payload['thread_id']);
+        }
+
+        if (isset($payload['topic']))
+        {
+            $message->setTopic($payload['topic']);
+        }
+
+        if (isset($payload['priority']))
+        {
+            $message->setPriority($payload['priority']);
+        }
+
+        if (isset($payload['collapse_key']))
+        {
+            $message->setCollapseId($payload['collapse_key']);
+        }
+
+        if (isset($payload['identifier']))
+        {
+            $message->setCustomIdentifier($payload['identifier']);
+        }
+
+        if (isset($payload['sound']))
+        {
+            $message->setSound($payload['sound']);
+        }
+
+        if (isset($payload['category']))
+        {
+            $message->setCategory($payload['category']);
+        }
+
+        if (isset($payload['badge']))
+        {
+            $message->setBadge($payload['badge']);
+        }
+
+        if (isset($payload['content_available']))
+        {
+            $message->setContentAvailable($payload['content_available']);
+        }
+
+        if (isset($payload['mutable_content']))
+        {
+            $message->setMutableContent($payload['mutable_content']);
+        }
+
+        if (isset($payload['custom_data']))
+        {
+            foreach ($payload['custom_data'] as $key => $value)
+            {
+                $message->setCustomProperty($key, $value);
+            }
+        }
+
+        return $message;
     }
 
 }
