@@ -11,6 +11,7 @@
 namespace Lunr\Vortex\APNS\ApnsPHP\Tests;
 
 use ApnsPHP\Exception as ApnsPHPException;
+use ApnsPHP\Message;
 use ApnsPHP\Message\Exception as MessageException;
 use ApnsPHP\Message\Priority;
 use ApnsPHP\Push\Exception as PushException;
@@ -51,7 +52,7 @@ class APNSDispatcherPushTest extends APNSDispatcherTest
      * @dataProvider unsupportedPayloadProvider
      * @covers       Lunr\Vortex\APNS\ApnsPHP\APNSDispatcher::push
      */
-    public function testPushingWithUnsupportedPayloadThrowsException($payload): void
+    public function testPushingWithUnsupportedPayloadThrowsException(object $payload): void
     {
         $endpoints = [ 'endpoint' ];
 
@@ -73,20 +74,6 @@ class APNSDispatcherPushTest extends APNSDispatcherTest
         $result = $this->class->push($this->payload, $endpoints);
 
         $this->assertInstanceOf('Lunr\Vortex\APNS\ApnsPHP\APNSResponse', $result);
-    }
-
-    /**
-     * Test that push() resets the properties after a push.
-     *
-     * @covers Lunr\Vortex\APNS\ApnsPHP\APNSDispatcher::push
-     */
-    public function testPushResetsProperties(): void
-    {
-        $endpoints = [];
-
-        $this->class->push($this->payload, $endpoints);
-
-        $this->assertPropertyUnset('apns_message');
     }
 
     /**
@@ -114,115 +101,55 @@ class APNSDispatcherPushTest extends APNSDispatcherTest
      */
     public function testPushConstructsCorrectPayload(): void
     {
-        $endpoints = [];
+        $endpoints = [ 'endpoint1', 'endpoint2' ];
 
         $payload = [
-            'title' => 'title',
-            'body' => 'message',
-            'thread_id' => '59ADAE4572BF42A682F46170DA5A74EC',
-            'sound' => 'yo.mp3',
-            'category' => 'messages_for_test',
-            'mutable_content' => TRUE,
+            'title'             => 'title',
+            'body'              => 'message',
+            'thread_id'         => '59ADAE4572BF42A682F46170DA5A74EC',
+            'sound'             => 'yo.mp3',
+            'category'          => 'messages_for_test',
+            'mutable_content'   => TRUE,
             'content_available' => TRUE,
-            'topic' => 'com.company.app',
-            'priority' => Priority::ConsiderPowerUsage,
-            'collapse_key' => 'key',
-            'identifier' => 'identifier',
-            'yo' => 'he',
-            'badge' => 7,
-            'custom_data' => [
+            'topic'             => 'com.company.app',
+            'priority'          => Priority::ConsiderPowerUsage,
+            'collapse_key'      => 'key',
+            'identifier'        => 'DF9AEF66-F39A-48C1-A5A8-69D263E21F1C',
+            'yo'                => 'he',
+            'badge'             => 7,
+            'custom_data'       => [
                 'key1' => 'value1',
                 'key2' => 'value2'
             ],
         ];
 
+        $message = new Message();
+        $message->setTitle($payload['title']);
+        $message->setText($payload['body']);
+        $message->setThreadId($payload['thread_id']);
+        $message->setSound($payload['sound']);
+        $message->setCategory($payload['category']);
+        $message->setMutableContent($payload['mutable_content']);
+        $message->setContentAvailable($payload['content_available']);
+        $message->setTopic($payload['topic']);
+        $message->setPriority($payload['priority']);
+        $message->setCollapseId($payload['collapse_key']);
+        $message->setCustomIdentifier($payload['identifier']);
+        $message->setBadge($payload['badge']);
+        foreach ($payload['custom_data'] as $key => $value)
+        {
+            $message->setCustomProperty($key, $value);
+        }
+
         $this->payload->expects($this->once())
                       ->method('get_payload')
                       ->willReturn($payload);
 
-        $this->apns_message->expects($this->exactly(1))
-                           ->method('setTitle')
-                           ->with($payload['title']);
-
-        $this->apns_message->expects($this->exactly(1))
-                           ->method('setText')
-                           ->with($payload['body']);
-
-        $this->apns_message->expects($this->exactly(1))
-                           ->method('setThreadID')
-                           ->with($payload['thread_id']);
-
-        $this->apns_message->expects($this->exactly(1))
-                           ->method('setTopic')
-                           ->with($payload['topic']);
-
-        $this->apns_message->expects($this->exactly(1))
-                           ->method('setPriority')
-                           ->with($payload['priority']);
-
-        $this->apns_message->expects($this->exactly(1))
-                           ->method('setCollapseId')
-                           ->with($payload['collapse_key']);
-
-        $this->apns_message->expects($this->exactly(1))
-                           ->method('setCustomIdentifier')
-                           ->with($payload['identifier']);
-
-        $this->apns_message->expects($this->exactly(1))
-                           ->method('setSound')
-                           ->with($payload['sound']);
-
-        $this->apns_message->expects($this->exactly(1))
-                           ->method('setCategory')
-                           ->with($payload['category']);
-
-        $this->apns_message->expects($this->exactly(1))
-                           ->method('setBadge')
-                           ->with($payload['badge']);
-
-        $this->apns_message->expects($this->exactly(1))
-                           ->method('setContentAvailable')
-                           ->with(TRUE);
-
-        $this->apns_message->expects($this->exactly(1))
-                           ->method('setMutableContent')
-                           ->with(TRUE);
-
-        $this->apns_message->expects($this->exactly(2))
-                           ->method('setCustomProperty')
-                           ->withConsecutive(
-                               [ 'key1', 'value1' ],
-                               [ 'key2', 'value2' ]
-                           );
+        $this->apns_push->expects($this->once())
+                        ->method('add')
+                        ->with($message);
 
         $this->class->push($this->payload, $endpoints);
-    }
-
-    /**
-     * Test that push() log payload building error with badge.
-     *
-     * @covers Lunr\Vortex\APNS\ApnsPHP\APNSDispatcher::push
-     */
-    public function testPushLogPayloadBuildingBadgeError(): void
-    {
-        $endpoints = [];
-
-        $this->payload->expects($this->once())
-                      ->method('get_payload')
-                      ->willReturn([ 'badge' => -1 ]);
-
-        $this->apns_message->expects($this->once())
-                           ->method('setBadge')
-                           ->with(-1)
-                           ->will($this->throwException(new MessageException('Invalid badge: -1')));
-
-        $this->logger->expects($this->once())
-                     ->method('warning')
-                     ->with('Invalid badge: -1');
-
-        $result = $this->class->push($this->payload, $endpoints);
-
-        $this->assertInstanceOf('Lunr\Vortex\APNS\ApnsPHP\APNSResponse', $result);
     }
 
     /**
@@ -232,68 +159,13 @@ class APNSDispatcherPushTest extends APNSDispatcherTest
      */
     public function testPushLogPayloadBuildingCustomPropertyError(): void
     {
+        $this->expectException(MessageException::class);
+        $this->expectExceptionMessage('Property name \'aps\' can not be used for custom property.');
         $endpoints = [];
 
         $this->payload->expects($this->once())
                       ->method('get_payload')
-                      ->willReturn([ 'custom_data' => [ 'apns' => 'value1' ]]);
-
-        $this->apns_message->expects($this->once())
-                           ->method('setCustomProperty')
-                           ->with('apns', 'value1')
-                           ->will($this->throwException(new MessageException('Reserved keyword: apns')));
-
-        $this->logger->expects($this->once())
-                     ->method('warning')
-                     ->with('Reserved keyword: apns');
-
-        $result = $this->class->push($this->payload, $endpoints);
-
-        $this->assertInstanceOf('Lunr\Vortex\APNS\ApnsPHP\APNSResponse', $result);
-    }
-
-    /**
-     * Test that push() add all endpoints to the message.
-     *
-     * @covers Lunr\Vortex\APNS\ApnsPHP\APNSDispatcher::push
-     */
-    public function testPushAddAllEndpointsToMessage(): void
-    {
-        $endpoints = [ 'endpoint1', 'endpoint2' ];
-
-        $this->apns_message->expects($this->exactly(2))
-                           ->method('addRecipient')
-                           ->withConsecutive([ 'endpoint1' ], [ 'endpoint2' ]);
-
-        $this->class->push($this->payload, $endpoints);
-    }
-
-    /**
-     * Test that push() log invalid endpoints.
-     *
-     * @covers Lunr\Vortex\APNS\ApnsPHP\APNSDispatcher::push
-     */
-    public function testPushLogInvalidEndpoints(): void
-    {
-        $endpoints = [ 'endpoint1', 'endpoint2', 'endpoint3' ];
-
-        $pos = 0;
-
-        $this->apns_message->expects($this->exactly(3))
-                           ->method('addRecipient')
-                           ->withConsecutive([ 'endpoint1' ], [ 'endpoint2' ], [ 'endpoint3' ])
-                           ->willReturnOnConsecutiveCalls(
-                               $this->throwException(new MessageException('Invalid endpoint: endpoint1')),
-                               NULL,
-                               $this->throwException(new MessageException('Invalid endpoint: endpoint3'))
-                           );
-
-        $this->logger->expects($this->exactly(2))
-                     ->method('warning')
-                     ->withConsecutive(
-                        [ 'Invalid endpoint: endpoint1' ],
-                        [ 'Invalid endpoint: endpoint3' ]
-                     );
+                      ->willReturn([ 'custom_data' => [ 'aps' => 'value1' ]]);
 
         $result = $this->class->push($this->payload, $endpoints);
 
@@ -359,11 +231,11 @@ class APNSDispatcherPushTest extends APNSDispatcherTest
     {
         $endpoints = [];
 
-        $pos = 0;
+        $message = new Message();
 
         $this->apns_push->expects($this->exactly(1))
                         ->method('add')
-                        ->with($this->apns_message);
+                        ->with($message);
 
         $this->apns_push->expects($this->exactly(1))
                         ->method('connect');
