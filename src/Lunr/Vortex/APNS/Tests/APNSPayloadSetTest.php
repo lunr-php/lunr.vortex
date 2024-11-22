@@ -10,6 +10,8 @@
 
 namespace Lunr\Vortex\APNS\Tests;
 
+use ApnsPHP\Message\Priority;
+
 /**
  * This class contains tests for the setters of the APNSPayload class.
  *
@@ -311,27 +313,12 @@ class APNSPayloadSetTest extends APNSPayloadTest
      */
     public function testPriority(): void
     {
-        $this->class->set_priority(5);
+        $this->class->set_priority(Priority::ConsiderPowerUsage);
 
         $value = $this->get_reflection_property_value('elements');
 
         $this->assertArrayHasKey('priority', $value);
-        $this->assertEquals(5, $value['priority']);
-    }
-
-    /**
-     * Test set_priority() works correctly.
-     *
-     * @covers \Lunr\Vortex\APNS\APNSPayload::set_priority
-     */
-    public function testPriorityIgnoresWrongValues(): void
-    {
-        $this->class->set_priority(7);
-
-        $value = $this->get_reflection_property_value('elements');
-
-        $this->assertArrayHasKey('priority', $value);
-        $this->assertEquals(10, $value['priority']);
+        $this->assertEquals(Priority::ConsiderPowerUsage, $value['priority']);
     }
 
     /**
@@ -341,7 +328,7 @@ class APNSPayloadSetTest extends APNSPayloadTest
      */
     public function testSetPriorityReturnsSelfReference(): void
     {
-        $this->assertSame($this->class, $this->class->set_priority(5));
+        $this->assertSame($this->class, $this->class->set_priority(Priority::ConsiderPowerUsage));
     }
 
     /**

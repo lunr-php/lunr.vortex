@@ -99,19 +99,42 @@ class FCMApnsPayloadSetTest extends FCMApnsPayloadTest
     }
 
     /**
+     * Provide different priority options for testing.
+     *
+     * @return array
+     */
+    public function priorityProvider(): array
+    {
+        $return = [];
+
+        $return['lowercase'] = [ 'high', 10 ];
+        $return['titlecase'] = [ 'High', 10 ];
+        $return['uppercase'] = [ 'HIGH', 10 ];
+        $return['default']   = [ 'default', 5 ];
+        $return['low']       = [ 'low', 1 ];
+
+        return $return;
+    }
+
+    /**
      * Test set_priority() works correctly.
+     *
+     * @dataProvider priorityProvider
+     *
+     * @param string $priority The priority to set
+     * @param int    $expected The expected value
      *
      * @covers \Lunr\Vortex\FCM\FCMApnsPayload::set_priority
      */
-    public function testSetPriority(): void
+    public function testSetPriority(string $priority, int $expected): void
     {
-        $this->class->set_priority('high');
+        $this->class->set_priority($priority);
 
         $value = $this->get_reflection_property_value('elements');
 
         $this->assertArrayHasKey('headers', $value);
         $this->assertArrayHasKey('apns-priority', $value['headers']);
-        $this->assertEquals(10, $value['headers']['apns-priority']);
+        $this->assertEquals($expected, $value['headers']['apns-priority']);
     }
 
     /**
