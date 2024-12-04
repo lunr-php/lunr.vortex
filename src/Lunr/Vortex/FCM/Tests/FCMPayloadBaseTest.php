@@ -42,6 +42,40 @@ class FCMPayloadBaseTest extends FCMPayloadTest
         $this->assertPropertySame('apns_payload', NULL);
     }
 
+    /**
+     * Test is_broadcast() returns FALSE when no condition or topic is set.
+     *
+     * @covers Lunr\Vortex\FCM\FCMPayload::is_broadcast
+     */
+    public function testIsBroadcastReturnFalse(): void
+    {
+        $this->assertFalse($this->class->is_broadcast());
+    }
+
+    /**
+     * Test if is_broadcast() returns TRUE when condition is set.
+     *
+     * @covers Lunr\Vortex\FCM\FCMPayload::is_broadcast
+     */
+    public function testIsBroadcastConditionIsSet(): void
+    {
+        $this->class->set_condition("'TopicA' in topics && 'TopicB' in topics");
+
+        $this->assertTrue($this->class->is_broadcast());
+    }
+
+    /**
+     * Test if is_broadcast() returns TRUE when topic is set.
+     *
+     * @covers Lunr\Vortex\FCM\FCMPayload::is_broadcast
+     */
+    public function testIsBroadcastTopicIsSet(): void
+    {
+        $this->class->set_topic('news');
+
+        $this->assertTrue($this->class->is_broadcast());
+    }
+
 }
 
 ?>

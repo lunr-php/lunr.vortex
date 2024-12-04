@@ -35,6 +35,16 @@ class WNSPayloadBaseTest extends WNSPayloadTest
         $this->assertEquals($expected, $method->invokeArgs($this->class, [ $string ]));
     }
 
+    /**
+     * Test is_broadcast returns false.
+     *
+     * @covers Lunr\Vortex\WNS\WNSBadgePayload::is_broadcast
+     */
+    public function testIsBroadCastReturnFalse(): void
+    {
+        $this->assertFalse($this->class->is_broadcast());
+    }
+
 }
 
 ?>

@@ -10,10 +10,12 @@
 
 namespace Lunr\Vortex\WNS;
 
+use Lunr\Vortex\PushNotificationPayloadInterface;
+
 /**
  * Windows Push Notification Payload Generator.
  */
-abstract class WNSPayload
+abstract class WNSPayload implements PushNotificationPayloadInterface
 {
 
     /**
@@ -45,6 +47,16 @@ abstract class WNSPayload
         $replace = [ '&amp;', '&lt;', '&gt;', '&apos;', '&quot;' ];
 
         return str_replace($search, $replace, $string);
+    }
+
+    /**
+     * Check if the payload is for a broadcast notification.
+     *
+     * @return bool If payload for notification is a broadcast
+     */
+    public function is_broadcast(): bool
+    {
+        return FALSE;
     }
 
     /**

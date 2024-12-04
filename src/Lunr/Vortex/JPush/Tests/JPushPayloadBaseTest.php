@@ -34,6 +34,16 @@ class JPushPayloadBaseTest extends JPushPayloadTest
         ]);
     }
 
+    /**
+     * Test is_broadcast returns false.
+     *
+     * @covers \Lunr\Vortex\JPush\JPushPayload::is_broadcast
+     */
+    public function testIsBroadCastReturnFalse(): void
+    {
+        $this->assertFalse($this->class->is_broadcast());
+    }
+
 }
 
 ?>

@@ -10,10 +10,12 @@
 
 namespace Lunr\Vortex\JPush;
 
+use Lunr\Vortex\PushNotificationPayloadInterface;
+
 /**
  * JPush Payload Generator.
  */
-abstract class JPushPayload
+abstract class JPushPayload implements PushNotificationPayloadInterface
 {
 
     /**
@@ -48,6 +50,16 @@ abstract class JPushPayload
     public function __destruct()
     {
         unset($this->elements);
+    }
+
+    /**
+     * Check if the payload is for a broadcast notification.
+     *
+     * @return bool If payload for notification is a broadcast
+     */
+    public function is_broadcast(): bool
+    {
+        return FALSE;
     }
 
     /**

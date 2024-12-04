@@ -34,6 +34,16 @@ class EmailPayloadBaseTest extends EmailPayloadTest
         $this->assertEquals($expected, $this->get_reflection_property_value('elements'));
     }
 
+    /**
+     * Test is_broadcast returns false.
+     *
+     * @covers Lunr\Vortex\Email\EmailPayload::is_broadcast
+     */
+    public function testIsBroadCastReturnFalse(): void
+    {
+        $this->assertFalse($this->class->is_broadcast());
+    }
+
 }
 
 ?>

@@ -11,6 +11,7 @@
 namespace Lunr\Vortex\FCM;
 
 use InvalidArgumentException;
+use Lunr\Vortex\PushNotificationPayloadInterface;
 
 /**
  * Firebase Cloud Messaging Push Notification Payload Generator.
@@ -38,7 +39,7 @@ use InvalidArgumentException;
  * }
  * @phpstan-type FcmOptionKeys "analytics_label"
  */
-class FCMPayload
+class FCMPayload implements PushNotificationPayloadInterface
 {
 
     /**
@@ -77,6 +78,16 @@ class FCMPayload
         unset($this->elements);
         unset($this->android_payload);
         unset($this->apns_payload);
+    }
+
+    /**
+     * Check if the payload is for a broadcast notification.
+     *
+     * @return bool If payload for notification is a broadcast
+     */
+    public function is_broadcast(): bool
+    {
+        return $this->has_topic() || $this->has_condition();
     }
 
     /**

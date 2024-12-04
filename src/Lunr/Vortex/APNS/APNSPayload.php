@@ -10,12 +10,13 @@
 
 namespace Lunr\Vortex\APNS;
 
+use Lunr\Vortex\PushNotificationPayloadInterface;
 use ReflectionClass;
 
 /**
  * Apple Push Notification Service Payload Generator.
  */
-class APNSPayload
+class APNSPayload implements PushNotificationPayloadInterface
 {
 
     /**
@@ -40,6 +41,16 @@ class APNSPayload
     public function __destruct()
     {
         unset($this->elements);
+    }
+
+    /**
+     * Check if the payload is for a broadcast notification.
+     *
+     * @return bool If payload for notification is a broadcast
+     */
+    public function is_broadcast(): bool
+    {
+        return FALSE;
     }
 
     /**

@@ -10,6 +10,8 @@
 
 namespace Lunr\Vortex\Email;
 
+use Lunr\Vortex\PushNotificationPayloadInterface;
+
 /**
  * Email Notification Payload Generator.
  *
@@ -21,7 +23,7 @@ namespace Lunr\Vortex\Email;
  *     body_as_html: bool
  * }
  */
-class EmailPayload
+class EmailPayload implements PushNotificationPayloadInterface
 {
 
     /**
@@ -50,6 +52,16 @@ class EmailPayload
     public function __destruct()
     {
         unset($this->elements);
+    }
+
+    /**
+     * Check if the payload is for a broadcast notification.
+     *
+     * @return bool If payload for notification is a broadcast
+     */
+    public function is_broadcast(): bool
+    {
+        return FALSE;
     }
 
     /**
