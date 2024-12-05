@@ -103,14 +103,14 @@ class APNSResponse implements PushNotificationResponseInterface
 
                 switch ($status_code)
                 {
-                    case APNSHttpStatus::ERROR_BAD_REQUEST:
-                    case APNSHttpStatus::ERROR_UNREGISTERED:
-                    case APNSBinaryStatus::ERROR_INVALID_TOKEN_SIZE:
-                    case APNSBinaryStatus::ERROR_INVALID_TOKEN:
+                    case APNSHttpStatus::BadRequestError->value:
+                    case APNSHttpStatus::UnregisteredError->value:
+                    case APNSBinaryStatus::InvalidTokenSizeError->value:
+                    case APNSBinaryStatus::InvalidTokenError->value:
                         $status = PushNotificationStatus::InvalidEndpoint;
                         break;
-                    case APNSHttpStatus::TOO_MANY_REQUESTS:
-                    case APNSBinaryStatus::ERROR_PROCESSING:
+                    case APNSHttpStatus::TooManyRequestsError->value:
+                    case APNSBinaryStatus::ProcessingError->value:
                         $status = PushNotificationStatus::TemporaryError;
                         break;
                     default:
@@ -119,20 +119,20 @@ class APNSResponse implements PushNotificationResponseInterface
                 }
 
                 //Refine based on reasons in the HTTP status
-                switch ($reason)
+                switch (APNSHttpStatusReason::tryFrom($reason))
                 {
-                    case APNSHttpStatusReason::ERROR_TOPIC_BLOCKED:
-                    case APNSHttpStatusReason::ERROR_CERTIFICATE_INVALID:
-                    case APNSHttpStatusReason::ERROR_CERTIFICATE_ENVIRONMENT:
-                    case APNSHttpStatusReason::ERROR_INVALID_AUTH_TOKEN:
+                    case APNSHttpStatusReason::TopicBlockedError:
+                    case APNSHttpStatusReason::CertificateInvalidError:
+                    case APNSHttpStatusReason::CertificateEnvironmentError:
+                    case APNSHttpStatusReason::InvalidAuthTokenError:
                         $status = PushNotificationStatus::Error;
                         break;
-                    case APNSHttpStatusReason::ERROR_IDLE_TIMEOUT:
-                    case APNSHttpStatusReason::ERROR_EXPIRED_AUTH_TOKEN:
+                    case APNSHttpStatusReason::IdleTimeoutError:
+                    case APNSHttpStatusReason::AuthTokenExpiredError:
                         $status = PushNotificationStatus::TemporaryError;
                         break;
-                    case APNSHttpStatusReason::ERROR_BAD_TOKEN:
-                    case APNSHttpStatusReason::ERROR_NON_MATCHING_TOKEN:
+                    case APNSHttpStatusReason::BadTokenError:
+                    case APNSHttpStatusReason::NonMatchingTokenError:
                         $status = PushNotificationStatus::InvalidEndpoint;
                         break;
                     default:
@@ -199,7 +199,7 @@ class APNSResponse implements PushNotificationResponseInterface
      */
     public function get_status(string $endpoint): PushNotificationStatus
     {
-        return isset($this->statuses[$endpoint]) ? $this->statuses[$endpoint] : PushNotificationStatus::Unknown;
+        return $this->statuses[$endpoint] ?? PushNotificationStatus::Unknown;
     }
 
 }

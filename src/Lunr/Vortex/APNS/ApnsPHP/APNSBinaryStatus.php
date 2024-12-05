@@ -13,80 +13,68 @@ namespace Lunr\Vortex\APNS\ApnsPHP;
 /**
  * Apple Push Notification Service status codes.
  */
-class APNSBinaryStatus
+enum APNSBinaryStatus: int
 {
 
     /**
      * No error encountered.
-     * @var integer
      */
-    public const SUCCESS = 0;
+    case Success = 0;
 
     /**
-     * Processing error.
-     * @var integer
+     * Processing error
      */
-    public const ERROR_PROCESSING = 1;
+    case ProcessingError = 1;
 
     /**
-     * Missing device token error.
-     * @var integer
+     * Missing device token error
      */
-    public const ERROR_MISSING_DEVICE_TOKEN = 2;
+    case MissingDeviceTokenError = 2;
 
     /**
-     * Missing topic error.
-     * @var integer
+     * Missing topic error
      */
-    public const ERROR_TOPIC = 3;
+    case TopicError = 3;
 
     /**
-     * Missing payload error.
-     * @var integer
+     * Missing payload error
      */
-    public const ERROR_MISSING_PAYLOAD = 4;
+    case MissingPayloadError = 4;
 
     /**
-     * Invalid token size error.
-     * @var integer
+     * Invalid token size error
      */
-    public const ERROR_INVALID_TOKEN_SIZE = 5;
+    case InvalidTokenSizeError = 5;
 
     /**
-     * Invalid topic size error.
-     * @var integer
+     * Invalid topic size error
      */
-    public const ERROR_INVALID_TOPIC_SIZE = 6;
+    case InvalidTopicSizeError = 6;
 
     /**
-     * Invalid payload size error.
-     * @var integer
+     * Invalid payload size error
      */
-    public const ERROR_INVALID_PAYLOAD_SIZE = 7;
+    case InvalidPayloadSizeError = 7;
 
     /**
-     * Invalid token error.
-     * @var integer
+     * Invalid token error
      */
-    public const ERROR_INVALID_TOKEN = 8;
+    case InvalidTokenError = 8;
 
     /**
-     * Shutdown error.
-     * @var integer
+     * Shutdown error
      */
-    public const ERROR_SHUTDOWN = 10;
+    case ShutdownError = 10;
 
     /**
-     * Protocol error,
-     * @var integer
+     * Protocol error
      */
-    public const ERROR_PROTOCOL = 128;
+    case ProtocolError = 128;
 
     /**
-     * Unknown error.
-     * @var integer
+     * Unknown error
      */
-    public const ERROR_UNKNOWN = 255;
+    case UnknownError = 255;
 
 }
 
