@@ -11,6 +11,7 @@
 namespace Lunr\Vortex\APNS\Tests;
 
 use Lunr\Halo\LunrBaseTest;
+use Lunr\Vortex\APNS\APNSAlertPayload;
 use Lunr\Vortex\APNS\APNSPayload;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\MockObject\Stub;
@@ -21,7 +22,7 @@ use PHPUnit\Framework\MockObject\Stub;
  *
  * @covers Lunr\Vortex\APNS\APNSPayload
  */
-abstract class APNSPayloadTest extends LunrBaseTest
+abstract class APNSAlertPayloadTest extends LunrBaseTest
 {
 
     /**
@@ -32,9 +33,9 @@ abstract class APNSPayloadTest extends LunrBaseTest
 
     /**
      * Instance of the tested class.
-     * @var APNSPayload&MockObject&Stub
+     * @var APNSAlertPayload
      */
-    protected APNSPayload&MockObject&Stub $class;
+    protected APNSAlertPayload $class;
 
     /**
      * Testcase Constructor.
@@ -53,8 +54,7 @@ abstract class APNSPayloadTest extends LunrBaseTest
 
         $this->payload = json_encode($elements_array);
 
-        $this->class = $this->getMockBuilder(APNSPayload::class)
-                            ->getMockForAbstractClass();
+        $this->class = new APNSAlertPayload();
 
         parent::baseSetUp($this->class);
     }
