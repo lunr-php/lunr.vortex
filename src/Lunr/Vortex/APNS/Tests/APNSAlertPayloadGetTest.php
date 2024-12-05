@@ -1,21 +1,20 @@
 <?php
 
 /**
- * This file contains the APNSPayloadGetTest class.
+ * This file contains the APNSAlertPayloadGetTest class.
  *
- * SPDX-FileCopyrightText: Copyright 2014 M2mobi B.V., Amsterdam, The Netherlands
- * SPDX-FileCopyrightText: Copyright 2022 Move Agency Group B.V., Zwolle, The Netherlands
+ * SPDX-FileCopyrightText: Copyright 2024 Move Agency Group B.V., Zwolle, The Netherlands
  * SPDX-License-Identifier: MIT
  */
 
 namespace Lunr\Vortex\APNS\Tests;
 
 /**
- * This class contains tests for the getters of the APNSPayload class.
+ * This class contains tests for the getters of the APNSAlertPayload class.
  *
- * @covers Lunr\Vortex\APNS\APNSPayload
+ * @covers Lunr\Vortex\APNS\APNSAlertPayload
  */
-class APNSPayloadGetTest extends APNSPayloadTest
+class APNSAlertPayloadGetTest extends APNSAlertPayloadTest
 {
 
     /**
@@ -25,7 +24,7 @@ class APNSPayloadGetTest extends APNSPayloadTest
      * @param array  $data_array The data to compare get_payload against
      *
      * @dataProvider payloadProvider
-     * @covers       Lunr\Vortex\APNS\APNSPayload::get_payload
+     * @covers       Lunr\Vortex\APNS\APNSAlertPayload::get_payload
      */
     public function testGetPayloadWithAlert(string $file, array $data_array): void
     {
