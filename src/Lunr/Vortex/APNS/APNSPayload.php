@@ -10,12 +10,28 @@
 
 namespace Lunr\Vortex\APNS;
 
-use ReflectionClass;
+use ApnsPHP\Message\Priority;
 
 /**
  * Apple Push Notification Service Payload Generator.
+ *
+ * @phpstan-type APNSBasePayloadElements array{
+ *     title?: string,
+ *     body?: string,
+ *     category?: string,
+ *     topic?: string,
+ *     thread_id?: string,
+ *     collapse_key?: string,
+ *     identifier?: string,
+ *     sound?: string,
+ *     priority: Priority,
+ *     badge?: int,
+ *     content_available?: bool,
+ *     mutable_content?: bool,
+ *     custom_data?: array,
+ * }
  */
-class APNSPayload
+abstract class APNSPayload
 {
 
     /**
@@ -31,7 +47,7 @@ class APNSPayload
     {
         $this->elements = [];
 
-        $this->elements['priority'] = APNSPriority::HIGH;
+        $this->elements['priority'] = Priority::Immediately;
     }
 
     /**
@@ -47,7 +63,7 @@ class APNSPayload
      *
      * @return array APNSPayload elements
      */
-    public function get_payload(): array
+    protected function get_payload(): array
     {
         return $this->elements;
     }
@@ -88,18 +104,13 @@ class APNSPayload
     /**
      * Mark the notification priority.
      *
-     * @param int $priority Notification priority value.
+     * @param Priority $priority Notification priority value.
      *
      * @return APNSPayload Self Reference
      */
-    public function set_priority(int $priority): self
+    public function set_priority(Priority $priority): self
     {
-        $priority_class = new ReflectionClass('\Lunr\Vortex\APNS\APNSPriority');
-
-        if (in_array($priority, array_values($priority_class->getConstants())))
-        {
-            $this->elements['priority'] = $priority;
-        }
+        $this->elements['priority'] = $priority;
 
         return $this;
     }
