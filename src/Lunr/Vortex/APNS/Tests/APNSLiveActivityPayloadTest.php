@@ -1,27 +1,24 @@
 <?php
 
 /**
- * This file contains the APNSPayloadTest class.
+ * This file contains the APNSLiveActivityPayloadTest class.
  *
- * SPDX-FileCopyrightText: Copyright 2014 M2mobi B.V., Amsterdam, The Netherlands
- * SPDX-FileCopyrightText: Copyright 2022 Move Agency Group B.V., Zwolle, The Netherlands
+ * SPDX-FileCopyrightText: Copyright 2024 Move Agency Group B.V., Zwolle, The Netherlands
  * SPDX-License-Identifier: MIT
  */
 
 namespace Lunr\Vortex\APNS\Tests;
 
 use Lunr\Halo\LunrBaseTest;
-use Lunr\Vortex\APNS\APNSPayload;
-use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\MockObject\Stub;
+use Lunr\Vortex\APNS\APNSLiveActivityPayload;
 
 /**
  * This class contains common setup routines, providers
- * and shared attributes for testing the APNSPayload class.
+ * and shared attributes for testing the APNSLiveActivityPayload class.
  *
- * @covers Lunr\Vortex\APNS\APNSPayload
+ * @covers \Lunr\Vortex\APNS\APNSLiveActivityPayload
  */
-abstract class APNSPayloadTest extends LunrBaseTest
+abstract class APNSLiveActivityPayloadTest extends LunrBaseTest
 {
 
     /**
@@ -32,9 +29,9 @@ abstract class APNSPayloadTest extends LunrBaseTest
 
     /**
      * Instance of the tested class.
-     * @var APNSPayload&MockObject&Stub
+     * @var APNSLiveActivityPayload
      */
-    protected APNSPayload&MockObject&Stub $class;
+    protected APNSLiveActivityPayload $class;
 
     /**
      * Testcase Constructor.
@@ -53,8 +50,7 @@ abstract class APNSPayloadTest extends LunrBaseTest
 
         $this->payload = json_encode($elements_array);
 
-        $this->class = $this->getMockBuilder(APNSPayload::class)
-                            ->getMockForAbstractClass();
+        $this->class = new APNSLiveActivityPayload();
 
         parent::baseSetUp($this->class);
     }
@@ -73,15 +69,15 @@ abstract class APNSPayloadTest extends LunrBaseTest
     /**
      * Unit test data provider for payload files.
      *
-     * @return array $values Array of non-object values
+     * @return array<string, mixed> $values Array of non-object values
      */
     public function payloadProvider(): array
     {
         $values   = [];
-        $values[] = [ '/Vortex/apns/alert.json', [ 'alert' => 'apnsmessage' ] ];
-        $values[] = [ '/Vortex/apns/custom_data.json', [ 'custom_data' => [ 'key1' => 'value1', 'key2' => 'value2' ] ] ];
-        $values[] = [ '/Vortex/apns/badge.json', [ 'badge' => 10 ] ];
-        $values[] = [
+        $values['alert']       = [ '/Vortex/apns/alert.json', [ 'alert' => 'apnsmessage' ] ];
+        $values['custom data'] = [ '/Vortex/apns/custom_data.json', [ 'custom_data' => [ 'key1' => 'value1', 'key2' => 'value2' ] ] ];
+        $values['badge']       = [ '/Vortex/apns/badge.json', [ 'badge' => 10 ] ];
+        $values['full']        = [
             '/Vortex/apns/apns.json',
             [
                 'alert'       => 'apnsmessage',

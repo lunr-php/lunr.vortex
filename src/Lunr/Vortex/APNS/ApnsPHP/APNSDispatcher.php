@@ -13,9 +13,12 @@ namespace Lunr\Vortex\APNS\ApnsPHP;
 use ApnsPHP\Exception as ApnsPHPException;
 use ApnsPHP\Message;
 use ApnsPHP\Message\Exception as MessageException;
+use ApnsPHP\Message\LiveActivity;
 use ApnsPHP\Push;
 use InvalidArgumentException;
+use Lunr\Vortex\APNS\APNSAlertPayload;
 use Lunr\Vortex\APNS\APNSPayload;
+use Lunr\Vortex\APNS\APNSLiveActivityPayload;
 use Lunr\Vortex\PushNotificationMultiDispatcherInterface;
 use Psr\Log\LoggerInterface;
 
@@ -31,13 +34,6 @@ class APNSDispatcher implements PushNotificationMultiDispatcherInterface
      * @var Push
      */
     protected Push $apns_push;
-
-    /**
-     * Apns Message instance
-     *
-     * @var Message
-     */
-    protected Message $apns_message;
 
     /**
      * Shared instance of a Logger class.
@@ -56,8 +52,6 @@ class APNSDispatcher implements PushNotificationMultiDispatcherInterface
     {
         $this->logger    = $logger;
         $this->apns_push = $apns_push;
-
-        $this->reset();
     }
 
     /**
@@ -66,28 +60,7 @@ class APNSDispatcher implements PushNotificationMultiDispatcherInterface
     public function __destruct()
     {
         unset($this->apns_push);
-        unset($this->apns_message);
         unset($this->logger);
-    }
-
-    /**
-     * Reset the variable members of the class.
-     *
-     * @return void
-     */
-    protected function reset(): void
-    {
-        unset($this->apns_message);
-    }
-
-    /**
-     * Return a new APNS message.
-     *
-     * @return Message
-     */
-    protected function get_new_apns_message(): Message
-    {
-        return new Message();
     }
 
     /**
@@ -100,90 +73,12 @@ class APNSDispatcher implements PushNotificationMultiDispatcherInterface
      */
     public function push(object $payload, array &$endpoints): APNSResponse
     {
-        if (!$payload instanceof APNSPayload)
+        $message = match (TRUE)
         {
-            throw new InvalidArgumentException('Invalid payload object!');
-        }
-
-        // Create message
-        $payload = $payload->get_payload();
-
-        $this->apns_message = $this->get_new_apns_message();
-
-        try
-        {
-            if (isset($payload['title']))
-            {
-                $this->apns_message->setTitle($payload['title']);
-            }
-
-            if (isset($payload['body']))
-            {
-                $this->apns_message->setText($payload['body']);
-            }
-
-            if (isset($payload['thread_id']))
-            {
-                $this->apns_message->setThreadID($payload['thread_id']);
-            }
-
-            if (isset($payload['topic']))
-            {
-                $this->apns_message->setTopic($payload['topic']);
-            }
-
-            if (isset($payload['priority']))
-            {
-                $this->apns_message->setPriority($payload['priority']);
-            }
-
-            if (isset($payload['collapse_key']))
-            {
-                $this->apns_message->setCollapseId($payload['collapse_key']);
-            }
-
-            if (isset($payload['identifier']))
-            {
-                $this->apns_message->setCustomIdentifier($payload['identifier']);
-            }
-
-            if (isset($payload['sound']))
-            {
-                $this->apns_message->setSound($payload['sound']);
-            }
-
-            if (isset($payload['category']))
-            {
-                $this->apns_message->setCategory($payload['category']);
-            }
-
-            if (isset($payload['badge']))
-            {
-                $this->apns_message->setBadge($payload['badge']);
-            }
-
-            if (isset($payload['content_available']))
-            {
-                $this->apns_message->setContentAvailable($payload['content_available']);
-            }
-
-            if (isset($payload['mutable_content']))
-            {
-                $this->apns_message->setMutableContent($payload['mutable_content']);
-            }
-
-            if (isset($payload['custom_data']))
-            {
-                foreach ($payload['custom_data'] as $key => $value)
-                {
-                    $this->apns_message->setCustomProperty($key, $value);
-                }
-            }
-        }
-        catch (MessageException $e)
-        {
-            $this->logger->warning($e->getMessage());
-        }
+            $payload instanceof APNSLiveActivityPayload => $this->build_live_activity_for_payload($payload),
+            $payload instanceof APNSAlertPayload => $this->build_message_for_payload($payload),
+            default => throw new InvalidArgumentException('Invalid payload object!'),
+        };
 
         // Add endpoints
         $invalid_endpoints = [];
@@ -192,7 +87,7 @@ class APNSDispatcher implements PushNotificationMultiDispatcherInterface
         {
             try
             {
-                $this->apns_message->addRecipient($endpoint);
+                $message->addRecipient($endpoint);
             }
             catch (MessageException $e)
             {
@@ -205,7 +100,7 @@ class APNSDispatcher implements PushNotificationMultiDispatcherInterface
         // Send message
         try
         {
-            $this->apns_push->add($this->apns_message);
+            $this->apns_push->add($message);
             $this->apns_push->connect();
             $this->apns_push->send();
             $this->apns_push->disconnect();
@@ -221,11 +116,147 @@ class APNSDispatcher implements PushNotificationMultiDispatcherInterface
         }
 
         // Return response
-        $response = new APNSResponse($this->logger, $endpoints, $invalid_endpoints, $errors, (string) $this->apns_message);
+        return new APNSResponse($this->logger, $endpoints, $invalid_endpoints, $errors, (string) $message);
+    }
 
-        $this->reset();
+    /**
+     * Fill a Message object for a given payload
+     *
+     * @param APNSAlertPayload|APNSLiveActivityPayload $payload The payload to build from
+     * @param Message|LiveActivity                     $message The message to fill
+     *
+     * @return void
+     */
+    private function fill_base_message_for_payload(APNSAlertPayload|APNSLiveActivityPayload $payload, Message|LiveActivity &$message): void
+    {
+        $payload = $payload->get_payload();
 
-        return $response;
+        $message->setPriority($payload['priority']);
+
+        if (isset($payload['title']))
+        {
+            $message->setTitle($payload['title']);
+        }
+
+        if (isset($payload['body']))
+        {
+            $message->setText($payload['body']);
+        }
+
+        if (isset($payload['thread_id']))
+        {
+            $message->setThreadID($payload['thread_id']);
+        }
+
+        if (isset($payload['topic']))
+        {
+            $message->setTopic($payload['topic']);
+        }
+
+        if (isset($payload['collapse_key']))
+        {
+            $message->setCollapseId($payload['collapse_key']);
+        }
+
+        if (isset($payload['identifier']))
+        {
+            $message->setCustomIdentifier($payload['identifier']);
+        }
+
+        if (isset($payload['sound']))
+        {
+            $message->setSound($payload['sound']);
+        }
+
+        if (isset($payload['category']))
+        {
+            $message->setCategory($payload['category']);
+        }
+
+        if (isset($payload['badge']))
+        {
+            $message->setBadge($payload['badge']);
+        }
+
+        if (isset($payload['content_available']))
+        {
+            $message->setContentAvailable($payload['content_available']);
+        }
+
+        if (isset($payload['mutable_content']))
+        {
+            $message->setMutableContent($payload['mutable_content']);
+        }
+
+        if (isset($payload['custom_data']))
+        {
+            foreach ($payload['custom_data'] as $key => $value)
+            {
+                $message->setCustomProperty($key, $value);
+            }
+        }
+    }
+
+    /**
+     * Build a Message object for a given payload
+     *
+     * @param APNSAlertPayload $payload The payload to build from
+     *
+     * @return Message The filled message
+     */
+    private function build_message_for_payload(APNSAlertPayload $payload): Message
+    {
+        $message = new Message();
+        $this->fill_base_message_for_payload($payload, $message);
+
+        return $message;
+    }
+
+    /**
+     * Build a LiveActivity object for a given payload
+     *
+     * @param APNSLiveActivityPayload $payload The payload to build from
+     *
+     * @return LiveActivity The filled message
+     */
+    private function build_live_activity_for_payload(APNSLiveActivityPayload $payload): LiveActivity
+    {
+        $message = new LiveActivity();
+        $this->fill_base_message_for_payload($payload, $message);
+
+        /** @var LiveActivity $message */
+        $payload = $payload->get_payload();
+        if (isset($payload['event']))
+        {
+            $message->setEvent($payload['event']);
+        }
+
+        if (isset($payload['contentState']))
+        {
+            $message->setContentState($payload['contentState']);
+        }
+
+        if (isset($payload['attributes']))
+        {
+            $message->setAttributes($payload['attributes']);
+        }
+
+        if (isset($payload['attributesType']))
+        {
+            $message->setAttributesType($payload['attributesType']);
+        }
+
+        if (isset($payload['staleTime']))
+        {
+            $message->setStaleTimestamp($payload['staleTime']);
+        }
+
+        if (isset($payload['dismissTime']))
+        {
+            $message->setDismissTimestamp($payload['dismissTime']);
+        }
+
+        return $message;
     }
 
 }
