@@ -87,7 +87,7 @@ class PushNotificationDispatcher
 
         foreach ($payloads as $platform => $platform_payloads)
         {
-            if (!isset($grouped_endpoints[$platform]))
+            if (!isset($grouped_endpoints[$platform]) && array_filter($platform_payloads, fn($payload) => $payload->is_broadcast()) === [])
             {
                 continue;
             }
@@ -104,18 +104,20 @@ class PushNotificationDispatcher
 
             foreach ($platform_payloads as $payload_type => $payload)
             {
-                if (!isset($grouped_endpoints[$platform][$payload_type]))
+                if (!isset($grouped_endpoints[$platform][$payload_type]) && $payload->is_broadcast() === FALSE)
                 {
                     continue;
                 }
 
+                $endpoints = $grouped_endpoints[$platform][$payload_type] ?? [];
+
                 if ($this->dispatchers[$platform] instanceof PushNotificationMultiDispatcherInterface)
                 {
-                    $this->dispatch_multiple($platform, $grouped_endpoints[$platform][$payload_type], $payload);
+                    $this->dispatch_multiple($platform, $endpoints, $payload);
                 }
                 else
                 {
-                    $this->dispatch_single($platform, $grouped_endpoints[$platform][$payload_type], $payload);
+                    $this->dispatch_single($platform, $endpoints, $payload);
                 }
             }
         }

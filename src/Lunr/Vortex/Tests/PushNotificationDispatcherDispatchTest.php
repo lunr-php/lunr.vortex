@@ -928,6 +928,43 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
         $this->assertPropertySame('statuses', $expected_statuses);
     }
 
+    /**
+     * Test dispatch send correct broadcast payload.
+     *
+     * @covers Lunr\Vortex\PushNotificationDispatcher::dispatch
+     */
+    public function testDispatchSendsCorrectBroadcastPayload(): void
+    {
+        $dispatchers = [
+            'apns'  => $this->apns,
+            'fcm'   => $this->fcm,
+            'email' => $this->email,
+        ];
+        $this->set_reflection_property_value('dispatchers', $dispatchers);
+
+        $data_payload = $this->getMockBuilder(FCMPayload::class)
+                             ->disableOriginalConstructor()
+                             ->getMock();
+
+        $payloads = [
+            'fcm' => [ 'data' => $data_payload ],
+        ];
+
+        $data_payload->expects($this->exactly(2))
+                     ->method('is_broadcast')
+                     ->willReturn(TRUE);
+
+        $this->fcm->expects($this->once())
+                   ->method('push')
+                   ->with($data_payload, [])
+                   ->willReturn($this->fcm_response);
+
+        $this->fcm_response->expects($this->never())
+                           ->method('get_status');
+
+        $this->class->dispatch([], $payloads);
+    }
+
 }
 
 ?>
