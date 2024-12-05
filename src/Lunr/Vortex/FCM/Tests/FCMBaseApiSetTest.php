@@ -1,10 +1,9 @@
 <?php
 
 /**
- * This file contains the FCMDispatcherSetTest class.
+ * This file contains the FCMBaseApiTest class.
  *
- * SPDX-FileCopyrightText: Copyright 2013 M2mobi B.V., Amsterdam, The Netherlands
- * SPDX-FileCopyrightText: Copyright 2022 Move Agency Group B.V., Zwolle, The Netherlands
+ * SPDX-FileCopyrightText: Copyright 2024 Move Agency Group B.V., Zwolle, The Netherlands
  * SPDX-License-Identifier: MIT
  */
 
@@ -13,17 +12,17 @@ namespace Lunr\Vortex\FCM\Tests;
 use RuntimeException;
 
 /**
- * This class contains tests for the setters of the FCMDispatcher class.
+ * This class contains tests for the setters of the FCMBaseApi class.
  *
- * @covers Lunr\Vortex\FCM\FCMDispatcher
+ * @covers Lunr\Vortex\FCM\FCMBaseApi
  */
-class FCMDispatcherSetTest extends FCMDispatcherTest
+class FCMBaseApiSetTest extends FCMBaseApiTest
 {
 
     /**
      * Test that set_project_id() sets the project_id.
      *
-     * @covers Lunr\Vortex\FCM\FCMDispatcher::set_project_id
+     * @covers Lunr\Vortex\FCM\FCMBaseApi::set_project_id
      */
     public function testSetProjectIDSetsProjectId(): void
     {
@@ -35,7 +34,7 @@ class FCMDispatcherSetTest extends FCMDispatcherTest
     /**
      * Test the return of set_project_id().
      *
-     * @covers Lunr\Vortex\FCM\FCMDispatcher::set_project_id
+     * @covers Lunr\Vortex\FCM\FCMBaseApi::set_project_id
      */
     public function testSetProjectIdReturnsSelfReference(): void
     {
@@ -45,7 +44,7 @@ class FCMDispatcherSetTest extends FCMDispatcherTest
     /**
      * Test that set_client_email() sets the client_email.
      *
-     * @covers Lunr\Vortex\FCM\FCMDispatcher::set_client_email
+     * @covers Lunr\Vortex\FCM\FCMBaseApi::set_client_email
      */
     public function testSetClientEmailSetsClientEmail(): void
     {
@@ -57,7 +56,7 @@ class FCMDispatcherSetTest extends FCMDispatcherTest
     /**
      * Test the return of set_client_email().
      *
-     * @covers Lunr\Vortex\FCM\FCMDispatcher::set_client_email
+     * @covers Lunr\Vortex\FCM\FCMBaseApi::set_client_email
      */
     public function testSetClientEmailReturnsSelfReference(): void
     {
@@ -67,7 +66,7 @@ class FCMDispatcherSetTest extends FCMDispatcherTest
     /**
      * Test that set_private_key() sets the private_key.
      *
-     * @covers Lunr\Vortex\FCM\FCMDispatcher::set_private_key
+     * @covers Lunr\Vortex\FCM\FCMBaseApi::set_private_key
      */
     public function testSetPrivateKeySetsPrivateKey(): void
     {
@@ -79,7 +78,7 @@ class FCMDispatcherSetTest extends FCMDispatcherTest
     /**
      * Test the return of set_private_key().
      *
-     * @covers Lunr\Vortex\FCM\FCMDispatcher::set_private_key
+     * @covers Lunr\Vortex\FCM\FCMBaseApi::set_private_key
      */
     public function testSetPrivateKeyReturnsSelfReference(): void
     {
@@ -89,7 +88,7 @@ class FCMDispatcherSetTest extends FCMDispatcherTest
     /**
      * Test that set_private_key_from_file() returns exception when the file failed to read.
      *
-     * @covers Lunr\Vortex\FCM\FCMDispatcher::set_private_key_from_file
+     * @covers Lunr\Vortex\FCM\FCMBaseApi::set_private_key_from_file
      */
     public function testSetPrivateKeyFromFileReturnExceptionIfFileFailedToRead(): void
     {
@@ -106,7 +105,7 @@ class FCMDispatcherSetTest extends FCMDispatcherTest
     /**
      * Test that set_private_key_from_file() sets the private_key.
      *
-     * @covers Lunr\Vortex\FCM\FCMDispatcher::set_private_key_from_file
+     * @covers Lunr\Vortex\FCM\FCMBaseApi::set_private_key_from_file
      */
     public function testSetPrivateKeyFromFileSetsPrivateKey(): void
     {
@@ -122,7 +121,7 @@ class FCMDispatcherSetTest extends FCMDispatcherTest
     /**
      * Test the return of set_private_key_from_file().
      *
-     * @covers Lunr\Vortex\FCM\FCMDispatcher::set_private_key_from_file
+     * @covers Lunr\Vortex\FCM\FCMBaseApi::set_private_key_from_file
      */
     public function testSetPrivateKeyFromFileReturnsSelfReference(): void
     {
@@ -136,7 +135,7 @@ class FCMDispatcherSetTest extends FCMDispatcherTest
     /**
      * Test that set_oauth_token() sets the oauth_token.
      *
-     * @covers Lunr\Vortex\FCM\FCMDispatcher::set_oauth_token
+     * @covers Lunr\Vortex\FCM\FCMBaseApi::set_oauth_token
      */
     public function testSetOAuthTokenSetsOAuthToken(): void
     {

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file contains the FCMDispatcherConfigureOAuthTokenTest class.
+ * This file contains the FCMBaseApiGetOAuthTokenTest class.
  *
  * SPDX-FileCopyrightText: Copyright 2024 Move Agency Group B.V., Zwolle, The Netherlands
  * SPDX-License-Identifier: MIT
@@ -20,19 +20,19 @@ use WpOrg\Requests\Exception as RequestsException;
 use WpOrg\Requests\Response;
 
 /**
- * This class contains tests for the setters of the FCMDispatcher class.
+ * This class contains tests for the setters of the FCMBaseApi class.
  *
- * @covers Lunr\Vortex\FCM\FCMDispatcher
+ * @covers Lunr\Vortex\FCM\FCMBaseApi
  */
-class FCMDispatcherConfigureOAuthTokenTest extends FCMDispatcherTest
+class FCMBaseApiGetOAuthTokenTest extends FCMBaseApiTest
 {
 
     /**
-     * Test that configure_oauth_token() fails
+     * Test that get_oauth_token() fails
      *
-     * @covers Lunr\Vortex\FCM\FCMDispatcher::configure_oauth_token
+     * @covers Lunr\Vortex\FCM\FCMBaseApi::get_oauth_token
      */
-    public function testConfigureOAuthTokenThrowsInvalidArgumentException(): void
+    public function testGetOAuthTokenThrowsInvalidArgumentException(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid oauth lifetime!');
@@ -46,15 +46,16 @@ class FCMDispatcherConfigureOAuthTokenTest extends FCMDispatcherTest
         $this->logger->expects($this->never())
                      ->method('warning');
 
-        $this->class->configure_oauth_token('invalid relative time');
+        $method = $this->get_reflection_method('get_oauth_token');
+        $method->invokeArgs($this->class, [ 'invalid relative time' ]);
     }
 
     /**
-     * Test configure_oauth_token fails when client_email is NULL.
+     * Test get_oauth_token fails when client_email is NULL.
      *
-     * @covers Lunr\Vortex\FCM\FCMDispatcher::configure_oauth_token
+     * @covers Lunr\Vortex\FCM\FCMBaseApi::get_oauth_token
      */
-    public function testConfigureOAuthTokenFailsWhenClientEmailIsNull(): void
+    public function testGetOAuthTokenFailsWhenClientEmailIsNull(): void
     {
         $this->expectException(BadMethodCallException::class);
         $this->expectExceptionMessage('Requesting token failed: No client email provided');
@@ -68,17 +69,16 @@ class FCMDispatcherConfigureOAuthTokenTest extends FCMDispatcherTest
         $this->logger->expects($this->never())
                      ->method('warning');
 
-        $this->class->configure_oauth_token();
-
-        $this->assertPropertyEquals('oauth_token', NULL);
+        $method = $this->get_reflection_method('get_oauth_token');
+        $method->invokeArgs($this->class, []);
     }
 
     /**
-     * Test configure_oauth_token fails when private_key is NULL.
+     * Test get_oauth_token fails when private_key is NULL.
      *
-     * @covers Lunr\Vortex\FCM\FCMDispatcher::configure_oauth_token
+     * @covers Lunr\Vortex\FCM\FCMBaseApi::get_oauth_token
      */
-    public function testConfigureOAuthTokenFailsWhenPrivateKeyIsNull(): void
+    public function testGetOAuthTokenFailsWhenPrivateKeyIsNull(): void
     {
         $this->set_reflection_property_value('client_email', 'email_client');
 
@@ -94,17 +94,16 @@ class FCMDispatcherConfigureOAuthTokenTest extends FCMDispatcherTest
         $this->logger->expects($this->never())
                      ->method('warning');
 
-        $this->class->configure_oauth_token();
-
-        $this->assertPropertyEquals('oauth_token', NULL);
+        $method = $this->get_reflection_method('get_oauth_token');
+        $method->invokeArgs($this->class, []);
     }
 
     /**
-     * Test configure_oauth_token when fetching token fails.
+     * Test get_oauth_token when fetching token fails.
      *
-     * @covers Lunr\Vortex\FCM\FCMDispatcher::configure_oauth_token
+     * @covers Lunr\Vortex\FCM\FCMBaseApi::get_oauth_token
      */
-    public function testConfigureOAuthTokenWhenFetchingTokenFails(): void
+    public function testGetOAuthTokenWhenFetchingTokenFails(): void
     {
         if (!extension_loaded('uopz'))
         {
@@ -179,9 +178,8 @@ class FCMDispatcherConfigureOAuthTokenTest extends FCMDispatcherTest
                      ->method('warning')
                      ->with('Fetching OAuth token for FCM notification(s) failed: {message}', [ 'message' => 'cURL error 10: Request error' ]);
 
-        $this->class->configure_oauth_token('+10 minutes');
-
-        $this->assertPropertyEquals('oauth_token', NULL);
+        $method = $this->get_reflection_method('get_oauth_token');
+        $method->invokeArgs($this->class, []);
 
         uopz_unset_return($this->token_builder::class, 'getToken');
         uopz_unset_mock(DateTimeImmutable::class);
@@ -189,11 +187,11 @@ class FCMDispatcherConfigureOAuthTokenTest extends FCMDispatcherTest
     }
 
     /**
-     * Test configure_oauth_token when processing json response fails.
+     * Test get_oauth_token when processing json response fails.
      *
-     * @covers Lunr\Vortex\FCM\FCMDispatcher::configure_oauth_token
+     * @covers Lunr\Vortex\FCM\FCMBaseApi::get_oauth_token
      */
-    public function testConfigureOAuthTokenWhenProcessingJsonResponseFails(): void
+    public function testGetOAuthTokenWhenProcessingJsonResponseFails(): void
     {
         if (!extension_loaded('uopz'))
         {
@@ -275,9 +273,8 @@ class FCMDispatcherConfigureOAuthTokenTest extends FCMDispatcherTest
                          [ 'message' => 'Syntax error' ]
                      );
 
-        $this->class->configure_oauth_token();
-
-        $this->assertPropertyEquals('oauth_token', NULL);
+        $method = $this->get_reflection_method('get_oauth_token');
+        $method->invokeArgs($this->class, []);
 
         uopz_unset_return($this->token_builder::class, 'getToken');
         uopz_unset_mock(DateTimeImmutable::class);
@@ -285,11 +282,11 @@ class FCMDispatcherConfigureOAuthTokenTest extends FCMDispatcherTest
     }
 
     /**
-     * Test configure_oauth_token when processing response fails with general error.
+     * Test get_oauth_token when processing response fails with general error.
      *
-     * @covers Lunr\Vortex\FCM\FCMDispatcher::configure_oauth_token
+     * @covers Lunr\Vortex\FCM\FCMBaseApi::get_oauth_token
      */
-    public function testConfigureOAuthTokenFailsWithGeneralError(): void
+    public function testGetOAuthTokenFailsWithGeneralError(): void
     {
         if (!extension_loaded('uopz'))
         {
@@ -371,9 +368,8 @@ class FCMDispatcherConfigureOAuthTokenTest extends FCMDispatcherTest
                          [ 'error' => 'No access token in the response body' ]
                      );
 
-        $this->class->configure_oauth_token();
-
-        $this->assertPropertyEquals('oauth_token', NULL);
+        $method = $this->get_reflection_method('get_oauth_token');
+        $method->invokeArgs($this->class, []);
 
         uopz_unset_return($this->token_builder::class, 'getToken');
         uopz_unset_mock(DateTimeImmutable::class);
@@ -381,11 +377,11 @@ class FCMDispatcherConfigureOAuthTokenTest extends FCMDispatcherTest
     }
 
     /**
-     * Test Get_oauth_token when processing response fails with upstream error.
+     * Test get_oauth_token when processing response fails with upstream error.
      *
-     * @covers Lunr\Vortex\FCM\FCMDispatcher::configure_oauth_token
+     * @covers Lunr\Vortex\FCM\FCMBaseApi::get_oauth_token
      */
-    public function testConfigureOAuthTokenFailsWithUpstreamError(): void
+    public function testGetOAuthTokenFailsWithUpstreamError(): void
     {
         if (!extension_loaded('uopz'))
         {
@@ -470,9 +466,8 @@ class FCMDispatcherConfigureOAuthTokenTest extends FCMDispatcherTest
                          [ 'error' => $error_msg ]
                      );
 
-        $this->class->configure_oauth_token();
-
-        $this->assertPropertyEquals('oauth_token', NULL);
+        $method = $this->get_reflection_method('get_oauth_token');
+        $method->invokeArgs($this->class, []);
 
         uopz_unset_return($this->token_builder::class, 'getToken');
         uopz_unset_mock(DateTimeImmutable::class);
@@ -480,11 +475,11 @@ class FCMDispatcherConfigureOAuthTokenTest extends FCMDispatcherTest
     }
 
     /**
-     * Test configure_oauth_token when fetching token succeeds.
+     * Test get_oauth_token when fetching token succeeds.
      *
-     * @covers Lunr\Vortex\FCM\FCMDispatcher::configure_oauth_token
+     * @covers Lunr\Vortex\FCM\FCMBaseApi::get_oauth_token
      */
-    public function testConfigureOAuthTokenWhenFetchingTokenSucceeds(): void
+    public function testGetOAuthTokenWhenFetchingTokenSucceeds(): void
     {
         if (!extension_loaded('uopz'))
         {
@@ -556,9 +551,9 @@ class FCMDispatcherConfigureOAuthTokenTest extends FCMDispatcherTest
                    ->with('https://oauth2.googleapis.com/token', $headers, json_encode($payload, JSON_UNESCAPED_UNICODE), [])
                    ->willReturn($response);
 
-        $this->class->configure_oauth_token();
+        $method = $this->get_reflection_method('get_oauth_token');
 
-        $this->assertPropertyEquals('oauth_token', 'oauth_token1');
+        $this->assertSame('oauth_token1', $method->invokeArgs($this->class, []));
 
         uopz_unset_return($this->token_builder::class, 'getToken');
         uopz_unset_mock(DateTimeImmutable::class);
