@@ -15,7 +15,7 @@ use ApnsPHP\Message;
 use ApnsPHP\Message\Exception as MessageException;
 use ApnsPHP\Push;
 use InvalidArgumentException;
-use Lunr\Vortex\APNS\APNSPayload;
+use Lunr\Vortex\APNS\APNSAlertPayload;
 use Lunr\Vortex\PushNotificationMultiDispatcherInterface;
 use Psr\Log\LoggerInterface;
 
@@ -80,7 +80,7 @@ class APNSDispatcher implements PushNotificationMultiDispatcherInterface
      */
     public function push(object $payload, array &$endpoints): APNSResponse
     {
-        if (!$payload instanceof APNSPayload)
+        if (!$payload instanceof APNSAlertPayload)
         {
             throw new InvalidArgumentException('Invalid payload object!');
         }
@@ -130,14 +130,16 @@ class APNSDispatcher implements PushNotificationMultiDispatcherInterface
     /**
      * Build a Message object for a given payload
      *
-     * @param APNSPayload $payload The payload to build from
+     * @param APNSAlertPayload $payload The payload to build from
      *
      * @return Message The filled message
      */
-    private function build_message_for_payload(APNSPayload $payload): Message
+    private function build_message_for_payload(APNSAlertPayload $payload): Message
     {
         $payload = $payload->get_payload();
         $message = $this->get_new_apns_message();
+
+        $message->setPriority($payload['priority']);
 
         if (isset($payload['title']))
         {
@@ -157,11 +159,6 @@ class APNSDispatcher implements PushNotificationMultiDispatcherInterface
         if (isset($payload['topic']))
         {
             $message->setTopic($payload['topic']);
-        }
-
-        if (isset($payload['priority']))
-        {
-            $message->setPriority($payload['priority']);
         }
 
         if (isset($payload['collapse_key']))

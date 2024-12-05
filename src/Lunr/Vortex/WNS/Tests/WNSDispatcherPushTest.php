@@ -10,7 +10,7 @@
 
 namespace Lunr\Vortex\WNS\Tests;
 
-use Lunr\Vortex\APNS\APNSPayload;
+use Lunr\Vortex\APNS\APNSAlertPayload;
 use Lunr\Vortex\Email\EmailPayload;
 use Lunr\Vortex\FCM\FCMPayload;
 use Lunr\Vortex\JPush\JPushMessagePayload;
@@ -33,7 +33,7 @@ class WNSDispatcherPushTest extends WNSDispatcherTest
     public static function unsupportedPayloadProvider(): array
     {
         $data          = [];
-        $data['apns']  = [ new APNSPayload() ];
+        $data['apns']  = [ new APNSAlertPayload() ];
         $data['email'] = [ new EmailPayload() ];
         $data['fcm']   = [ new FCMPayload() ];
         $data['jpush'] = [ new JPushMessagePayload() ];
