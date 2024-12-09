@@ -979,11 +979,15 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
         $this->fcm_response->expects($this->never())
                            ->method('get_status');
 
+        $this->fcm_response->expects($this->once())
+                           ->method('get_broadcast_status')
+                           ->willReturn(PushNotificationStatus::Success);
+
         $this->class->dispatch([], $payloads);
 
         $expected_statuses = [
-            PushNotificationStatus::Unknown->value         => [ 'fcm' => [ 'data' => $data_payload ], 'email' => [ 'email' => $email_payload ]],
-            PushNotificationStatus::Success->value         => [],
+            PushNotificationStatus::Unknown->value         => [ 'email' => [ 'email' => $email_payload ]],
+            PushNotificationStatus::Success->value         => [ 'fcm' => [ 'data' => $data_payload ] ],
             PushNotificationStatus::TemporaryError->value  => [],
             PushNotificationStatus::InvalidEndpoint->value => [],
             PushNotificationStatus::ClientError->value     => [],

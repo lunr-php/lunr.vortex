@@ -284,7 +284,9 @@ class FCMDispatcher implements PushNotificationMultiDispatcherInterface
 
         if ($payload->is_broadcast())
         {
-            $fcm_response->add_batch_response($this->push_batch($payload, $endpoints), $endpoints);
+            $batch_response = $this->push_batch($payload, $endpoints);
+
+            $fcm_response->add_broadcast_response($batch_response);
 
             return $fcm_response;
         }
