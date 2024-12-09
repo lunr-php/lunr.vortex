@@ -936,7 +936,6 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
     public function testDispatchSendsCorrectBroadcastPayload(): void
     {
         $dispatchers = [
-            'apns'  => $this->apns,
             'fcm'   => $this->fcm,
             'email' => $this->email,
         ];
@@ -946,11 +945,29 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
                              ->disableOriginalConstructor()
                              ->getMock();
 
+        $apns_payload = $this->getMockBuilder(APNSPayload::class)
+                             ->disableOriginalConstructor()
+                             ->getMock();
+
+        $email_payload = $this->getMockBuilder(EmailPayload::class)
+                              ->disableOriginalConstructor()
+                              ->getMock();
+
         $payloads = [
-            'fcm' => [ 'data' => $data_payload ],
+            'apns'  => [ 'apns' => $apns_payload ],
+            'fcm'  => [ 'data' => $data_payload ],
+            'email' => [ 'email' => $email_payload ],
         ];
 
-        $data_payload->expects($this->exactly(2))
+        $apns_payload->expects($this->exactly(2))
+                     ->method('is_broadcast')
+                     ->willReturn(TRUE);
+
+        $email_payload->expects($this->exactly(3))
+                     ->method('is_broadcast')
+                     ->willReturn(TRUE);
+
+        $data_payload->expects($this->exactly(3))
                      ->method('is_broadcast')
                      ->willReturn(TRUE);
 
@@ -962,7 +979,24 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
         $this->fcm_response->expects($this->never())
                            ->method('get_status');
 
+        $this->fcm_response->expects($this->once())
+                           ->method('get_broadcast_status')
+                           ->willReturn(PushNotificationStatus::Success);
+
         $this->class->dispatch([], $payloads);
+
+        $expected_statuses = [
+            PushNotificationStatus::Unknown->value         => [ 'email' => [ 'email' => $email_payload ]],
+            PushNotificationStatus::Success->value         => [ 'fcm' => [ 'data' => $data_payload ] ],
+            PushNotificationStatus::TemporaryError->value  => [],
+            PushNotificationStatus::InvalidEndpoint->value => [],
+            PushNotificationStatus::ClientError->value     => [],
+            PushNotificationStatus::Error->value           => [],
+            PushNotificationStatus::NotHandled->value      => [ 'apns' => [ 'apns' => $apns_payload ]],
+            PushNotificationStatus::Deferred->value        => [],
+        ];
+
+        $this->assertPropertySame('broadcast_statuses', $expected_statuses);
     }
 
 }
