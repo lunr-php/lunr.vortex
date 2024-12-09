@@ -10,13 +10,14 @@
 
 namespace Lunr\Vortex\FCM;
 
+use Lunr\Vortex\PushNotificationBroadcastResponseInterface;
 use Lunr\Vortex\PushNotificationResponseInterface;
 use Lunr\Vortex\PushNotificationStatus;
 
 /**
  * Firebase Cloud Messaging Push Notification response wrapper.
  */
-class FCMResponse implements PushNotificationResponseInterface
+class FCMResponse implements PushNotificationResponseInterface, PushNotificationBroadcastResponseInterface
 {
 
     /**
@@ -24,6 +25,12 @@ class FCMResponse implements PushNotificationResponseInterface
      * @var array<string, PushNotificationStatus::*>
      */
     protected array $statuses;
+
+    /**
+     * The status for a broadcast.
+     * @var PushNotificationStatus
+     */
+    protected PushNotificationStatus $broadcast_status;
 
     /**
      * Constructor.
@@ -39,6 +46,7 @@ class FCMResponse implements PushNotificationResponseInterface
     public function __destruct()
     {
         unset($this->statuses);
+        unset($this->broadcast_status);
     }
 
     /**
@@ -58,6 +66,18 @@ class FCMResponse implements PushNotificationResponseInterface
     }
 
     /**
+     * Add the results of a batch response.
+     *
+     * @param FCMBatchResponse $batch_response Push response.
+     *
+     * @return void
+     */
+    public function add_broadcast_response(FCMBatchResponse $batch_response): void
+    {
+        $this->broadcast_status = $batch_response->get_broadcast_status();
+    }
+
+    /**
      * Get notification delivery status for an endpoint.
      *
      * @param string $endpoint Endpoint
@@ -67,6 +87,16 @@ class FCMResponse implements PushNotificationResponseInterface
     public function get_status(string $endpoint): PushNotificationStatus
     {
         return isset($this->statuses[$endpoint]) ? $this->statuses[$endpoint] : PushNotificationStatus::Unknown;
+    }
+
+    /**
+     * Get notification delivery status for a broadcast.
+     *
+     * @return PushNotificationStatus Delivery status for the broadcast
+     */
+    public function get_broadcast_status(): PushNotificationStatus
+    {
+        return $this->broadcast_status ?? PushNotificationStatus::Unknown;
     }
 
 }

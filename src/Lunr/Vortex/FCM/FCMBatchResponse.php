@@ -11,6 +11,7 @@
 namespace Lunr\Vortex\FCM;
 
 use InvalidArgumentException;
+use Lunr\Vortex\PushNotificationBroadcastResponseInterface;
 use Lunr\Vortex\PushNotificationResponseInterface;
 use Lunr\Vortex\PushNotificationStatus;
 use Psr\Log\LoggerInterface;
@@ -21,7 +22,7 @@ use WpOrg\Requests\Response;
 /**
  * Firebase Cloud Messaging Push Notification response wrapper.
  */
-class FCMBatchResponse implements PushNotificationResponseInterface
+class FCMBatchResponse implements PushNotificationResponseInterface, PushNotificationBroadcastResponseInterface
 {
     /**
      * Shared instance of a Logger class.
@@ -48,6 +49,12 @@ class FCMBatchResponse implements PushNotificationResponseInterface
     private array $endpoints;
 
     /**
+     * The status for a broadcast.
+     * @var PushNotificationStatus
+     */
+    protected PushNotificationStatus $broadcast_status;
+
+    /**
      * Set of error types that indicate a curl error.
      * @var array
      */
@@ -71,7 +78,11 @@ class FCMBatchResponse implements PushNotificationResponseInterface
         $this->endpoints = $endpoints;
         $this->responses = $responses;
 
-        if (array_is_list($responses) && count($responses) === 1)
+        if ($endpoints === [])
+        {
+            $this->set_broadcast_status();
+        }
+        elseif (array_is_list($responses) && count($responses) === 1)
         {
             foreach ($endpoints as $endpoint)
             {
@@ -93,6 +104,7 @@ class FCMBatchResponse implements PushNotificationResponseInterface
         unset($this->responses);
         unset($this->statuses);
         unset($this->endpoints);
+        unset($this->broadcast_status);
     }
 
     /**
@@ -213,6 +225,84 @@ class FCMBatchResponse implements PushNotificationResponseInterface
         $this->logger->warning('Dispatching FCM notification failed for endpoint {endpoint}: {error}', $context);
 
         $this->statuses[$endpoint] = $status;
+    }
+
+    /**
+     * Get notification delivery status for a broadcast.
+     *
+     * @return PushNotificationStatus Delivery status for the broadcast
+     */
+    public function get_broadcast_status(): PushNotificationStatus
+    {
+        return $this->broadcast_status ?? PushNotificationStatus::Unknown;
+    }
+
+    /**
+     * Set endpoint statuses
+     *
+     * @return void
+     */
+    private function set_broadcast_status(): void
+    {
+        $response = $this->responses[0];
+
+        if ($response instanceof RequestsException)
+        {
+            $this->logger->warning(
+                'Dispatching FCM broadcast failed: {error}',
+                [ 'error' => $response->getMessage() ]
+            );
+
+            if (in_array($response->getType(), self::CURL_ERROR_TYPES))
+            {
+                $this->broadcast_status = PushNotificationStatus::TemporaryError;
+                return;
+            }
+
+            $this->broadcast_status = PushNotificationStatus::Unknown;
+            return;
+        }
+
+        $json_content = json_decode($response->body, TRUE);
+
+        $error_message = $json_content['error']['message'] ?? NULL;
+        $error_code    = $json_content['error']['details'][0]['errorCode'] ?? NULL;
+
+        switch ($response->status_code)
+        {
+            case 200:
+                $this->broadcast_status = PushNotificationStatus::Success;
+                return;
+            case 400:
+                $status          = PushNotificationStatus::Error;
+                $error_message ??= 'Invalid argument';
+                break;
+            case 401:
+                $status          = PushNotificationStatus::Error;
+                $error_message ??= 'Error with authentication';
+                break;
+            case 429:
+                $status          = PushNotificationStatus::TemporaryError;
+                $error_message ??= 'Exceeded qouta error';
+                break;
+            case 500:
+                $status          = PushNotificationStatus::TemporaryError;
+                $error_message ??= 'Internal error';
+                break;
+            case 503:
+                $status          = PushNotificationStatus::TemporaryError;
+                $error_message ??= 'Timeout';
+                break;
+            default:
+                $status          = PushNotificationStatus::Unknown;
+                $error_message ??= $error_code ?? 'Unknown error';
+                break;
+        }
+
+        $context = [ 'error' => $error_message ];
+        $this->logger->warning('Dispatching FCM broadcast failed: {error}', $context);
+
+        $this->broadcast_status = $status;
     }
 
 }

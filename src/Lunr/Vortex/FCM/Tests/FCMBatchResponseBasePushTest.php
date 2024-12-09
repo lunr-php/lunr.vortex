@@ -725,6 +725,159 @@ class FCMBatchResponseBasePushTest extends FCMBatchResponseTest
         $this->assertPropertySame('responses', $responses);
     }
 
+    /**
+     * Test constructor behavior for push success with broadcast success.
+     *
+     * @covers Lunr\Vortex\FCM\FCMBatchResponse::__construct
+     */
+    public function testPushSuccessWithBroadcastSuccess(): void
+    {
+        $content   = file_get_contents(TEST_STATICS . '/Vortex/fcm/response_single_success.json');
+        $endpoints = [];
+
+        $this->response->status_code = 200;
+        $this->response->body        = $content;
+
+        $this->logger->expects($this->never())
+                     ->method('warning');
+
+        $responses = [
+            $this->response,
+        ];
+
+        $this->class = new FCMBatchResponse($responses, $this->logger, $endpoints);
+
+        parent::baseSetUp($this->class);
+
+        $broadcast_status = PushNotificationStatus::Success;
+
+        $this->assertPropertySame('logger', $this->logger);
+        $this->assertPropertySame('endpoints', $endpoints);
+        $this->assertPropertySame('broadcast_status', $broadcast_status);
+        $this->assertPropertySame('responses', $responses);
+    }
+
+    /**
+     * Test constructor behavior for error of push notification in case of failed request.
+     *
+     * @covers Lunr\Vortex\FCM\FCMBatchResponse::__construct
+     */
+    public function testPushErrorFailedRequestWithBroadcast(): void
+    {
+        $this->mock_function('curl_errno', function () { return 10; });
+
+        $endpoints = [];
+
+        $responses = [ new RequestsException('cURL error 10: Request error', 'curlerror', NULL) ];
+
+        $this->logger->expects($this->once())
+                     ->method('warning')
+                     ->with(
+                         'Dispatching FCM broadcast failed: {error}',
+                         [ 'error' => 'cURL error 10: Request error' ]
+                     );
+
+        $this->class = new FCMBatchResponse($responses, $this->logger, $endpoints);
+
+        parent::baseSetUp($this->class);
+
+        $this->assertPropertySame('logger', $this->logger);
+        $this->assertPropertySame('endpoints', $endpoints);
+        $this->assertPropertySame('broadcast_status', PushNotificationStatus::TemporaryError);
+        $this->assertPropertySame('responses', $responses);
+
+        $this->unmock_function('curl_errno');
+    }
+
+    /**
+     * Test constructor behavior for error of push notification in case of failed request.
+     *
+     * @covers Lunr\Vortex\FCM\FCMBatchResponse::__construct
+     */
+    public function testPushErrorUnknownFailedRequestWithBroadcast(): void
+    {
+        $this->mock_function('curl_errno', function () { return 10; });
+
+        $endpoints = [];
+
+        $responses = [ new RequestsException('Unknown error', 'error', NULL) ];
+
+        $this->logger->expects($this->once())
+                     ->method('warning')
+                     ->with(
+                         'Dispatching FCM broadcast failed: {error}',
+                         [ 'error' => 'Unknown error' ]
+                     );
+
+        $this->class = new FCMBatchResponse($responses, $this->logger, $endpoints);
+
+        parent::baseSetUp($this->class);
+
+        $this->assertPropertySame('logger', $this->logger);
+        $this->assertPropertySame('endpoints', $endpoints);
+        $this->assertPropertySame('broadcast_status', PushNotificationStatus::Unknown);
+        $this->assertPropertySame('responses', $responses);
+
+        $this->unmock_function('curl_errno');
+    }
+
+    /**
+     * Unit test data provider.
+     *
+     * @return array $data array of fcm errors
+     */
+    public function errorBroadcastDataProvider(): array
+    {
+        $data = [];
+
+        $data[] = [ 'Invalid argument', 400, PushNotificationStatus::Error ];
+        $data[] = [ 'Error with authentication', 401, PushNotificationStatus::Error ];
+        $data[] = [ 'Exceeded qouta error', 429, PushNotificationStatus::TemporaryError ];
+        $data[] = [ 'Internal error', 500, PushNotificationStatus::TemporaryError ];
+        $data[] = [ 'Timeout', 503, PushNotificationStatus::TemporaryError ];
+        $data[] = [ 'Unknown error', 440, PushNotificationStatus::Unknown ];
+
+        return $data;
+    }
+
+    /**
+     * Test constructor behavior for push success with broadcast success.
+     *
+     * @param string                 $error_msg Error message.
+     * @param int                    $http_code Http code of the response.
+     * @param PushNotificationStatus $status    The expected status.
+     *
+     * @dataProvider errorBroadcastDataProvider
+     * @covers       Lunr\Vortex\FCM\FCMBatchResponse::__construct
+     */
+    public function testPushWithBroadcastFailures(string $error_msg, int $http_code, PushNotificationStatus $status): void
+    {
+        $endpoints = [];
+
+        $this->response->status_code = $http_code;
+        $this->response->body        = '';
+
+        $this->logger->expects($this->once())
+                     ->method('warning')
+                     ->with(
+                         'Dispatching FCM broadcast failed: {error}',
+                         [ 'error' => $error_msg ]
+                     );
+
+        $responses = [
+            $this->response,
+        ];
+
+        $this->class = new FCMBatchResponse($responses, $this->logger, $endpoints);
+
+        parent::baseSetUp($this->class);
+
+        $this->assertPropertySame('logger', $this->logger);
+        $this->assertPropertySame('endpoints', $endpoints);
+        $this->assertPropertySame('broadcast_status', $status);
+        $this->assertPropertySame('responses', $responses);
+    }
+
 }
 
 ?>
