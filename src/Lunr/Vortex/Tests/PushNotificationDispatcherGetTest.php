@@ -9,6 +9,8 @@
 
 namespace Lunr\Vortex\Tests;
 
+use Lunr\Vortex\APNS\APNSPayload;
+use Lunr\Vortex\FCM\FCMPayload;
 use Lunr\Vortex\PushNotificationStatus;
 
 /**
@@ -162,6 +164,37 @@ class PushNotificationDispatcherGetTest extends PushNotificationDispatcherTest
         $this->set_reflection_property_value('statuses', $statuses);
 
         $this->assertSame($statuses, $this->class->get_statuses());
+    }
+
+    /**
+     * Test that get_broadcast_statuses() returns the entire broadcast status array.
+     *
+     * @covers Lunr\Vortex\PushNotificationDispatcher::get_broadcast_statuses
+     */
+    public function testGetBroadcastStatusesReturnsBroadcastStatuses(): void
+    {
+
+        $data_payload = $this->getMockBuilder(FCMPayload::class)
+                             ->disableOriginalConstructor()
+                             ->getMock();
+
+        $apns_payload = $this->getMockBuilder(APNSPayload::class)
+                             ->disableOriginalConstructor()
+                             ->getMock();
+
+        $broadcast_statuses = [
+            PushNotificationStatus::TemporaryError->value => [
+                $data_payload,
+                $apns_payload
+            ],
+            PushNotificationStatus::Error->value => [
+                $data_payload
+            ],
+        ];
+
+        $this->set_reflection_property_value('broadcast_statuses', $broadcast_statuses);
+
+        $this->assertSame($broadcast_statuses, $this->class->get_broadcast_statuses());
     }
 
 }
