@@ -13,9 +13,11 @@ namespace Lunr\Vortex\APNS\ApnsPHP;
 use ApnsPHP\Exception as ApnsPHPException;
 use ApnsPHP\Message;
 use ApnsPHP\Message\Exception as MessageException;
+use ApnsPHP\Message\LiveActivity;
 use ApnsPHP\Push;
 use InvalidArgumentException;
 use Lunr\Vortex\APNS\APNSAlertPayload;
+use Lunr\Vortex\APNS\APNSLiveActivityPayload;
 use Lunr\Vortex\PushNotificationMultiDispatcherInterface;
 use Psr\Log\LoggerInterface;
 
@@ -80,13 +82,12 @@ class APNSDispatcher implements PushNotificationMultiDispatcherInterface
      */
     public function push(object $payload, array &$endpoints): APNSResponse
     {
-        if (!$payload instanceof APNSAlertPayload)
+        $message = match (TRUE)
         {
-            throw new InvalidArgumentException('Invalid payload object!');
-        }
-
-        // Create message
-        $message = $this->build_message_for_payload($payload);
+            $payload instanceof APNSLiveActivityPayload => $this->build_live_activity_for_payload($payload),
+            $payload instanceof APNSAlertPayload => $this->build_message_for_payload($payload),
+            default => throw new InvalidArgumentException('Invalid payload object!'),
+        };
 
         // Add endpoints
         $invalid_endpoints = [];
@@ -128,16 +129,16 @@ class APNSDispatcher implements PushNotificationMultiDispatcherInterface
     }
 
     /**
-     * Build a Message object for a given payload
+     * Fill a Message object for a given payload
      *
-     * @param APNSAlertPayload $payload The payload to build from
+     * @param APNSAlertPayload|APNSLiveActivityPayload $payload The payload to build from
+     * @param Message|LiveActivity                     $message The message to fill
      *
-     * @return Message The filled message
+     * @return void
      */
-    private function build_message_for_payload(APNSAlertPayload $payload): Message
+    private function fill_base_message_for_payload(APNSAlertPayload|APNSLiveActivityPayload $payload, Message|LiveActivity &$message): void
     {
         $payload = $payload->get_payload();
-        $message = $this->get_new_apns_message();
 
         $message->setPriority($payload['priority']);
 
@@ -202,6 +203,66 @@ class APNSDispatcher implements PushNotificationMultiDispatcherInterface
             {
                 $message->setCustomProperty($key, $value);
             }
+        }
+    }
+
+    /**
+     * Build a Message object for a given payload
+     *
+     * @param APNSAlertPayload $payload The payload to build from
+     *
+     * @return Message The filled message
+     */
+    private function build_message_for_payload(APNSAlertPayload $payload): Message
+    {
+        $message = $this->get_new_apns_message();
+        $this->fill_base_message_for_payload($payload, $message);
+
+        return $message;
+    }
+
+    /**
+     * Build a LiveActivity object for a given payload
+     *
+     * @param APNSLiveActivityPayload $payload The payload to build from
+     *
+     * @return LiveActivity The filled message
+     */
+    private function build_live_activity_for_payload(APNSLiveActivityPayload $payload): LiveActivity
+    {
+        $message = new LiveActivity();
+        $this->fill_base_message_for_payload($payload, $message);
+
+        /** @var LiveActivity $message */
+        $payload = $payload->get_payload();
+        if (isset($payload['event']))
+        {
+            $message->setEvent($payload['event']);
+        }
+
+        if (isset($payload['contentState']))
+        {
+            $message->setContentState($payload['contentState']);
+        }
+
+        if (isset($payload['attributes']))
+        {
+            $message->setAttributes($payload['attributes']);
+        }
+
+        if (isset($payload['attributesType']))
+        {
+            $message->setAttributesType($payload['attributesType']);
+        }
+
+        if (isset($payload['staleTime']))
+        {
+            $message->setStaleTimestamp($payload['staleTime']);
+        }
+
+        if (isset($payload['dismissTime']))
+        {
+            $message->setDismissTimestamp($payload['dismissTime']);
         }
 
         return $message;

@@ -71,11 +71,11 @@ class APNSDispatcherPushTest extends APNSDispatcherTest
     {
         $endpoints = [];
 
-        $this->payload->expects($this->once())
-                      ->method('get_payload')
-                      ->willReturn([ 'priority' => Priority::ConsiderPowerUsage  ]);
+        $this->alert_payload->expects($this->once())
+                            ->method('get_payload')
+                            ->willReturn([ 'priority' => Priority::ConsiderPowerUsage ]);
 
-        $result = $this->class->push($this->payload, $endpoints);
+        $result = $this->class->push($this->alert_payload, $endpoints);
 
         $this->assertInstanceOf('Lunr\Vortex\APNS\ApnsPHP\APNSResponse', $result);
     }
@@ -89,11 +89,11 @@ class APNSDispatcherPushTest extends APNSDispatcherTest
     {
         $endpoints = [];
 
-        $this->payload->expects($this->once())
+        $this->alert_payload->expects($this->once())
                       ->method('get_payload')
                       ->willReturn([ 'yo' => 'data', 'priority' => Priority::ConsiderPowerUsage  ]);
 
-        $result = $this->class->push($this->payload, $endpoints);
+        $result = $this->class->push($this->alert_payload, $endpoints);
 
         $this->assertInstanceOf('Lunr\Vortex\APNS\ApnsPHP\APNSResponse', $result);
     }
@@ -145,7 +145,7 @@ class APNSDispatcherPushTest extends APNSDispatcherTest
             $message->setCustomProperty($key, $value);
         }
 
-        $this->payload->expects($this->once())
+        $this->alert_payload->expects($this->once())
                       ->method('get_payload')
                       ->willReturn($payload);
 
@@ -153,7 +153,7 @@ class APNSDispatcherPushTest extends APNSDispatcherTest
                         ->method('add')
                         ->with($message);
 
-        $this->class->push($this->payload, $endpoints);
+        $this->class->push($this->alert_payload, $endpoints);
     }
 
     /**
@@ -167,11 +167,11 @@ class APNSDispatcherPushTest extends APNSDispatcherTest
         $this->expectExceptionMessage('Property name \'aps\' can not be used for custom property.');
         $endpoints = [];
 
-        $this->payload->expects($this->once())
+        $this->alert_payload->expects($this->once())
                       ->method('get_payload')
                       ->willReturn([ 'custom_data' => [ 'aps' => 'value1' ], 'priority' => Priority::ConsiderPowerUsage ]);
 
-        $result = $this->class->push($this->payload, $endpoints);
+        $result = $this->class->push($this->alert_payload, $endpoints);
 
         $this->assertInstanceOf('Lunr\Vortex\APNS\ApnsPHP\APNSResponse', $result);
     }
@@ -196,11 +196,11 @@ class APNSDispatcherPushTest extends APNSDispatcherTest
                         [ 'error' => 'Failed to connect' ]
                      );
 
-        $this->payload->expects($this->once())
-                      ->method('get_payload')
-                      ->willReturn([ 'priority' => Priority::ConsiderPowerUsage ]);
+        $this->alert_payload->expects($this->once())
+                            ->method('get_payload')
+                            ->willReturn([ 'priority' => Priority::ConsiderPowerUsage ]);
 
-        $result = $this->class->push($this->payload, $endpoints);
+        $result = $this->class->push($this->alert_payload, $endpoints);
 
         $this->assertInstanceOf('Lunr\Vortex\APNS\ApnsPHP\APNSResponse', $result);
     }
@@ -225,11 +225,11 @@ class APNSDispatcherPushTest extends APNSDispatcherTest
                         [ 'error' => 'Failed to send' ]
                      );
 
-        $this->payload->expects($this->once())
-                      ->method('get_payload')
-                      ->willReturn([ 'priority' => Priority::ConsiderPowerUsage ]);
+        $this->alert_payload->expects($this->once())
+                            ->method('get_payload')
+                            ->willReturn([ 'priority' => Priority::ConsiderPowerUsage ]);
 
-        $result = $this->class->push($this->payload, $endpoints);
+        $result = $this->class->push($this->alert_payload, $endpoints);
 
         $this->assertInstanceOf('Lunr\Vortex\APNS\ApnsPHP\APNSResponse', $result);
     }
@@ -273,11 +273,11 @@ class APNSDispatcherPushTest extends APNSDispatcherTest
         $this->logger->expects($this->never())
                      ->method('warning');
 
-        $this->payload->expects($this->once())
-                      ->method('get_payload')
-                      ->willReturn([ 'priority' => Priority::ConsiderPowerUsage ]);
+        $this->alert_payload->expects($this->once())
+                            ->method('get_payload')
+                            ->willReturn([ 'priority' => Priority::ConsiderPowerUsage ]);
 
-        $result = $this->class->push($this->payload, $endpoints);
+        $result = $this->class->push($this->alert_payload, $endpoints);
 
         $this->assertInstanceOf('Lunr\Vortex\APNS\ApnsPHP\APNSResponse', $result);
     }
