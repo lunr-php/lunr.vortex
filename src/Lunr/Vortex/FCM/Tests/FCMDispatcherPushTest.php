@@ -586,7 +586,7 @@ class FCMDispatcherPushTest extends FCMDispatcherTest
         ];
 
         $this->payload->expects($this->exactly(3))
-                      ->method('has_topic')
+                      ->method('is_broadcast')
                       ->willReturn(TRUE);
 
         $this->payload->expects($this->never())
@@ -635,7 +635,7 @@ class FCMDispatcherPushTest extends FCMDispatcherTest
         ];
 
         $this->payload->expects($this->exactly(2))
-                      ->method('has_topic')
+                      ->method('is_broadcast')
                       ->willReturn(TRUE);
 
         $this->payload->expects($this->never())
@@ -684,11 +684,7 @@ class FCMDispatcherPushTest extends FCMDispatcherTest
         ];
 
         $this->payload->expects($this->exactly(3))
-                      ->method('has_topic')
-                      ->willReturn(FALSE);
-
-        $this->payload->expects($this->exactly(3))
-                      ->method('has_condition')
+                      ->method('is_broadcast')
                       ->willReturn(TRUE);
 
         $this->payload->expects($this->never())
@@ -737,11 +733,7 @@ class FCMDispatcherPushTest extends FCMDispatcherTest
         ];
 
         $this->payload->expects($this->exactly(2))
-                      ->method('has_topic')
-                      ->willReturn(FALSE);
-
-        $this->payload->expects($this->exactly(2))
-                      ->method('has_condition')
+                      ->method('is_broadcast')
                       ->willReturn(TRUE);
 
         $this->payload->expects($this->never())
