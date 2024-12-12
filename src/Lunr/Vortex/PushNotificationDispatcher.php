@@ -31,6 +31,12 @@ class PushNotificationDispatcher
     protected array $statuses;
 
     /**
+     * List of Push Notification status codes for every broadcast.
+     * @var array<value-of<PushNotificationStatus>, array<string, array<string, PushNotificationPayloadInterface>>>
+     */
+    protected array $broadcast_statuses;
+
+    /**
      * Constructor.
      */
     public function __construct()
@@ -42,6 +48,8 @@ class PushNotificationDispatcher
         {
             $this->statuses[$case->value] = [];
         }
+
+        $this->broadcast_statuses = $this->statuses;
     }
 
     /**
@@ -51,6 +59,7 @@ class PushNotificationDispatcher
     {
         unset($this->dispatchers);
         unset($this->statuses);
+        unset($this->broadcast_statuses);
     }
 
     /**
@@ -94,9 +103,17 @@ class PushNotificationDispatcher
 
             if (!isset($this->dispatchers[$platform]))
             {
-                foreach ($grouped_endpoints[$platform] as $payload_endpoints)
+                if (isset($grouped_endpoints[$platform]))
                 {
-                    $this->statuses[Status::NotHandled->value] = array_merge($this->statuses[Status::NotHandled->value], $payload_endpoints);
+                    foreach ($grouped_endpoints[$platform] as $payload_endpoints)
+                    {
+                        $this->statuses[Status::NotHandled->value] = array_merge($this->statuses[Status::NotHandled->value], $payload_endpoints);
+                    }
+                }
+
+                foreach (array_filter($platform_payloads, fn($payload) => $payload->is_broadcast()) as $payload_type => $payload)
+                {
+                    $this->broadcast_statuses[Status::NotHandled->value][$platform][$payload_type] = $payload;
                 }
 
                 continue;
@@ -109,15 +126,17 @@ class PushNotificationDispatcher
                     continue;
                 }
 
-                $endpoints = $grouped_endpoints[$platform][$payload_type] ?? [];
-
-                if ($this->dispatchers[$platform] instanceof PushNotificationMultiDispatcherInterface)
+                if ($payload->is_broadcast())
                 {
-                    $this->dispatch_multiple($platform, $endpoints, $payload);
+                    $this->dispatch_broadcast($platform, $payload_type, $payload);
+                }
+                elseif ($this->dispatchers[$platform] instanceof PushNotificationMultiDispatcherInterface)
+                {
+                    $this->dispatch_multiple($platform, $grouped_endpoints[$platform][$payload_type], $payload);
                 }
                 else
                 {
-                    $this->dispatch_single($platform, $endpoints, $payload);
+                    $this->dispatch_single($platform, $grouped_endpoints[$platform][$payload_type], $payload);
                 }
             }
         }
@@ -195,6 +214,31 @@ class PushNotificationDispatcher
     }
 
     /**
+     * Push a notification payload to each endpoint in a multicast way
+     *
+     * @param string                           $platform     Notification platform
+     * @param string                           $payload_type Notification payload type
+     * @param PushNotificationPayloadInterface $payload      Payload to send
+     *
+     * @return void
+     */
+    protected function dispatch_broadcast(string $platform, string $payload_type, PushNotificationPayloadInterface $payload): void
+    {
+        $endpoints = [];
+
+        $response = $this->dispatchers[$platform]->push($payload, $endpoints);
+
+        $status = PushNotificationStatus::Unknown;
+
+        if ($response instanceof PushNotificationBroadcastResponseInterface)
+        {
+            $status = $response->get_broadcast_status();
+        }
+
+        $this->broadcast_statuses[$status->value][$platform][$payload_type] = $payload;
+    }
+
+    /**
      * Returns a list of endpoint & platform pairs for a given list of delivery status codes.
      *
      * @param value-of<PushNotificationStatus>[] $status_codes The list of status codes
@@ -231,6 +275,16 @@ class PushNotificationDispatcher
     public function get_statuses(): array
     {
         return $this->statuses;
+    }
+
+    /**
+     * Return broadcast status information.
+     *
+     * @return array<value-of<PushNotificationStatus>, array<string, array<string, PushNotificationPayloadInterface>>>
+     */
+    public function get_broadcast_statuses(): array
+    {
+        return $this->broadcast_statuses;
     }
 
 }
