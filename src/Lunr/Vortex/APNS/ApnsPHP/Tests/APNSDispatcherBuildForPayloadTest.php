@@ -120,6 +120,7 @@ class APNSDispatcherBuildForPayloadTest extends APNSDispatcherTest
         $message->setTitle($payload['title']);
         $message->setText($payload['body']);
         $message->setThreadId($payload['thread_id']);
+        $message->setActivityId($payload['thread_id']);
         $message->setSound($payload['sound']);
         $message->setCategory($payload['category']);
         $message->setMutableContent($payload['mutable_content']);
