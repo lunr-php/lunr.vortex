@@ -235,6 +235,11 @@ class APNSDispatcher implements PushNotificationMultiDispatcherInterface
 
         /** @var LiveActivity $message */
         $payload = $payload->get_payload();
+        if (isset($payload['thread_id']))
+        {
+            $message->setActivityId($payload['thread_id']);
+        }
+
         if (isset($payload['event']))
         {
             $message->setEvent($payload['event']);
