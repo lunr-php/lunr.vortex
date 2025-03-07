@@ -13,6 +13,8 @@ namespace Lunr\Vortex;
 
 /**
  * Push notification interface.
+ *
+ * @phpstan-import-type Endpoint from PushNotificationDispatcher
  */
 interface PushNotificationDispatcherInterface
 {
@@ -20,8 +22,8 @@ interface PushNotificationDispatcherInterface
     /**
      * Push the notification.
      *
-     * @param object $payload   Payload object
-     * @param array  $endpoints Endpoints to sent it to in this batch
+     * @param object     $payload   Payload object
+     * @param Endpoint[] $endpoints Endpoints to sent it to in this batch
      *
      * @return PushNotificationResponseInterface Response object
      */
