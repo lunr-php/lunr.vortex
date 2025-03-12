@@ -29,7 +29,7 @@ use Lunr\Vortex\PushNotificationPayloadInterface;
  *     badge?: int,
  *     content_available?: bool,
  *     mutable_content?: bool,
- *     custom_data?: array,
+ *     custom_data?: array<string, mixed>,
  * }
  */
 abstract class APNSPayload implements PushNotificationPayloadInterface
@@ -37,7 +37,7 @@ abstract class APNSPayload implements PushNotificationPayloadInterface
 
     /**
      * Array of Push Notification elements.
-     * @var array
+     * @var APNSBasePayloadElements
      */
     protected array $elements;
 
@@ -46,9 +46,9 @@ abstract class APNSPayload implements PushNotificationPayloadInterface
      */
     public function __construct()
     {
-        $this->elements = [];
-
-        $this->elements['priority'] = Priority::Immediately;
+        $this->elements = [
+            'priority' => Priority::Immediately,
+        ];
     }
 
     /**
@@ -72,7 +72,7 @@ abstract class APNSPayload implements PushNotificationPayloadInterface
     /**
      * Construct the payload for the push notification.
      *
-     * @return array APNSPayload elements
+     * @return APNSBasePayloadElements APNSPayload elements
      */
     protected function get_payload(): array
     {
