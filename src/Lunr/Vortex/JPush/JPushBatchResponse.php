@@ -35,7 +35,7 @@ class JPushBatchResponse
 
     /**
      * The statuses per endpoint.
-     * @var array
+     * @var array<string, PushNotificationStatus>
      */
     private array $statuses;
 
@@ -53,7 +53,7 @@ class JPushBatchResponse
 
     /**
      * Notification endpoints.
-     * @var array
+     * @var string[]
      */
     protected array $endpoints;
 
