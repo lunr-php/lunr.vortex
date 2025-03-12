@@ -11,6 +11,16 @@ namespace Lunr\Vortex\JPush;
 
 /**
  * JPush Notification_3rd Payload Generator.
+ *
+ * @phpstan-import-type JPushPlatform from JPushPayload
+ * @phpstan-import-type JPushAudience from JPushPayload
+ * @phpstan-type JPushNotification3rdPayloadElements array{
+ *    platform: JPushPlatform,
+ *    audience: JPushAudience,
+ *    notification_3rd?: array<string, mixed>,
+ *    message?: array<string, mixed>,
+ *    options?: array<string, string|int|float|bool>
+ * }
  */
 class JPushNotification3rdPayload extends JPushPayload
 {
@@ -34,7 +44,7 @@ class JPushNotification3rdPayload extends JPushPayload
     /**
      * Construct the payload for the push notification.
      *
-     * @return array JPushPayload
+     * @return JPushNotification3rdPayloadElements JPushPayload
      */
     public function get_payload(): array
     {
