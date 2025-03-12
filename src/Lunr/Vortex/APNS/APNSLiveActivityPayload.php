@@ -17,9 +17,9 @@ use ApnsPHP\Message\LiveActivityEvent;
  * @phpstan-import-type APNSBasePayloadElements from APNSPayload
  * @phpstan-type APNSLiveActivityPayloadElements APNSBasePayloadElements|array{
  *     event?: LiveActivityEvent,
- *     contentState?: array|object,
+ *     contentState?: array<string, mixed>|object,
  *     attributesType?: string,
- *     attributes?: array|object,
+ *     attributes?: array<string, mixed>|object,
  *     staleTime?: int,
  *     dismissTime?: int,
  * }
@@ -70,7 +70,7 @@ class APNSLiveActivityPayload extends APNSPayload
     /**
      * Sets the payload key contentState.
      *
-     * @param array|object $state The current content state for the live activity
+     * @param array<string, mixed>|object $state The current content state for the live activity
      *
      * @return self Self Reference
      */
@@ -84,7 +84,7 @@ class APNSLiveActivityPayload extends APNSPayload
     /**
      * Sets the payload key attributes.
      *
-     * @param array|object $attributes The starting attributes for the live activity
+     * @param array<string, mixed>|object $attributes The starting attributes for the live activity
      *
      * @return self Self Reference
      */
