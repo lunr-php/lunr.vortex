@@ -10,12 +10,15 @@
 
 namespace Lunr\Vortex\APNS\ApnsPHP;
 
+use ApnsPHP\Push;
 use Lunr\Vortex\PushNotificationResponseInterface;
 use Lunr\Vortex\PushNotificationStatus;
 use Psr\Log\LoggerInterface;
 
 /**
  * Apple Push Notification Service response wrapper.
+ *
+ * @phpstan-import-type MessageEnvelope from Push
  */
 class APNSResponse implements PushNotificationResponseInterface
 {
@@ -42,11 +45,11 @@ class APNSResponse implements PushNotificationResponseInterface
     /**
      * Constructor.
      *
-     * @param LoggerInterface $logger           Shared instance of a Logger.
-     * @param array           $endpoints        The endpoints the message was sent to
-     * @param array           $invalidEndpoints List of invalid endpoints detected before the push.
-     * @param array|null      $errors           The errors response from the APNS Push.
-     * @param string          $payload          Raw payload that was sent to APNS.
+     * @param LoggerInterface        $logger           Shared instance of a Logger.
+     * @param string[]               $endpoints        The endpoints the message was sent to
+     * @param string[]               $invalidEndpoints List of invalid endpoints detected before the push.
+     * @param MessageEnvelope[]|null $errors           The errors response from the APNS Push.
+     * @param string                 $payload          Raw payload that was sent to APNS.
      */
     public function __construct(LoggerInterface $logger, array $endpoints, array $invalidEndpoints, ?array $errors, string $payload)
     {
@@ -79,8 +82,8 @@ class APNSResponse implements PushNotificationResponseInterface
     /**
      * Define the status result for each endpoint.
      *
-     * @param array $endpoints The endpoints the message was sent to
-     * @param array $errors    The errors response from the APNS Push.
+     * @param string[]          $endpoints The endpoints the message was sent to
+     * @param MessageEnvelope[] $errors    The errors response from the APNS Push.
      *
      * @return void
      */
@@ -162,7 +165,7 @@ class APNSResponse implements PushNotificationResponseInterface
     /**
      * Report invalid endpoints.
      *
-     * @param array $invalidEndpoints The invalid endpoints
+     * @param string[] $invalidEndpoints The invalid endpoints
      *
      * @return void
      */
@@ -177,7 +180,7 @@ class APNSResponse implements PushNotificationResponseInterface
     /**
      * Report an error with the push notification.
      *
-     * @param array $endpoints The endpoints the message was sent to
+     * @param string[] $endpoints The endpoints the message was sent to
      *
      * @return void
      */
