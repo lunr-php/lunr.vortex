@@ -56,7 +56,7 @@ class FCMBatchResponse implements PushNotificationResponseInterface, PushNotific
 
     /**
      * Set of error types that indicate a curl error.
-     * @var array
+     * @var string[]
      */
     private const CURL_ERROR_TYPES = [
         'curlerror',
