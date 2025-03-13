@@ -14,6 +14,12 @@ use Lunr\Vortex\PushNotificationStatus as Status;
 
 /**
  * Generic Push Notification Dispatcher.
+ *
+ * @phpstan-type Endpoint array<string, scalar|null>&array{
+ *    platform: string,
+ *    payloadType: string,
+ *    endpoint: string
+ * }
  */
 class PushNotificationDispatcher
 {
@@ -26,7 +32,7 @@ class PushNotificationDispatcher
 
     /**
      * List of Push Notification status codes for every endpoint.
-     * @var array<value-of<PushNotificationStatus>, array>
+     * @var array<value-of<PushNotificationStatus>, Endpoint[]>
      */
     protected array $statuses;
 
@@ -78,10 +84,9 @@ class PushNotificationDispatcher
     /**
      * Push the notification.
      *
-     * @param array $endpoints Array containing lists of endpoints
-     *                         paired to their respective platform identifiers
-     * @param array $payloads  Associative array containing payload strings
-     *                         per platform identifier
+     * @param Endpoint[]                                                     $endpoints List of endpoints.
+     * @param array<string, array<string, PushNotificationPayloadInterface>> $payloads  Associative array containing payload strings
+     *                                                                                  per platform identifier
      *
      * @return void
      */
@@ -163,9 +168,9 @@ class PushNotificationDispatcher
     /**
      * Push a notification payload to each endpoint one by one
      *
-     * @param string $platform  Notification platform
-     * @param array  $endpoints Endpoints list
-     * @param object $payload   Payload to send
+     * @param string     $platform  Notification platform
+     * @param Endpoint[] $endpoints Endpoints list
+     * @param object     $payload   Payload to send
      *
      * @return void
      */
@@ -173,9 +178,9 @@ class PushNotificationDispatcher
     {
         foreach ($endpoints as $endpoint)
         {
-            $endpoints = [ $endpoint['endpoint'] ];
+            $single_endpoint = [ $endpoint['endpoint'] ];
 
-            $response = $this->dispatchers[$platform]->push($payload, $endpoints);
+            $response = $this->dispatchers[$platform]->push($payload, $single_endpoint);
 
             $status = $response->get_status($endpoint['endpoint']);
 
@@ -186,9 +191,9 @@ class PushNotificationDispatcher
     /**
      * Push a notification payload to each endpoint in a multicast way
      *
-     * @param string $platform  Notification platform
-     * @param array  $endpoints Endpoints list
-     * @param object $payload   Payload to send
+     * @param string     $platform  Notification platform
+     * @param Endpoint[] $endpoints Endpoints list
+     * @param object     $payload   Payload to send
      *
      * @return void
      */
@@ -243,7 +248,7 @@ class PushNotificationDispatcher
      *
      * @param value-of<PushNotificationStatus>[] $status_codes The list of status codes
      *
-     * @return array The endpoint & platform pairs
+     * @return Endpoint[] The endpoint & platform pairs
      */
     public function get_endpoints_by_status(array $status_codes): array
     {
@@ -270,7 +275,7 @@ class PushNotificationDispatcher
     /**
      * Return unfiltered status information.
      *
-     * @return array Array of endpoint & platforms pairs structured by status.
+     * @return array<value-of<PushNotificationStatus>, Endpoint[]> Array of endpoint & platforms pairs structured by status.
      */
     public function get_statuses(): array
     {
