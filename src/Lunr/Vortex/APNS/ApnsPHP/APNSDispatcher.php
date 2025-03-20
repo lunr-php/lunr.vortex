@@ -75,8 +75,8 @@ class APNSDispatcher implements PushNotificationMultiDispatcherInterface
     /**
      * Push the notification.
      *
-     * @param object $payload   Payload object
-     * @param array  $endpoints Endpoints to send to in this batch
+     * @param object   $payload   Payload object
+     * @param string[] $endpoints Endpoints to send to in this batch
      *
      * @return APNSResponse Response object
      */
