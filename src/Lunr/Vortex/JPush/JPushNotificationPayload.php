@@ -14,6 +14,13 @@ use ReflectionClass;
 
 /**
  * JPush Notification Payload Generator.
+ *
+ * @phpstan-type JPushNotificationPayloadElements array{
+ *    platform: string[],
+ *    audience: array<string, mixed>,
+ *    notification?: array<string, mixed>,
+ *    options?: array<string, string|int|float|bool>
+ * }
  */
 class JPushNotificationPayload extends JPushPayload
 {
@@ -39,7 +46,7 @@ class JPushNotificationPayload extends JPushPayload
     /**
      * Construct the payload for the push notification.
      *
-     * @return array JPushPayload
+     * @return JPushNotificationPayloadElements JPushPayload
      */
     public function get_payload(): array
     {

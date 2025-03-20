@@ -14,19 +14,28 @@ use Lunr\Vortex\PushNotificationPayloadInterface;
 
 /**
  * JPush Payload Generator.
+ *
+ * @phpstan-type JPushPayloadElements array{
+ *    platform: string[],
+ *    audience: array<string, mixed>,
+ *    notification?: array<string, mixed>,
+ *    notification_3rd?: array<string, mixed>,
+ *    message?: array<string, mixed>,
+ *    options?: array<string, string|int|float|bool>
+ * }
  */
 abstract class JPushPayload implements PushNotificationPayloadInterface
 {
 
     /**
      * Array of Push Notification elements.
-     * @var array
+     * @var JPushPayloadElements
      */
     protected array $elements;
 
     /**
      * Supported push platforms
-     * @var array
+     * @var string[]
      */
     private const PLATFORMS = [ 'ios', 'android' ];
 
@@ -35,13 +44,13 @@ abstract class JPushPayload implements PushNotificationPayloadInterface
      */
     public function __construct()
     {
-        $this->elements = [];
-
-        $this->elements['platform']         = self::PLATFORMS;
-        $this->elements['audience']         = [];
-        $this->elements['notification']     = [];
-        $this->elements['notification_3rd'] = [];
-        $this->elements['message']          = [];
+        $this->elements = [
+            'platform'         => self::PLATFORMS,
+            'audience'         => [],
+            'notification'     => [],
+            'notification_3rd' => [],
+            'message'          => [],
+        ];
     }
 
     /**
@@ -65,7 +74,7 @@ abstract class JPushPayload implements PushNotificationPayloadInterface
     /**
      * Construct the payload for the push notification.
      *
-     * @return array JPushPayload
+     * @return JPushPayloadElements JPushPayload
      */
     abstract public function get_payload(): array;
 
@@ -116,7 +125,7 @@ abstract class JPushPayload implements PushNotificationPayloadInterface
      *
      * The fields of data represent the key-value pairs of the message's payload data.
      *
-     * @param array $data The actual notification information
+     * @param array<string,mixed> $data The actual notification information
      *
      * @return $this Self Reference
      */
@@ -182,7 +191,7 @@ abstract class JPushPayload implements PushNotificationPayloadInterface
      *
      * @return $this Self Reference
      */
-    public function set_options(string $key, $value): static
+    public function set_options(string $key, string|int|float|bool $value): static
     {
         if (!isset($this->elements['options']))
         {
