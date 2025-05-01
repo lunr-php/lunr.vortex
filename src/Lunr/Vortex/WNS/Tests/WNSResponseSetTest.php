@@ -31,9 +31,9 @@ class WNSResponseSetTest extends WNSResponseTest
     }
 
     /**
-     * Test setting the status for a successful request.
+     * Test parsing the status for a successful request.
      *
-     * @covers Lunr\Vortex\WNS\WNSResponse::set_status
+     * @covers Lunr\Vortex\WNS\WNSResponse::parseStatus
      */
     public function testStatusForSuccessRequestStatus(): void
     {
@@ -57,16 +57,16 @@ class WNSResponseSetTest extends WNSResponseTest
     }
 
     /**
-     * Test setting the status for a failed request.
+     * Test parsing the status for a failed request.
      *
      * @param int    $code     Status code
      * @param string $nstatus  Notification status string
      * @param int    $expected Expected push notification status
      *
      * @dataProvider failedRequestProvider
-     * @covers       Lunr\Vortex\WNS\WNSResponse::set_status
+     * @covers       Lunr\Vortex\WNS\WNSResponse::parseStatus
      */
-    public function testSetStatusForNonSuccessRequestStatus($code, $nstatus, $expected): void
+    public function testParseStatusForNonSuccessRequestStatus($code, $nstatus, $expected): void
     {
         $response = $this->getMockBuilder('WpOrg\Requests\Response')->getMock();
 

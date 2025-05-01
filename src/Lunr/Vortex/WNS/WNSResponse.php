@@ -72,7 +72,7 @@ class WNSResponse implements PushNotificationResponseInterface
         else
         {
             $this->headers = $response->headers;
-            $this->set_status($response->url, $logger);
+            $this->status  = $this->parseStatus($response->url, $logger);
         }
     }
 
@@ -90,49 +90,49 @@ class WNSResponse implements PushNotificationResponseInterface
      * @param string          $endpoint The notification endpoint that was used.
      * @param LoggerInterface $logger   Shared instance of a Logger.
      *
-     * @return void
+     * @return PushNotificationStatus The detected status of the notification
      */
-    private function set_status(string $endpoint, LoggerInterface $logger)
+    private function parseStatus(string $endpoint, LoggerInterface $logger): PushNotificationStatus
     {
         switch ($this->http_code)
         {
             case 200:
                 if ($this->headers['X-WNS-Status'] === 'received')
                 {
-                    $this->status = PushNotificationStatus::Success;
+                    $status = PushNotificationStatus::Success;
                 }
                 elseif ($this->headers['X-WNS-Status'] === 'channelthrottled')
                 {
-                    $this->status = PushNotificationStatus::TemporaryError;
+                    $status = PushNotificationStatus::TemporaryError;
                 }
                 else
                 {
-                    $this->status = PushNotificationStatus::ClientError;
+                    $status = PushNotificationStatus::ClientError;
                 }
 
                 break;
             case 404:
             case 410:
-                $this->status = PushNotificationStatus::InvalidEndpoint;
+                $status = PushNotificationStatus::InvalidEndpoint;
                 break;
             case 400:
             case 401:
             case 403:
             case 405:
             case 413:
-                $this->status = PushNotificationStatus::Error;
+                $status = PushNotificationStatus::Error;
                 break;
             case 406:
             case 500:
             case 503:
-                $this->status = PushNotificationStatus::TemporaryError;
+                $status = PushNotificationStatus::TemporaryError;
                 break;
             default:
-                $this->status = PushNotificationStatus::Unknown;
+                $status = PushNotificationStatus::Unknown;
                 break;
         }
 
-        if ($this->status !== PushNotificationStatus::Success)
+        if ($status !== PushNotificationStatus::Success)
         {
             $context = [
                 'endpoint'          => $endpoint,
@@ -147,6 +147,8 @@ class WNSResponse implements PushNotificationResponseInterface
 
             $logger->warning($message, $context);
         }
+
+        return $status;
     }
 
     /**

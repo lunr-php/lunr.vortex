@@ -10,8 +10,3 @@ parameters:
         - phpstan.autoload.inc.php
     excludePaths:
         - ../src/*/Tests/*
-    ignoreErrors:
-        -
-            message: '#\$status is assigned outside of the constructor#'
-            paths:
-                - ../src/Lunr/Vortex/WNS/WNSResponse.php
