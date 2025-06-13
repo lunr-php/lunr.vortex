@@ -197,12 +197,14 @@ class APNSDispatcher implements PushNotificationMultiDispatcherInterface
             $message->setMutableContent($payload['mutable_content']);
         }
 
-        if (isset($payload['custom_data']))
+        if (!isset($payload['custom_data']))
         {
-            foreach ($payload['custom_data'] as $key => $value)
-            {
-                $message->setCustomProperty($key, $value);
-            }
+            return;
+        }
+
+        foreach ($payload['custom_data'] as $key => $value)
+        {
+            $message->setCustomProperty($key, $value);
         }
     }
 
