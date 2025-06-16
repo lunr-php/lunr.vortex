@@ -150,10 +150,12 @@ class APNSResponse implements PushNotificationResponseInterface
 
         foreach ($endpoints as $endpoint)
         {
-            if (!isset($this->statuses[$endpoint]))
+            if (isset($this->statuses[$endpoint]))
             {
-                $this->statuses[$endpoint] = PushNotificationStatus::Success;
+                continue;
             }
+
+            $this->statuses[$endpoint] = PushNotificationStatus::Success;
         }
     }
 
@@ -183,10 +185,12 @@ class APNSResponse implements PushNotificationResponseInterface
     {
         foreach ($endpoints as $endpoint)
         {
-            if (!isset($this->statuses[$endpoint]))
+            if (isset($this->statuses[$endpoint]))
             {
-                $this->statuses[$endpoint] = PushNotificationStatus::Error;
+                continue;
             }
+
+            $this->statuses[$endpoint] = PushNotificationStatus::Error;
         }
     }
 
