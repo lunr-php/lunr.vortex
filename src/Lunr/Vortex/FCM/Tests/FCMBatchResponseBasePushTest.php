@@ -37,8 +37,7 @@ class FCMBatchResponseBasePushTest extends FCMBatchResponseTestCase
         $this->response->status_code = 200;
         $this->response->body        = $content;
 
-        $this->logger->expects($this->never())
-                     ->method('warning');
+        $this->logger->expects('warning')->never();
 
         $responses = [
             'endpoint1' => $this->response,
@@ -78,8 +77,8 @@ class FCMBatchResponseBasePushTest extends FCMBatchResponseTestCase
             'error'    => 'Invalid argument',
         ];
 
-        $this->logger->expects($this->once())
-                     ->method('warning')
+        $this->logger->expects('warning')
+                     ->once()
                      ->with('Dispatching FCM notification failed for endpoint {endpoint}: {error}', $context);
 
         $responses = [ $this->response ];
@@ -112,12 +111,13 @@ class FCMBatchResponseBasePushTest extends FCMBatchResponseTestCase
 
         $context1 = [ 'endpoint' => 'endpoint2' ] + $context;
 
-        $this->logger->expects($this->exactly(2))
-                     ->method('warning')
-                     ->withConsecutive(
-                         [ 'Dispatching FCM notification failed for endpoint {endpoint}: {error}', $context ],
-                         [ 'Dispatching FCM notification failed for endpoint {endpoint}: {error}', $context1 ]
-                     );
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with('Dispatching FCM notification failed for endpoint {endpoint}: {error}', $context);
+
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with('Dispatching FCM notification failed for endpoint {endpoint}: {error}', $context1);
 
         $responses = [ $this->response ];
 
@@ -149,8 +149,8 @@ class FCMBatchResponseBasePushTest extends FCMBatchResponseTestCase
 
         $responses = [ 'endpoint1' => new RequestsException('cURL error 10: Request error', 'curlerror', NULL) ];
 
-        $this->logger->expects($this->once())
-                     ->method('warning')
+        $this->logger->expects('warning')
+                     ->once()
                      ->with(
                          'Dispatching FCM notification failed for endpoint {endpoint}: {error}',
                          [ 'endpoint' => 'endpoint1', 'error' => 'cURL error 10: Request error' ]
@@ -191,21 +191,22 @@ class FCMBatchResponseBasePushTest extends FCMBatchResponseTestCase
             'endpoint3' => PushNotificationStatus::TemporaryError,
         ];
 
-        $this->logger->expects($this->exactly(3))
-                     ->method('warning')
-                     ->withConsecutive(
-                         [
-                             'Dispatching FCM notification failed for endpoint {endpoint}: {error}',
-                             [ 'endpoint' => 'endpoint1', 'error' => 'cURL error 10: Request error' ]
-                         ],
-                         [
-                             'Dispatching FCM notification failed for endpoint {endpoint}: {error}',
-                             [ 'endpoint' => 'endpoint2', 'error' => 'cURL error 10: Request error' ]
-                         ],
-                         [
-                             'Dispatching FCM notification failed for endpoint {endpoint}: {error}',
-                             [ 'endpoint' => 'endpoint3', 'error' => 'cURL error 10: Request error' ]
-                         ]
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with('Dispatching FCM notification failed for endpoint {endpoint}: {error}',
+                         [ 'endpoint' => 'endpoint1', 'error' => 'cURL error 10: Request error' ]
+                     );
+
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with('Dispatching FCM notification failed for endpoint {endpoint}: {error}',
+                         [ 'endpoint' => 'endpoint2', 'error' => 'cURL error 10: Request error' ]
+                     );
+
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with('Dispatching FCM notification failed for endpoint {endpoint}: {error}',
+                         [ 'endpoint' => 'endpoint3', 'error' => 'cURL error 10: Request error' ]
                      );
 
         $this->class = new FCMBatchResponse($responses, $this->logger, $endpoints);
@@ -233,8 +234,8 @@ class FCMBatchResponseBasePushTest extends FCMBatchResponseTestCase
 
         $responses = [ 'endpoint1' => new RequestsException('cURL error 28: Request timed out', 'curlerror', NULL) ];
 
-        $this->logger->expects($this->once())
-                     ->method('warning')
+        $this->logger->expects('warning')
+                     ->once()
                      ->with(
                          'Dispatching FCM notification failed for endpoint {endpoint}: {error}',
                          [ 'endpoint' => 'endpoint1', 'error' => 'cURL error 28: Request timed out' ]
@@ -275,21 +276,22 @@ class FCMBatchResponseBasePushTest extends FCMBatchResponseTestCase
             'endpoint3' => PushNotificationStatus::TemporaryError,
         ];
 
-        $this->logger->expects($this->exactly(3))
-                     ->method('warning')
-                     ->withConsecutive(
-                         [
-                             'Dispatching FCM notification failed for endpoint {endpoint}: {error}',
-                             [ 'endpoint' => 'endpoint1', 'error' => 'cURL error 28: Request timed out' ]
-                         ],
-                         [
-                             'Dispatching FCM notification failed for endpoint {endpoint}: {error}',
-                             [ 'endpoint' => 'endpoint2', 'error' => 'cURL error 28: Request timed out' ]
-                         ],
-                         [
-                             'Dispatching FCM notification failed for endpoint {endpoint}: {error}',
-                             [ 'endpoint' => 'endpoint3', 'error' => 'cURL error 28: Request timed out' ]
-                         ]
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with('Dispatching FCM notification failed for endpoint {endpoint}: {error}',
+                         [ 'endpoint' => 'endpoint1', 'error' => 'cURL error 28: Request timed out' ]
+                     );
+
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with('Dispatching FCM notification failed for endpoint {endpoint}: {error}',
+                         [ 'endpoint' => 'endpoint2', 'error' => 'cURL error 28: Request timed out' ]
+                     );
+
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with('Dispatching FCM notification failed for endpoint {endpoint}: {error}',
+                         [ 'endpoint' => 'endpoint3', 'error' => 'cURL error 28: Request timed out' ]
                      );
 
         $this->class = new FCMBatchResponse($responses, $this->logger, $endpoints);
@@ -317,8 +319,8 @@ class FCMBatchResponseBasePushTest extends FCMBatchResponseTestCase
 
         $responses = [ 'endpoint1' => new RequestsException('cURL error 28: Request timed out', CurlException::EASY, NULL) ];
 
-        $this->logger->expects($this->once())
-                     ->method('warning')
+        $this->logger->expects('warning')
+                     ->once()
                      ->with(
                          'Dispatching FCM notification failed for endpoint {endpoint}: {error}',
                          [ 'endpoint' => 'endpoint1', 'error' => 'cURL error 28: Request timed out' ]
@@ -359,21 +361,22 @@ class FCMBatchResponseBasePushTest extends FCMBatchResponseTestCase
             'endpoint3' => PushNotificationStatus::TemporaryError,
         ];
 
-        $this->logger->expects($this->exactly(3))
-                     ->method('warning')
-                     ->withConsecutive(
-                         [
-                             'Dispatching FCM notification failed for endpoint {endpoint}: {error}',
-                             [ 'endpoint' => 'endpoint1', 'error' => 'cURL error 28: Request timed out' ]
-                         ],
-                         [
-                             'Dispatching FCM notification failed for endpoint {endpoint}: {error}',
-                             [ 'endpoint' => 'endpoint2', 'error' => 'cURL error 28: Request timed out' ]
-                         ],
-                         [
-                             'Dispatching FCM notification failed for endpoint {endpoint}: {error}',
-                             [ 'endpoint' => 'endpoint3', 'error' => 'cURL error 28: Request timed out' ]
-                         ]
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with('Dispatching FCM notification failed for endpoint {endpoint}: {error}',
+                         [ 'endpoint' => 'endpoint1', 'error' => 'cURL error 28: Request timed out' ]
+                     );
+
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with('Dispatching FCM notification failed for endpoint {endpoint}: {error}',
+                         [ 'endpoint' => 'endpoint2', 'error' => 'cURL error 28: Request timed out' ]
+                     );
+
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with('Dispatching FCM notification failed for endpoint {endpoint}: {error}',
+                         [ 'endpoint' => 'endpoint3', 'error' => 'cURL error 28: Request timed out' ]
                      );
 
         $this->class = new FCMBatchResponse($responses, $this->logger, $endpoints);
@@ -401,8 +404,8 @@ class FCMBatchResponseBasePushTest extends FCMBatchResponseTestCase
 
         $responses = [ 'endpoint1' => new RequestsException('cURL error 28: Request timed out', CurlException::MULTI, NULL) ];
 
-        $this->logger->expects($this->once())
-                     ->method('warning')
+        $this->logger->expects('warning')
+                     ->once()
                      ->with(
                          'Dispatching FCM notification failed for endpoint {endpoint}: {error}',
                          [ 'endpoint' => 'endpoint1', 'error' => 'cURL error 28: Request timed out' ]
@@ -443,21 +446,22 @@ class FCMBatchResponseBasePushTest extends FCMBatchResponseTestCase
             'endpoint3' => PushNotificationStatus::TemporaryError,
         ];
 
-        $this->logger->expects($this->exactly(3))
-                     ->method('warning')
-                     ->withConsecutive(
-                         [
-                             'Dispatching FCM notification failed for endpoint {endpoint}: {error}',
-                             [ 'endpoint' => 'endpoint1', 'error' => 'cURL error 28: Request timed out' ]
-                         ],
-                         [
-                             'Dispatching FCM notification failed for endpoint {endpoint}: {error}',
-                             [ 'endpoint' => 'endpoint2', 'error' => 'cURL error 28: Request timed out' ]
-                         ],
-                         [
-                             'Dispatching FCM notification failed for endpoint {endpoint}: {error}',
-                             [ 'endpoint' => 'endpoint3', 'error' => 'cURL error 28: Request timed out' ]
-                         ]
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with('Dispatching FCM notification failed for endpoint {endpoint}: {error}',
+                         [ 'endpoint' => 'endpoint1', 'error' => 'cURL error 28: Request timed out' ]
+                     );
+
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with('Dispatching FCM notification failed for endpoint {endpoint}: {error}',
+                         [ 'endpoint' => 'endpoint2', 'error' => 'cURL error 28: Request timed out' ]
+                     );
+
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with('Dispatching FCM notification failed for endpoint {endpoint}: {error}',
+                         [ 'endpoint' => 'endpoint3', 'error' => 'cURL error 28: Request timed out' ]
                      );
 
         $this->class = new FCMBatchResponse($responses, $this->logger, $endpoints);
@@ -485,8 +489,8 @@ class FCMBatchResponseBasePushTest extends FCMBatchResponseTestCase
 
         $responses = [ 'endpoint1' => new RequestsException('cURL error 28: Request timed out', CurlException::SHARE, NULL) ];
 
-        $this->logger->expects($this->once())
-                     ->method('warning')
+        $this->logger->expects('warning')
+                     ->once()
                      ->with(
                          'Dispatching FCM notification failed for endpoint {endpoint}: {error}',
                          [ 'endpoint' => 'endpoint1', 'error' => 'cURL error 28: Request timed out' ]
@@ -527,21 +531,22 @@ class FCMBatchResponseBasePushTest extends FCMBatchResponseTestCase
             'endpoint3' => PushNotificationStatus::TemporaryError,
         ];
 
-        $this->logger->expects($this->exactly(3))
-                     ->method('warning')
-                     ->withConsecutive(
-                         [
-                             'Dispatching FCM notification failed for endpoint {endpoint}: {error}',
-                             [ 'endpoint' => 'endpoint1', 'error' => 'cURL error 28: Request timed out' ]
-                         ],
-                         [
-                             'Dispatching FCM notification failed for endpoint {endpoint}: {error}',
-                             [ 'endpoint' => 'endpoint2', 'error' => 'cURL error 28: Request timed out' ]
-                         ],
-                         [
-                             'Dispatching FCM notification failed for endpoint {endpoint}: {error}',
-                             [ 'endpoint' => 'endpoint3', 'error' => 'cURL error 28: Request timed out' ]
-                         ]
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with('Dispatching FCM notification failed for endpoint {endpoint}: {error}',
+                         [ 'endpoint' => 'endpoint1', 'error' => 'cURL error 28: Request timed out' ]
+                     );
+
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with('Dispatching FCM notification failed for endpoint {endpoint}: {error}',
+                        [ 'endpoint' => 'endpoint2', 'error' => 'cURL error 28: Request timed out' ]
+                     );
+
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with('Dispatching FCM notification failed for endpoint {endpoint}: {error}',
+                         [ 'endpoint' => 'endpoint3', 'error' => 'cURL error 28: Request timed out' ]
                      );
 
         $this->class = new FCMBatchResponse($responses, $this->logger, $endpoints);
@@ -572,8 +577,8 @@ class FCMBatchResponseBasePushTest extends FCMBatchResponseTestCase
 
         $responses = [ 'endpoint1' => $this->response ];
 
-        $this->logger->expects($this->once())
-                     ->method('warning')
+        $this->logger->expects('warning')
+                     ->once()
                      ->with(
                          'Dispatching FCM notification failed for endpoint {endpoint}: {error}',
                          [ 'endpoint' => 'endpoint1', 'error' => 'The registration token is not a valid FCM registration token' ]
@@ -605,8 +610,8 @@ class FCMBatchResponseBasePushTest extends FCMBatchResponseTestCase
 
         $responses = [ 'endpoint1' => $this->response ];
 
-        $this->logger->expects($this->once())
-                     ->method('warning')
+        $this->logger->expects('warning')
+                     ->once()
                      ->with(
                          'Dispatching FCM notification failed for endpoint {endpoint}: {error}',
                          [ 'endpoint' => 'endpoint1', 'error' => 'Invalid Argument' ]
@@ -627,7 +632,7 @@ class FCMBatchResponseBasePushTest extends FCMBatchResponseTestCase
      *
      * @return array $data array of fcm errors
      */
-    public function errorDataProvider(): array
+    public static function errorDataProvider(): array
     {
         $data = [];
 
@@ -663,8 +668,8 @@ class FCMBatchResponseBasePushTest extends FCMBatchResponseTestCase
 
         $responses = [ 'endpoint1' => $this->response ];
 
-        $this->logger->expects($this->once())
-                     ->method('warning')
+        $this->logger->expects('warning')
+                     ->once()
                      ->with(
                          'Dispatching FCM notification failed for endpoint {endpoint}: {error}',
                          [ 'endpoint' => 'endpoint1', 'error' => $error_msg ]
@@ -692,7 +697,6 @@ class FCMBatchResponseBasePushTest extends FCMBatchResponseTestCase
         $endpoints = [];
         $responses = [];
         $statuses  = [];
-        $warnings  = [];
 
         foreach ($this->errorDataProvider() as $key => $value)
         {
@@ -705,15 +709,12 @@ class FCMBatchResponseBasePushTest extends FCMBatchResponseTestCase
             $responses[$endpoint] = clone $this->response;
             $statuses[$endpoint]  = $value[2];
 
-            $warnings[] = [
-                'Dispatching FCM notification failed for endpoint {endpoint}: {error}',
-                [ 'endpoint' => $endpoint, 'error' => $value[0] ]
-            ];
+            $this->logger->expects('warning')
+                         ->once()
+                         ->with('Dispatching FCM notification failed for endpoint {endpoint}: {error}',
+                            [ 'endpoint' => $endpoint, 'error' => $value[0] ]
+                         );
         }
-
-        $this->logger->expects($this->exactly(count($endpoints)))
-                     ->method('warning')
-                     ->withConsecutive(...$warnings);
 
         $this->class = new FCMBatchResponse($responses, $this->logger, $endpoints);
 
@@ -738,8 +739,7 @@ class FCMBatchResponseBasePushTest extends FCMBatchResponseTestCase
         $this->response->status_code = 200;
         $this->response->body        = $content;
 
-        $this->logger->expects($this->never())
-                     ->method('warning');
+        $this->logger->expects('warning')->never();
 
         $responses = [
             $this->response,
@@ -770,8 +770,8 @@ class FCMBatchResponseBasePushTest extends FCMBatchResponseTestCase
 
         $responses = [ new RequestsException('cURL error 10: Request error', 'curlerror', NULL) ];
 
-        $this->logger->expects($this->once())
-                     ->method('warning')
+        $this->logger->expects('warning')
+                     ->once()
                      ->with(
                          'Dispatching FCM broadcast failed: {error}',
                          [ 'error' => 'cURL error 10: Request error' ]
@@ -802,8 +802,8 @@ class FCMBatchResponseBasePushTest extends FCMBatchResponseTestCase
 
         $responses = [ new RequestsException('Unknown error', 'error', NULL) ];
 
-        $this->logger->expects($this->once())
-                     ->method('warning')
+        $this->logger->expects('warning')
+                     ->once()
                      ->with(
                          'Dispatching FCM broadcast failed: {error}',
                          [ 'error' => 'Unknown error' ]
@@ -826,7 +826,7 @@ class FCMBatchResponseBasePushTest extends FCMBatchResponseTestCase
      *
      * @return array $data array of fcm errors
      */
-    public function errorBroadcastDataProvider(): array
+    public static function errorBroadcastDataProvider(): array
     {
         $data = [];
 
@@ -857,8 +857,8 @@ class FCMBatchResponseBasePushTest extends FCMBatchResponseTestCase
         $this->response->status_code = $http_code;
         $this->response->body        = '';
 
-        $this->logger->expects($this->once())
-                     ->method('warning')
+        $this->logger->expects('warning')
+                     ->once()
                      ->with(
                          'Dispatching FCM broadcast failed: {error}',
                          [ 'error' => $error_msg ]

@@ -16,6 +16,7 @@ use Lunr\Vortex\JPush\JPushMessagePayload;
 use Lunr\Vortex\PushNotificationStatus;
 use Lunr\Vortex\WNS\WNSTilePayload;
 use WpOrg\Requests\Exception as RequestsException;
+use WpOrg\Requests\Response;
 
 /**
  * This class contains test for the push() method of the FCMDispatcher class.
@@ -49,7 +50,7 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
      * @dataProvider unsupportedPayloadProvider
      * @covers       Lunr\Vortex\FCM\FCMDispatcher::push
      */
-    public function testPushingWithUnsupportedPayloadThrowsException($payload): void
+    public function testPushingWithUnsupportedPayloadThrowsException(object $payload): void
     {
         $endpoints = [ 'endpoint' ];
 
@@ -68,6 +69,10 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
     {
         $endpoints = [];
 
+        $this->payload->expects('is_broadcast')
+                      ->once()
+                      ->andReturn(FALSE);
+
         $this->expectException('InvalidArgumentException');
         $this->expectExceptionMessage('No target provided!');
 
@@ -85,15 +90,15 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
 
         $this->setReflectionPropertyValue('oauth_token', NULL);
 
-        $this->logger->expects($this->exactly(2))
-                     ->method('warning')
-                     ->withConsecutive(
-                        [ 'Tried to push FCM notification but wasn\'t authenticated.' ],
-                        [
-                            'Dispatching FCM notification failed for endpoint {endpoint}: {error}',
-                            [ 'endpoint' => 'endpoint', 'error' => 'Error with authentication' ]
-                        ]
-                    );
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with('Tried to push FCM notification but wasn\'t authenticated.');
+
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with('Dispatching FCM notification failed for endpoint {endpoint}: {error}',
+                        [ 'endpoint' => 'endpoint', 'error' => 'Error with authentication' ]
+                     );
 
         $result = $this->class->push($this->payload, $endpoints);
 
@@ -111,23 +116,27 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
 
         $this->setReflectionPropertyValue('oauth_token', NULL);
 
-        $this->logger->expects($this->exactly(4))
-                     ->method('warning')
-                     ->withConsecutive(
-                        [ 'Tried to push FCM notification but wasn\'t authenticated.' ],
-                        [
-                            'Dispatching FCM notification failed for endpoint {endpoint}: {error}',
-                            [ 'endpoint' => 'endpoint', 'error' => 'Error with authentication' ]
-                        ],
-                        [
-                            'Dispatching FCM notification failed for endpoint {endpoint}: {error}',
-                            [ 'endpoint' => 'endpoint1', 'error' => 'Error with authentication' ]
-                        ],
-                        [
-                            'Dispatching FCM notification failed for endpoint {endpoint}: {error}',
-                            [ 'endpoint' => 'endpoint2', 'error' => 'Error with authentication' ]
-                        ],
-                    );
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with('Tried to push FCM notification but wasn\'t authenticated.');
+
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with('Dispatching FCM notification failed for endpoint {endpoint}: {error}',
+                        [ 'endpoint' => 'endpoint', 'error' => 'Error with authentication' ]
+                     );
+
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with('Dispatching FCM notification failed for endpoint {endpoint}: {error}',
+                        [ 'endpoint' => 'endpoint1', 'error' => 'Error with authentication' ]
+                     );
+
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with('Dispatching FCM notification failed for endpoint {endpoint}: {error}',
+                        [ 'endpoint' => 'endpoint2', 'error' => 'Error with authentication' ]
+                     );
 
         $result = $this->class->push($this->payload, $endpoints);
 
@@ -146,15 +155,15 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
         $this->setReflectionPropertyValue('oauth_token', 'test');
         $this->setReflectionPropertyValue('project_id', NULL);
 
-        $this->logger->expects($this->exactly(2))
-                     ->method('warning')
-                     ->withConsecutive(
-                        [ 'Tried to push FCM notification but project id is not provided.' ],
-                        [
-                            'Dispatching FCM notification failed for endpoint {endpoint}: {error}',
-                            [ 'endpoint' => 'endpoint', 'error' => 'Invalid argument' ]
-                        ]
-                    );
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with('Tried to push FCM notification but project id is not provided.');
+
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with('Dispatching FCM notification failed for endpoint {endpoint}: {error}',
+                        [ 'endpoint' => 'endpoint', 'error' => 'Invalid argument' ]
+                     );
 
         $result = $this->class->push($this->payload, $endpoints);
 
@@ -173,23 +182,27 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
         $this->setReflectionPropertyValue('oauth_token', 'test');
         $this->setReflectionPropertyValue('project_id', NULL);
 
-        $this->logger->expects($this->exactly(4))
-                     ->method('warning')
-                     ->withConsecutive(
-                        [ 'Tried to push FCM notification but project id is not provided.' ],
-                        [
-                            'Dispatching FCM notification failed for endpoint {endpoint}: {error}',
-                            [ 'endpoint' => 'endpoint', 'error' => 'Invalid argument' ]
-                        ],
-                        [
-                            'Dispatching FCM notification failed for endpoint {endpoint}: {error}',
-                            [ 'endpoint' => 'endpoint1', 'error' => 'Invalid argument' ]
-                        ],
-                        [
-                            'Dispatching FCM notification failed for endpoint {endpoint}: {error}',
-                            [ 'endpoint' => 'endpoint2', 'error' => 'Invalid argument' ]
-                        ],
-                    );
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with('Tried to push FCM notification but project id is not provided.');
+
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with('Dispatching FCM notification failed for endpoint {endpoint}: {error}',
+                        [ 'endpoint' => 'endpoint', 'error' => 'Invalid argument' ]
+                     );
+
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with('Dispatching FCM notification failed for endpoint {endpoint}: {error}',
+                        [ 'endpoint' => 'endpoint1', 'error' => 'Invalid argument' ]
+                     );
+
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with('Dispatching FCM notification failed for endpoint {endpoint}: {error}',
+                        [ 'endpoint' => 'endpoint2', 'error' => 'Invalid argument' ]
+                     );
 
         $result = $this->class->push($this->payload, $endpoints);
 
@@ -205,23 +218,31 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
     {
         $endpoints = [ 'endpoint' ];
 
-        $this->payload->expects($this->once())
-                      ->method('set_token')
-                      ->with('endpoint')
-                      ->willReturnSelf();
+        $this->payload->expects('is_broadcast')
+                      ->times(2)
+                      ->andReturn(FALSE);
 
-        $this->payload->expects($this->once())
-                      ->method('get_json_payload')
-                      ->willReturn('{"collapse_key":"abcde-12345"}');
+        $this->payload->expects('set_token')
+                      ->once()
+                      ->with('endpoint')
+                      ->andReturnSelf();
+
+        $this->payload->expects('get_json_payload')
+                      ->once()
+                      ->andReturn('{"collapse_key":"abcde-12345"}');
 
         $this->setReflectionPropertyValue('oauth_token', 'oauth_token');
         $this->setReflectionPropertyValue('project_id', 'fcm-project');
 
-        $response = $this->getMockBuilder('WpOrg\Requests\Response')->getMock();
+        $response = $this->getMockBuilder(Response::class)->getMock();
 
         $this->http->expects($this->once())
                    ->method('post')
                    ->willReturn($response);
+
+        $this->logger->expects('warning')
+                     ->once()
+                     ->withAnyArgs();
 
         $this->class->push($this->payload, $endpoints);
 
@@ -256,14 +277,18 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
             'protocol_version' => 2.0,
         ];
 
-        $this->payload->expects($this->once())
-                      ->method('set_token')
-                      ->with('endpoint')
-                      ->willReturnSelf();
+        $this->payload->expects('is_broadcast')
+                      ->times(2)
+                      ->andReturn(FALSE);
 
-        $this->payload->expects($this->once())
-                      ->method('get_json_payload')
-                      ->willReturn('{"token":"endpoint"}');
+        $this->payload->expects('set_token')
+                      ->once()
+                      ->with('endpoint')
+                      ->andReturnSelf();
+
+        $this->payload->expects('get_json_payload')
+                      ->once()
+                      ->andReturn('{"token":"endpoint"}');
 
         $this->http->expects($this->once())
                    ->method('post')
@@ -272,8 +297,8 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
 
         $context = [ 'endpoint' => 'endpoint', 'error' => 'cURL error 10: Request error' ];
 
-        $this->logger->expects($this->once())
-                     ->method('warning')
+        $this->logger->expects('warning')
+                     ->once()
                      ->with('Dispatching FCM notification failed for endpoint {endpoint}: {error}', $context);
 
         $result = $this->class->push($this->payload, $endpoints);
@@ -312,14 +337,18 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
             'protocol_version' => 2.0,
         ];
 
-        $this->payload->expects($this->once())
-                      ->method('set_token')
-                      ->with('endpoint')
-                      ->willReturnSelf();
+        $this->payload->expects('is_broadcast')
+                      ->times(2)
+                      ->andReturn(FALSE);
 
-        $this->payload->expects($this->once())
-                      ->method('get_json_payload')
-                      ->willReturn('{"token":"endpoint"}');
+        $this->payload->expects('set_token')
+                      ->once()
+                      ->with('endpoint')
+                      ->andReturnSelf();
+
+        $this->payload->expects('get_json_payload')
+                      ->once()
+                      ->andReturn('{"token":"endpoint"}');
 
         $this->http->expects($this->once())
                    ->method('post')
@@ -328,8 +357,8 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
 
         $context = [ 'endpoint' => 'endpoint', 'error' => 'cURL error 28: Request timed out' ];
 
-        $this->logger->expects($this->once())
-                     ->method('warning')
+        $this->logger->expects('warning')
+                     ->once()
                      ->with('Dispatching FCM notification failed for endpoint {endpoint}: {error}', $context);
 
         $result = $this->class->push($this->payload, $endpoints);
@@ -353,7 +382,7 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
 
         $endpoints = [ 'endpoint' ];
 
-        $response = $this->getMockBuilder('WpOrg\Requests\Response')->getMock();
+        $response = $this->getMockBuilder(Response::class)->getMock();
 
         $headers = [
             'Content-Type'  => 'application/json',
@@ -369,19 +398,27 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
             'protocol_version' => 2.0,
         ];
 
-        $this->payload->expects($this->once())
-                      ->method('set_token')
-                      ->with('endpoint')
-                      ->willReturnSelf();
+        $this->payload->expects('is_broadcast')
+                      ->times(2)
+                      ->andReturn(FALSE);
 
-        $this->payload->expects($this->once())
-                      ->method('get_json_payload')
-                      ->willReturn($post);
+        $this->payload->expects('set_token')
+                      ->once()
+                      ->with('endpoint')
+                      ->andReturnSelf();
+
+        $this->payload->expects('get_json_payload')
+                      ->once()
+                      ->andReturn($post);
 
         $this->http->expects($this->once())
                    ->method('post')
                    ->with($url, $headers, $post, $options)
                    ->willReturn($response);
+
+        $this->logger->expects('warning')
+                     ->once()
+                     ->withAnyArgs();
 
         $this->class->push($this->payload, $endpoints);
     }
@@ -398,7 +435,7 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
 
         $endpoints = [ 'endpoint' ];
 
-        $response = $this->getMockBuilder('WpOrg\Requests\Response')->getMock();
+        $response = $this->getMockBuilder(Response::class)->getMock();
 
         $headers = [
             'Content-Type'  => 'application/json',
@@ -414,19 +451,27 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
             'protocol_version' => 2.0,
         ];
 
-        $this->payload->expects($this->once())
-                      ->method('set_token')
-                      ->with('endpoint')
-                      ->willReturnSelf();
+        $this->payload->expects('is_broadcast')
+                      ->times(2)
+                      ->andReturn(FALSE);
 
-        $this->payload->expects($this->once())
-                      ->method('get_json_payload')
-                      ->willReturn($post);
+        $this->payload->expects('set_token')
+                      ->once()
+                      ->with('endpoint')
+                      ->andReturnSelf();
+
+        $this->payload->expects('get_json_payload')
+                      ->once()
+                      ->andReturn($post);
 
         $this->http->expects($this->once())
                    ->method('post')
                    ->with($url, $headers, $post, $options)
                    ->willReturn($response);
+
+        $this->logger->expects('warning')
+                     ->once()
+                     ->withAnyArgs();
 
         $this->class->push($this->payload, $endpoints);
     }
@@ -443,7 +488,7 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
 
         $endpoints = [ 'endpoint' ];
 
-        $response = $this->getMockBuilder('WpOrg\Requests\Response')->getMock();
+        $response = $this->getMockBuilder(Response::class)->getMock();
 
         $headers = [
             'Content-Type'  => 'application/json',
@@ -459,19 +504,27 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
             'protocol_version' => 2.0,
         ];
 
-        $this->payload->expects($this->once())
-                      ->method('set_token')
-                      ->with('endpoint')
-                      ->willReturnSelf();
+        $this->payload->expects('is_broadcast')
+                      ->times(2)
+                      ->andReturn(FALSE);
 
-        $this->payload->expects($this->once())
-                      ->method('get_json_payload')
-                      ->willReturn($post);
+        $this->payload->expects('set_token')
+                      ->once()
+                      ->with('endpoint')
+                      ->andReturnSelf();
+
+        $this->payload->expects('get_json_payload')
+                      ->once()
+                      ->andReturn($post);
 
         $this->http->expects($this->once())
                    ->method('post')
                    ->with($url, $headers, $post, $options)
                    ->willReturn($response);
+
+        $this->logger->expects('warning')
+                     ->once()
+                     ->withAnyArgs();
 
         $this->class->push($this->payload, $endpoints);
     }
@@ -490,8 +543,8 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
 
         $endpoints = [ 'endpoint', 'endpoint1', 'endpoint2', 'endpoint3' ];
 
-        $response_200 = $this->getMockBuilder('WpOrg\Requests\Response')->getMock();
-        $response_403 = $this->getMockBuilder('WpOrg\Requests\Response')->getMock();
+        $response_200 = $this->getMockBuilder(Response::class)->getMock();
+        $response_403 = $this->getMockBuilder(Response::class)->getMock();
 
         $response_200->status_code = 200;
         $response_403->status_code = 403;
@@ -517,14 +570,33 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
             'endpoint3' => new RequestsException('cURL error 28: Request timed out', 'curlerror', NULL),
         ];
 
-        $this->payload->expects($this->exactly(4))
-                      ->method('set_token')
-                      ->withConsecutive([ 'endpoint' ], [ 'endpoint1' ], [ 'endpoint2' ], [ 'endpoint3' ])
-                      ->willReturnSelf();
+        $this->payload->expects('is_broadcast')
+                      ->times(2)
+                      ->andReturn(FALSE);
 
-        $this->payload->expects($this->exactly(4))
-                      ->method('get_json_payload')
-                      ->willReturn($post);
+        $this->payload->expects('set_token')
+                      ->once()
+                      ->with('endpoint')
+                      ->andReturnSelf();
+
+        $this->payload->expects('set_token')
+                      ->once()
+                      ->with('endpoint1')
+                      ->andReturnSelf();
+
+        $this->payload->expects('set_token')
+                      ->once()
+                      ->with('endpoint2')
+                      ->andReturnSelf();
+
+        $this->payload->expects('set_token')
+                      ->once()
+                      ->with('endpoint3')
+                      ->andReturnSelf();
+
+        $this->payload->expects('get_json_payload')
+                      ->times(4)
+                      ->andReturn($post);
 
         $this->http->expects($this->exactly(4))
                    ->method('post')
@@ -535,6 +607,10 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
                        $responses['endpoint2'],
                        $responses['endpoint3'],
                    );
+
+        $this->logger->expects('warning')
+                     ->times(3)
+                     ->withAnyArgs();
 
         $result = $this->class->push($this->payload, $endpoints);
 
@@ -558,7 +634,7 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
 
         $endpoints = [];
 
-        $response_200 = $this->getMockBuilder('WpOrg\Requests\Response')->getMock();
+        $response_200 = $this->getMockBuilder(Response::class)->getMock();
 
         $response_200->status_code = 200;
 
@@ -576,16 +652,15 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
             'protocol_version' => 2.0,
         ];
 
-        $this->payload->expects($this->exactly(3))
-                      ->method('is_broadcast')
-                      ->willReturn(TRUE);
+        $this->payload->expects('is_broadcast')
+                      ->times(3)
+                      ->andReturn(TRUE);
 
-        $this->payload->expects($this->never())
-                      ->method('set_token');
+        $this->payload->expects('set_token')->never();
 
-        $this->payload->expects($this->once())
-                      ->method('get_json_payload')
-                      ->willReturn($post);
+        $this->payload->expects('get_json_payload')
+                      ->once()
+                      ->andReturn($post);
 
         $this->http->expects($this->once())
                    ->method('post')
@@ -607,7 +682,7 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
 
         $endpoints = [ 'endpoint', 'endpoint1', 'endpoint2', 'endpoint3' ];
 
-        $response_200 = $this->getMockBuilder('WpOrg\Requests\Response')->getMock();
+        $response_200 = $this->getMockBuilder(Response::class)->getMock();
 
         $response_200->status_code = 200;
 
@@ -625,16 +700,19 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
             'protocol_version' => 2.0,
         ];
 
-        $this->payload->expects($this->exactly(2))
-                      ->method('is_broadcast')
-                      ->willReturn(TRUE);
+        $this->payload->expects('is_broadcast')
+                      ->twice()
+                      ->andReturn(TRUE);
 
-        $this->payload->expects($this->never())
-                      ->method('set_token');
+        $this->payload->expects('set_token')->never();
 
-        $this->payload->expects($this->once())
-                      ->method('get_json_payload')
-                      ->willReturn($post);
+        $this->payload->expects('get_json_payload')
+                      ->once()
+                      ->andReturn($post);
+
+        $this->logger->expects('warning')
+                     ->times(4)
+                     ->withAnyArgs();
 
         $this->http->expects($this->once())
                    ->method('post')
@@ -656,7 +734,7 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
 
         $endpoints = [];
 
-        $response_200 = $this->getMockBuilder('WpOrg\Requests\Response')->getMock();
+        $response_200 = $this->getMockBuilder(Response::class)->getMock();
 
         $response_200->status_code = 200;
 
@@ -674,16 +752,16 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
             'protocol_version' => 2.0,
         ];
 
-        $this->payload->expects($this->exactly(3))
-                      ->method('is_broadcast')
-                      ->willReturn(TRUE);
+        $this->payload->expects('is_broadcast')
+                      ->times(3)
+                      ->andReturn(TRUE);
 
-        $this->payload->expects($this->never())
-                      ->method('set_token');
+        $this->payload->expects('set_token')
+                      ->never();
 
-        $this->payload->expects($this->once())
-                      ->method('get_json_payload')
-                      ->willReturn($post);
+        $this->payload->expects('get_json_payload')
+                      ->once()
+                      ->andReturn($post);
 
         $this->http->expects($this->once())
                    ->method('post')
@@ -705,7 +783,7 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
 
         $endpoints = [ 'endpoint', 'endpoint1', 'endpoint2', 'endpoint3' ];
 
-        $response_200 = $this->getMockBuilder('WpOrg\Requests\Response')->getMock();
+        $response_200 = $this->getMockBuilder(Response::class)->getMock();
 
         $response_200->status_code = 200;
 
@@ -723,16 +801,20 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
             'protocol_version' => 2.0,
         ];
 
-        $this->payload->expects($this->exactly(2))
-                      ->method('is_broadcast')
-                      ->willReturn(TRUE);
+        $this->payload->expects('is_broadcast')
+                      ->twice()
+                      ->andReturn(TRUE);
 
-        $this->payload->expects($this->never())
-                      ->method('set_token');
+        $this->payload->expects('set_token')
+                      ->never();
 
-        $this->payload->expects($this->once())
-                      ->method('get_json_payload')
-                      ->willReturn($post);
+        $this->payload->expects('get_json_payload')
+                      ->once()
+                      ->andReturn($post);
+
+        $this->logger->expects('warning')
+                     ->times(4)
+                     ->withAnyArgs();
 
         $this->http->expects($this->once())
                    ->method('post')

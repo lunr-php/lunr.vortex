@@ -11,6 +11,7 @@
 namespace Lunr\Vortex\FCM\Tests;
 
 use Lunr\Halo\PropertyTraits\PsrLoggerTestTrait;
+use WpOrg\Requests\Response;
 
 /**
  * This class contains test for the constructor of the FCMDispatcher class.
@@ -75,7 +76,7 @@ class FCMDispatcherBaseTest extends FCMDispatcherTestCase
 
         $result = $method->invoke($this->class);
 
-        $this->assertInstanceOf('WpOrg\Requests\Response', $result);
+        $this->assertInstanceOf(Response::class, $result);
         $this->assertEquals('https://fcm.googleapis.com/v1/projects/fcm-project/messages:send', $result->url);
     }
 

@@ -12,7 +12,12 @@ namespace Lunr\Vortex\FCM\Tests;
 
 use Lunr\Halo\LunrBaseTestCase;
 use Lunr\Vortex\FCM\FCMBatchResponse;
+use Mockery;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use Mockery\MockInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
+use WpOrg\Requests\Response;
 
 /**
  * This class contains common setup routines, providers
@@ -23,17 +28,19 @@ use Psr\Log\LoggerInterface;
 abstract class FCMBatchResponseTestCase extends LunrBaseTestCase
 {
 
-    /**
-     * Mock instance of the Logger class.
-     * @var LoggerInterface
-     */
-    protected $logger;
+    use MockeryPHPUnitIntegration;
 
     /**
-     * Mock instance of the Requests\Response class.
-     * @var Response
+     * Mock instance of the Logger class.
+     * @var LoggerInterface&MockInterface
      */
-    protected $response;
+    protected LoggerInterface&MockInterface $logger;
+
+    /**
+     * Mock instance of the Response class.
+     * @var Response&MockObject
+     */
+    protected Response&MockObject $response;
 
     /**
      * Instance of the tested class.
@@ -48,9 +55,9 @@ abstract class FCMBatchResponseTestCase extends LunrBaseTestCase
      */
     public function setUp(): void
     {
-        $this->logger = $this->getMockBuilder('Psr\Log\LoggerInterface')->getMock();
+        $this->logger = Mockery::mock(LoggerInterface::class);
 
-        $this->response = $this->getMockBuilder('WpOrg\Requests\Response')->getMock();
+        $this->response = $this->getMockBuilder(Response::class)->getMock();
     }
 
     /**
