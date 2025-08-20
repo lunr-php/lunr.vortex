@@ -60,7 +60,7 @@ abstract class EmailResponseTestCase extends LunrBaseTestCase
 
         $response->expects($this->once())
                  ->method('isError')
-                 ->will($this->returnValue(TRUE));
+                 ->willReturn(TRUE);
 
         $response->ErrorInfo = 'ErrorInfo';
 
@@ -74,8 +74,8 @@ abstract class EmailResponseTestCase extends LunrBaseTestCase
         $this->logger->expects($this->once())
              ->method('warning')
              ->with(
-               $this->equalTo('Sending email notification to {endpoint} failed: {message}'),
-               $this->equalTo([ 'endpoint' => 'error-endpoint', 'message' => 'ErrorInfo' ])
+               'Sending email notification to {endpoint} failed: {message}',
+               [ 'endpoint' => 'error-endpoint', 'message' => 'ErrorInfo' ]
              );
 
         $this->class = new EmailResponse($mail_results, $this->logger, 'The email');
@@ -96,7 +96,7 @@ abstract class EmailResponseTestCase extends LunrBaseTestCase
 
         $response->expects($this->once())
                  ->method('isError')
-                 ->will($this->returnValue(FALSE));
+                 ->willReturn(FALSE);
 
         $mail_results = [
             'success-endpoint' => [
