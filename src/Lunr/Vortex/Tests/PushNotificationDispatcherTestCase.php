@@ -22,6 +22,9 @@ use Lunr\Vortex\PushNotificationDispatcher;
 use Lunr\Vortex\PushNotificationStatus;
 use Lunr\Vortex\WNS\WNSDispatcher;
 use Lunr\Vortex\WNS\WNSResponse;
+use Mockery;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use Mockery\MockInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\MockObject\Stub;
 
@@ -33,6 +36,8 @@ use PHPUnit\Framework\MockObject\Stub;
  */
 abstract class PushNotificationDispatcherTestCase extends LunrBaseTestCase
 {
+
+    use MockeryPHPUnitIntegration;
 
     /**
      * Mock instance of the APNSDispatcher class
@@ -66,9 +71,9 @@ abstract class PushNotificationDispatcherTestCase extends LunrBaseTestCase
 
     /**
      * Mock instance of the APNSResponse class
-     * @var APNSResponse&MockObject&Stub
+     * @var APNSResponse&MockInterface
      */
-    protected APNSResponse&MockObject&Stub $apns_response;
+    protected APNSResponse&MockInterface $apnsResponse;
 
     /**
      * Mock instance of the FCMResponse class
@@ -84,15 +89,15 @@ abstract class PushNotificationDispatcherTestCase extends LunrBaseTestCase
 
     /**
      * Mock instance of the WNSResponse class
-     * @var WNSResponse&MockObject&Stub
+     * @var WNSResponse&MockInterface
      */
-    protected WNSResponse&MockObject&Stub $wns_response;
+    protected WNSResponse&MockInterface $wnsResponse;
 
     /**
      * Mock instance of the JPushResponse class
-     * @var JPushResponse&MockObject&Stub
+     * @var JPushResponse&MockInterface
      */
-    protected JPushResponse&MockObject&Stub $jpush_response;
+    protected JPushResponse&MockInterface $jpushResponse;
 
     /**
      * Instance of the tested class.
@@ -125,10 +130,6 @@ abstract class PushNotificationDispatcherTestCase extends LunrBaseTestCase
                             ->disableOriginalConstructor()
                             ->getMock();
 
-        $this->apns_response = $this->getMockBuilder(APNSResponse::class)
-                                    ->disableOriginalConstructor()
-                                    ->getMock();
-
         $this->fcm_response = $this->getMockBuilder(FCMResponse::class)
                                    ->disableOriginalConstructor()
                                    ->getMock();
@@ -137,13 +138,9 @@ abstract class PushNotificationDispatcherTestCase extends LunrBaseTestCase
                                      ->disableOriginalConstructor()
                                      ->getMock();
 
-        $this->wns_response = $this->getMockBuilder(WNSResponse::class)
-                                   ->disableOriginalConstructor()
-                                   ->getMock();
-
-        $this->jpush_response = $this->getMockBuilder(JPushResponse::class)
-                                     ->disableOriginalConstructor()
-                                     ->getMock();
+        $this->apnsResponse  = Mockery::mock(APNSResponse::class);
+        $this->wnsResponse   = Mockery::mock(WNSResponse::class);
+        $this->jpushResponse = Mockery::mock(JPushResponse::class);
 
         $this->class = new PushNotificationDispatcher();
 
@@ -160,11 +157,11 @@ abstract class PushNotificationDispatcherTestCase extends LunrBaseTestCase
         unset($this->fcm);
         unset($this->wns);
         unset($this->jpush);
-        unset($this->apns_response);
+        unset($this->apnsResponse);
         unset($this->email_response);
         unset($this->fcm_response);
-        unset($this->wns_response);
-        unset($this->jpush_response);
+        unset($this->wnsResponse);
+        unset($this->jpushResponse);
         unset($this->class);
 
         parent::tearDown();
