@@ -48,7 +48,7 @@ class EmailDispatcherPushTest extends EmailDispatcherTestCase
      * @dataProvider unsupportedPayloadProvider
      * @covers       Lunr\Vortex\Email\EmailDispatcher::push
      */
-    public function testPushingWithUnsupportedPayloadThrowsException($payload): void
+    public function testPushingWithUnsupportedPayloadThrowsException(object $payload): void
     {
         $endpoints = [ 'endpoint' ];
 
@@ -95,14 +95,14 @@ class EmailDispatcherPushTest extends EmailDispatcherTestCase
 
         $this->mail_transport->expects($this->once())
                              ->method('send')
-                             ->will($this->returnValue(TRUE));
+                             ->willReturn(TRUE);
 
         $this->mail_transport->expects($this->once())
                              ->method('clearAddresses');
 
         $this->mail_transport->expects($this->once())
                              ->method('getSentMIMEMessage')
-                             ->will($this->returnValue(''));
+                             ->willReturn('');
 
         $this->assertInstanceOf('Lunr\Vortex\Email\EmailResponse', $this->class->push($this->payload, $endpoints));
 
@@ -151,14 +151,14 @@ class EmailDispatcherPushTest extends EmailDispatcherTestCase
 
         $this->mail_transport->expects($this->once())
                              ->method('send')
-                             ->will($this->throwException(new PHPMailerException));
+                             ->willThrowException(new PHPMailerException());
 
         $this->mail_transport->expects($this->once())
                              ->method('clearAddresses');
 
         $this->mail_transport->expects($this->once())
                              ->method('getSentMIMEMessage')
-                             ->will($this->returnValue(''));
+                             ->willReturn('');
 
         $this->assertInstanceOf('Lunr\Vortex\Email\EmailResponse', $this->class->push($this->payload, $endpoints));
 
@@ -195,11 +195,11 @@ class EmailDispatcherPushTest extends EmailDispatcherTestCase
 
         $this->mail_transport->expects($this->once())
                              ->method('send')
-                             ->will($this->returnValue(TRUE));
+                             ->willReturn(TRUE);
 
         $this->mail_transport->expects($this->once())
                              ->method('getSentMIMEMessage')
-                             ->will($this->returnValue(''));
+                             ->willReturn('');
 
         $this->class->push($this->payload, $endpoints);
 
