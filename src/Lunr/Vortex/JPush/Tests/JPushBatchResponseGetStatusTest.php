@@ -45,7 +45,7 @@ class JPushBatchResponseGetStatusTest extends JPushBatchResponseTestCase
      *
      * @return array $data array of endpoints statuses / status result
      */
-    public function endpointDataProvider(): array
+    public static function endpointDataProvider(): array
     {
         $data = [];
 
@@ -74,13 +74,13 @@ class JPushBatchResponseGetStatusTest extends JPushBatchResponseTestCase
     /**
      * Test the get_status() behavior.
      *
-     * @param array $statuses Endpoints statuses
-     * @param int   $status   Expected function result
+     * @param array                  $statuses Endpoints statuses
+     * @param PushNotificationStatus $status   Expected function result
      *
      * @dataProvider endpointDataProvider
      * @covers       \Lunr\Vortex\JPush\JPushBatchResponse::get_status
      */
-    public function testGetStatus($statuses, $status): void
+    public function testGetStatus(array $statuses, PushNotificationStatus $status): void
     {
         $this->setReflectionPropertyValue('statuses', $statuses);
         $this->setReflectionPropertyValue('message_id', 1453658564165);

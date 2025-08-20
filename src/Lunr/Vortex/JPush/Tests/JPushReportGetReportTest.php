@@ -84,8 +84,8 @@ class JPushReportGetReportTest extends JPushReportTestCase
             'error' => 'cURL error 0001: Network error',
         ];
 
-        $this->logger->expects($this->once())
-                     ->method('warning')
+        $this->logger->expects('warning')
+                     ->once()
                      ->with('Getting JPush notification report failed: {error}', $context);
 
         $this->class->get_report(1453658564165, [ 'endpoint1' ]);
@@ -138,50 +138,57 @@ class JPushReportGetReportTest extends JPushReportTestCase
                        ->method('throw_for_status');
 
         $log_message = 'Dispatching JPush notification failed for endpoint {endpoint}: {error}';
-        $this->logger->expects($this->exactly(6))
-                     ->method('warning')
-                     ->withConsecutive(
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with($log_message,
                         [
-                            $log_message,
-                            [
-                                'endpoint' => 'endpoint1',
-                                'error'    => 'Not delivered'
-                            ],
+                            'endpoint' => 'endpoint1',
+                            'error'    => 'Not delivered'
                         ],
+                     );
+
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with($log_message,
                         [
-                            $log_message,
-                            [
-                                'endpoint' => 'endpoint2',
-                                'error'    => 'Registration_id does not belong to the application'
-                            ],
+                            'endpoint' => 'endpoint2',
+                            'error'    => 'Registration_id does not belong to the application'
                         ],
+                     );
+
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with($log_message,
                         [
-                            $log_message,
-                            [
-                                'endpoint' => 'endpoint3',
-                                'error'    => 'Registration_id belongs to the application, but it is not the target of the message'
-                            ],
+                            'endpoint' => 'endpoint3',
+                            'error'    => 'Registration_id belongs to the application, but it is not the target of the message'
                         ],
+                     );
+
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with($log_message,
                         [
-                            $log_message,
-                            [
-                                'endpoint' => 'endpoint4',
-                                'error'    => 'The system is abnormal'
-                            ],
+                            'endpoint' => 'endpoint4',
+                            'error'    => 'The system is abnormal'
                         ],
+                     );
+
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with($log_message,
                         [
-                            $log_message,
-                            [
-                                'endpoint' => 'endpoint5',
-                                'error'    => 5
-                            ],
+                            'endpoint' => 'endpoint5',
+                            'error'    => 5
                         ],
+                     );
+
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with($log_message,
                         [
-                            $log_message,
-                            [
-                                'endpoint' => 'endpoint6',
-                                'error'    => 6
-                            ],
+                            'endpoint' => 'endpoint6',
+                            'error'    => 6
                         ],
                      );
 

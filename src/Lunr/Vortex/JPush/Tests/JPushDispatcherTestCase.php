@@ -13,6 +13,10 @@ namespace Lunr\Vortex\JPush\Tests;
 use Lunr\Halo\LunrBaseTestCase;
 use Lunr\Vortex\JPush\JPushDispatcher;
 use Lunr\Vortex\JPush\JPushPayload;
+use Mockery;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use Mockery\MockInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 use WpOrg\Requests\Response;
 use WpOrg\Requests\Session;
@@ -25,28 +29,30 @@ use WpOrg\Requests\Session;
  */
 abstract class JPushDispatcherTestCase extends LunrBaseTestCase
 {
+    use MockeryPHPUnitIntegration;
+
     /**
      * Mock instance of the Requests\Session class.
-     * @var Session
+     * @var Session&MockInterface
      */
-    protected $http;
+    protected Session&MockInterface $http;
     /**
      * Mock instance of the Requests\Response class.
-     * @var Response
+     * @var Response&MockObject
      */
-    protected $response;
+    protected Response&MockObject $response;
 
     /**
      * Mock instance of a Logger class.
-     * @var LoggerInterface
+     * @var LoggerInterface&MockInterface
      */
-    protected $logger;
+    protected LoggerInterface&MockInterface $logger;
 
     /**
      * Mock instance of the JPush Payload class.
-     * @var JPushPayload
+     * @var JPushPayload&MockObject
      */
-    protected $payload;
+    protected JPushPayload&MockObject $payload;
 
     /**
      * Instance of the tested class.
@@ -59,9 +65,9 @@ abstract class JPushDispatcherTestCase extends LunrBaseTestCase
      */
     public function setUp(): void
     {
-        $this->http     = $this->getMockBuilder('WpOrg\Requests\Session')->getMock();
-        $this->response = $this->getMockBuilder('WpOrg\Requests\Response')->getMock();
-        $this->logger   = $this->getMockBuilder('Psr\Log\LoggerInterface')->getMock();
+        $this->http     = Mockery::mock(Session::class);
+        $this->logger   = Mockery::mock(LoggerInterface::class);
+        $this->response = $this->getMockBuilder(Response::class)->getMock();
         $this->payload  = $this->getMockBuilder('Lunr\Vortex\JPush\JPushPayload')
                               ->disableOriginalConstructor()
                               ->getMock();

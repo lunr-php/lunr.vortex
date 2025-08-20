@@ -60,7 +60,7 @@ abstract class JPushBatchResponseTestCase extends LunrBaseTestCase
 
         $this->logger = $this->getMockBuilder('Psr\Log\LoggerInterface')->getMock();
 
-        $this->response = $this->getMockBuilder('WpOrg\Requests\Response')->getMock();
+        $this->response = $this->getMockBuilder(Response::class)->getMock();
     }
 
     /**

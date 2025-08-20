@@ -16,6 +16,7 @@ use Lunr\Vortex\FCM\FCMPayload;
 use Lunr\Vortex\PushNotificationStatus;
 use Lunr\Vortex\WNS\WNSTilePayload;
 use WpOrg\Requests\Exception as RequestsException;
+use WpOrg\Requests\Response;
 
 /**
  * This class contains test for the push() method of the JPushDispatcher class.
@@ -49,7 +50,7 @@ class JPushDispatcherPushTest extends JPushDispatcherTestCase
      * @dataProvider unsupportedPayloadProvider
      * @covers       \Lunr\Vortex\JPush\JPushDispatcher::push
      */
-    public function testPushingWithUnsupportedPayloadThrowsException($payload): void
+    public function testPushingWithUnsupportedPayloadThrowsException(object $payload): void
     {
         $endpoints = [ 'endpoint' ];
 
@@ -68,7 +69,7 @@ class JPushDispatcherPushTest extends JPushDispatcherTestCase
     {
         $endpoints = [];
 
-        $this->constant_redefine('Lunr\Vortex\JPush\JPushDispatcher::BATCH_SIZE', 2);
+        $this->redefineConstant('Lunr\Vortex\JPush\JPushDispatcher::BATCH_SIZE', 2);
 
         $result = $this->class->push($this->payload, $endpoints);
 
@@ -84,11 +85,15 @@ class JPushDispatcherPushTest extends JPushDispatcherTestCase
     {
         $endpoints = [ 'endpoint' ];
 
-        $response = $this->getMockBuilder('WpOrg\Requests\Response')->getMock();
+        $response = $this->getMockBuilder(Response::class)->getMock();
 
-        $this->http->expects($this->once())
-                   ->method('post')
-                   ->will($this->returnValue($response));
+        $this->logger->expects('warning')
+                     ->once()
+                     ->withAnyArgs();
+
+        $this->http->expects('post')
+                   ->once()
+                   ->andReturn($response);
 
         $method = $this->getReflectionMethod('push_batch');
         $result = $method->invokeArgs($this->class, [ $this->payload, &$endpoints ]);
@@ -105,8 +110,7 @@ class JPushDispatcherPushTest extends JPushDispatcherTestCase
     {
         $endpoints = [];
 
-        $this->http->expects($this->never())
-                   ->method('post');
+        $this->http->expects('post')->never();
 
         $this->class->push($this->payload, $endpoints);
     }
@@ -126,11 +130,15 @@ class JPushDispatcherPushTest extends JPushDispatcherTestCase
 
         $this->setReflectionPropertyValue('auth_token', 'auth_token');
 
-        $response = $this->getMockBuilder('WpOrg\Requests\Response')->getMock();
+        $response = $this->getMockBuilder(Response::class)->getMock();
 
-        $this->http->expects($this->once())
-                   ->method('post')
-                   ->will($this->returnValue($response));
+        $this->logger->expects('warning')
+                     ->once()
+                     ->withAnyArgs();
+
+        $this->http->expects('post')
+                   ->once()
+                   ->andReturn($response);
 
         $this->class->push($this->payload, $endpoints);
 
@@ -156,17 +164,20 @@ class JPushDispatcherPushTest extends JPushDispatcherTestCase
                       ->method('get_payload')
                       ->willReturn($payload);
 
-        $this->http->expects($this->once())
-                   ->method('post')
+        $this->http->expects('post')
+                   ->once()
                    ->with($url, [], $post, $options)
-                   ->will($this->throwException(new RequestsException('cURL error 10: Request error', 'curlerror', NULL)));
+                   ->andThrow(new RequestsException('cURL error 10: Request error', 'curlerror', NULL));
 
-        $message = 'Dispatching JPush notification(s) failed: {message}';
         $context = [ 'message' => 'cURL error 10: Request error' ];
 
-        $this->logger->expects($this->exactly(2))
-                     ->method('warning')
-                     ->withConsecutive([ $message, $context ], [ 'Dispatching JPush notification failed: {error}' ]);
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with('Dispatching JPush notification(s) failed: {message}', $context);
+
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with('Dispatching JPush notification failed: {error}', [ 'error' => 'Unknown error' ]);
 
         $result = $this->class->push($this->payload, $endpoints);
 
@@ -194,17 +205,20 @@ class JPushDispatcherPushTest extends JPushDispatcherTestCase
                       ->method('get_payload')
                       ->willReturn($payload);
 
-        $this->http->expects($this->once())
-                   ->method('post')
+        $this->http->expects('post')
+                   ->once()
                    ->with($url, [], $post, $options)
-                   ->will($this->throwException(new RequestsException('cURL error 28: Request timed out', 'curlerror', NULL)));
+                   ->andThrow(new RequestsException('cURL error 28: Request timed out', 'curlerror', NULL));
 
-        $message = 'Dispatching JPush notification(s) failed: {message}';
         $context = [ 'message' => 'cURL error 28: Request timed out' ];
 
-        $this->logger->expects($this->exactly(2))
-                     ->method('warning')
-                     ->withConsecutive([ $message, $context ], [ 'Dispatching JPush notification failed: {error}' ]);
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with('Dispatching JPush notification(s) failed: {message}', $context);
+
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with('Dispatching JPush notification failed: {error}', [ 'error' => 'Internal error' ]);
 
         $result = $this->class->push($this->payload, $endpoints);
 
@@ -232,20 +246,20 @@ class JPushDispatcherPushTest extends JPushDispatcherTestCase
                       ->method('get_payload')
                       ->willReturn($payload);
 
-        $response              = $this->getMockBuilder('WpOrg\Requests\Response')->getMock();
+        $response              = $this->getMockBuilder(Response::class)->getMock();
         $response->success     = FALSE;
         $response->status_code = 400;
 
-        $this->http->expects($this->once())
-                   ->method('post')
+        $this->http->expects('post')
+                   ->once()
                    ->with($url, [], $post, $options)
-                   ->will($this->returnValue($response));
+                   ->andReturn($response);
 
         $message = 'Dispatching JPush notification failed: {error}';
         $context = [ 'error' => 'Invalid request' ];
 
-        $this->logger->expects($this->exactly(1))
-                     ->method('warning')
+        $this->logger->expects('warning')
+                     ->once()
                      ->with($message, $context);
 
         $result = $this->class->push($this->payload, $endpoints);
@@ -272,12 +286,16 @@ class JPushDispatcherPushTest extends JPushDispatcherTestCase
                       ->method('get_payload')
                       ->willReturn($payload);
 
-        $response = $this->getMockBuilder('WpOrg\Requests\Response')->getMock();
+        $response = $this->getMockBuilder(Response::class)->getMock();
 
-        $this->http->expects($this->once())
-                   ->method('post')
+        $this->logger->expects('warning')
+                     ->once()
+                     ->withAnyArgs();
+
+        $this->http->expects('post')
+                   ->once()
                    ->with($url, [], $post, $options)
-                   ->will($this->returnValue($response));
+                   ->andReturn($response);
 
         $this->class->push($this->payload, $endpoints);
     }
@@ -301,12 +319,16 @@ class JPushDispatcherPushTest extends JPushDispatcherTestCase
 
         $this->setReflectionPropertyValue('auth_token', 'auth_token');
 
-        $response = $this->getMockBuilder('WpOrg\Requests\Response')->getMock();
+        $response = $this->getMockBuilder(Response::class)->getMock();
 
-        $this->http->expects($this->once())
-                   ->method('post')
+        $this->logger->expects('warning')
+                     ->once()
+                     ->withAnyArgs();
+
+        $this->http->expects('post')
+                   ->once()
                    ->with($url, [], $post, $options)
-                   ->will($this->returnValue($response));
+                   ->andReturn($response);
 
         $this->class->push($this->payload, $endpoints);
     }
@@ -330,12 +352,16 @@ class JPushDispatcherPushTest extends JPushDispatcherTestCase
 
         $this->setReflectionPropertyValue('auth_token', 'auth_token');
 
-        $response = $this->getMockBuilder('WpOrg\Requests\Response')->getMock();
+        $response = $this->getMockBuilder(Response::class)->getMock();
 
-        $this->http->expects($this->once())
-                   ->method('post')
+        $this->logger->expects('warning')
+                     ->once()
+                     ->withAnyArgs();
+
+        $this->http->expects('post')
+                   ->once()
                    ->with($url, [], $post, $options)
-                   ->willReturn($response);
+                   ->andReturn($response);
 
         $this->class->push($this->payload, $endpoints);
     }
@@ -358,17 +384,21 @@ class JPushDispatcherPushTest extends JPushDispatcherTestCase
 
         $this->setReflectionPropertyValue('auth_token', 'auth_token');
 
-        $response = $this->getMockBuilder('WpOrg\Requests\Response')->getMock();
+        $response = $this->getMockBuilder(Response::class)->getMock();
 
         $options = [
             'timeout'         => 15,
             'connect_timeout' => 15
         ];
 
-        $this->http->expects($this->once())
-                   ->method('post')
+        $this->logger->expects('warning')
+                     ->once()
+                     ->withAnyArgs();
+
+        $this->http->expects('post')
+                   ->once()
                    ->with($url, [], $post, $options)
-                   ->will($this->returnValue($response));
+                   ->andReturn($response);
 
         $this->class->push($this->payload, $endpoints);
     }
@@ -384,7 +414,7 @@ class JPushDispatcherPushTest extends JPushDispatcherTestCase
 
         $this->setReflectionPropertyValue('auth_token', 'auth_token');
 
-        $response = $this->getMockBuilder('WpOrg\Requests\Response')->getMock();
+        $response = $this->getMockBuilder(Response::class)->getMock();
 
         $url = 'https://api.jpush.cn/v3/push';
 
@@ -398,10 +428,24 @@ class JPushDispatcherPushTest extends JPushDispatcherTestCase
                       ->method('get_payload')
                       ->willReturn($payload);
 
-        $this->http->expects($this->exactly(3))
-                   ->method('post')
-                   ->withConsecutive([ $url, [], $post1, $options ], [ $url, [], $post2, $options ], [ $url, [], $post3, $options ])
-                   ->will($this->returnValue($response));
+        $this->logger->expects('warning')
+                     ->times(3)
+                     ->withAnyArgs();
+
+        $this->http->expects('post')
+                   ->once()
+                   ->with($url, [], $post1, $options)
+                   ->andReturn($response);
+
+        $this->http->expects('post')
+                   ->once()
+                   ->with($url, [], $post2, $options)
+                   ->andReturn($response);
+
+        $this->http->expects('post')
+                   ->once()
+                   ->with($url, [], $post3, $options)
+                   ->andReturn($response);
 
         $this->class->push($this->payload, $endpoints);
     }
