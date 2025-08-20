@@ -71,7 +71,7 @@ abstract class APNSAlertPayloadTestCase extends LunrBaseTestCase
      *
      * @return array $values Array of non-object values
      */
-    public function payloadProvider(): array
+    public static function payloadProvider(): array
     {
         $values   = [];
         $values[] = [ '/Vortex/apns/alert.json', [ 'alert' => 'apnsmessage' ] ];

@@ -52,7 +52,7 @@ class APNSResponseBasePushSuccessTest extends APNSResponseTestCase
         $invalid_endpoints = [];
         $errors            = [
             1 => [
-                'MESSAGE'             => $this->apns_message,
+                'MESSAGE'             => $this->apnsMessage,
                 'ERRORS'              => [
                     [
                         'command'       => 8,
@@ -66,12 +66,12 @@ class APNSResponseBasePushSuccessTest extends APNSResponseTestCase
         ];
         $statuses          = [ 'endpoint1' => PushNotificationStatus::TemporaryError ];
 
-        $this->apns_message->expects($this->once())
-                           ->method('getRecipient')
-                           ->willReturn('endpoint1');
+        $this->apnsMessage->expects($this->once())
+                          ->method('getRecipient')
+                          ->willReturn('endpoint1');
 
-        $this->logger->expects($this->once())
-                     ->method('warning')
+        $this->logger->expects('warning')
+                     ->once()
                      ->with(
                         'Dispatching APNS notification failed for endpoint {endpoint}: {error}',
                         [ 'endpoint' => 'endpoint1', 'error' => 'IdleTimeout' ]
@@ -255,37 +255,46 @@ class APNSResponseBasePushSuccessTest extends APNSResponseTestCase
                  ->method('getRecipient')
                  ->willReturn('endpoint7');
 
-        $this->logger->expects($this->exactly(7))
-                     ->method('warning')
-                     ->withConsecutive(
-                        [
-                            'Dispatching APNS notification failed for endpoint {endpoint}: {error}',
-                            [ 'endpoint' => 'endpoint1', 'error' => 'TopicDisallowed' ],
-                        ],
-                        [
-                            'Dispatching APNS notification failed for endpoint {endpoint}: {error}',
-                            [ 'endpoint' => 'endpoint2', 'error' => 'BadCertificate' ],
-                        ],
-                        [
-                            'Dispatching APNS notification failed for endpoint {endpoint}: {error}',
-                            [ 'endpoint' => 'endpoint3', 'error' => 'BadCertificateEnvironment' ],
-                        ],
-                        [
-                            'Dispatching APNS notification failed for endpoint {endpoint}: {error}',
-                            [ 'endpoint' => 'endpoint4', 'error' => 'InvalidProviderToken' ],
-                        ],
-                        [
-                            'Dispatching APNS notification failed for endpoint {endpoint}: {error}',
-                            [ 'endpoint' => 'endpoint5', 'error' => 'ExpiredProviderToken' ],
-                        ],
-                        [
-                            'Dispatching APNS notification failed for endpoint {endpoint}: {error}',
-                            [ 'endpoint' => 'endpoint6', 'error' => 'BadDeviceToken' ],
-                        ],
-                        [
-                            'Dispatching APNS notification failed for endpoint {endpoint}: {error}',
-                            [ 'endpoint' => 'endpoint7', 'error' => 'DeviceTokenNotForTopic' ],
-                        ]
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with('Dispatching APNS notification failed for endpoint {endpoint}: {error}',
+                        [ 'endpoint' => 'endpoint1', 'error' => 'TopicDisallowed' ]
+                     );
+
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with('Dispatching APNS notification failed for endpoint {endpoint}: {error}',
+                        [ 'endpoint' => 'endpoint2', 'error' => 'BadCertificate' ],
+                     );
+
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with('Dispatching APNS notification failed for endpoint {endpoint}: {error}',
+                        [ 'endpoint' => 'endpoint3', 'error' => 'BadCertificateEnvironment' ],
+                     );
+
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with('Dispatching APNS notification failed for endpoint {endpoint}: {error}',
+                        [ 'endpoint' => 'endpoint4', 'error' => 'InvalidProviderToken' ],
+                     );
+
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with('Dispatching APNS notification failed for endpoint {endpoint}: {error}',
+                        [ 'endpoint' => 'endpoint5', 'error' => 'ExpiredProviderToken' ],
+                     );
+
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with('Dispatching APNS notification failed for endpoint {endpoint}: {error}',
+                        [ 'endpoint' => 'endpoint6', 'error' => 'BadDeviceToken' ],
+                     );
+
+        $this->logger->expects('warning')
+                     ->once()
+                     ->with('Dispatching APNS notification failed for endpoint {endpoint}: {error}',
+                        [ 'endpoint' => 'endpoint7', 'error' => 'DeviceTokenNotForTopic' ]
                      );
 
         $this->class = new APNSResponse($this->logger, $endpoints, $invalid_endpoints, $errors, '{}');
@@ -338,8 +347,8 @@ class APNSResponseBasePushSuccessTest extends APNSResponseTestCase
                 ->method('getRecipient')
                 ->willReturn('endpoint4');
 
-        $this->logger->expects($this->once())
-                     ->method('warning')
+        $this->logger->expects('warning')
+                     ->once()
                      ->with(
                         'Dispatching APNS notification failed for endpoint {endpoint}: {error}',
                         [ 'endpoint' => 'endpoint4', 'error' => 'ExpiredProviderToken' ]

@@ -13,6 +13,11 @@ namespace Lunr\Vortex\APNS\ApnsPHP\Tests;
 use ApnsPHP\Message;
 use Lunr\Halo\LunrBaseTestCase;
 use Lunr\Vortex\APNS\ApnsPHP\APNSResponse;
+use Mockery;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use Mockery\MockInterface;
+use PHPUnit\Framework\MockObject\MockObject;
+use Psr\Log\LoggerInterface;
 
 /**
  * This class contains common setup routines, providers
@@ -22,6 +27,7 @@ use Lunr\Vortex\APNS\ApnsPHP\APNSResponse;
  */
 abstract class APNSResponseTestCase extends LunrBaseTestCase
 {
+    use MockeryPHPUnitIntegration;
 
     /**
      * Instance of the tested class.
@@ -31,15 +37,15 @@ abstract class APNSResponseTestCase extends LunrBaseTestCase
 
     /**
      * Mock instance of the Logger class.
-     * @var LoggerInterface
+     * @var LoggerInterface&MockInterface
      */
-    protected $logger;
+    protected LoggerInterface&MockInterface $logger;
 
     /**
      * Mock instance of an APNS Message class.
-     * @var Message
+     * @var Message&MockObject
      */
-    protected $apns_message;
+    protected Message&MockObject $apnsMessage;
 
     /**
      * Testcase Constructor.
@@ -48,11 +54,11 @@ abstract class APNSResponseTestCase extends LunrBaseTestCase
      */
     public function setUp(): void
     {
-        $this->logger = $this->getMockBuilder('Psr\Log\LoggerInterface')->getMock();
+        $this->logger = Mockery::mock(LoggerInterface::class);
 
-        $this->apns_message = $this->getMockBuilder('ApnsPHP\Message')
-                                   ->disableOriginalConstructor()
-                                   ->getMock();
+        $this->apnsMessage = $this->getMockBuilder(Message::class)
+                                  ->disableOriginalConstructor()
+                                  ->getMock();
     }
 
     /**

@@ -25,7 +25,7 @@ class APNSPayloadSetTest extends APNSPayloadTestCase
      *
      * @return array Custom data key->value pairs
      */
-    public function customDataProvider()
+    public static function customDataProvider(): array
     {
         $data   = [];
         $data[] = [ 'key', 'value' ];
@@ -211,7 +211,7 @@ class APNSPayloadSetTest extends APNSPayloadTestCase
      * @dataProvider customDataProvider
      * @covers       Lunr\Vortex\APNS\APNSPayload::set_custom_data
      */
-    public function testSetCustomData($key, $value): void
+    public function testSetCustomData(string $key, mixed $value): void
     {
         $this->class->set_custom_data($key, $value);
 
