@@ -12,6 +12,7 @@ namespace Lunr\Vortex\WNS\Tests;
 
 use Lunr\Vortex\PushNotificationStatus;
 use Lunr\Vortex\WNS\WNSResponse;
+use WpOrg\Requests\Response;
 use WpOrg\Requests\Response\Headers;
 
 /**
@@ -37,7 +38,7 @@ class WNSResponseSetTest extends WNSResponseTestCase
      */
     public function testStatusForSuccessRequestStatus(): void
     {
-        $response = $this->getMockBuilder('WpOrg\Requests\Response')->getMock();
+        $response = $this->getMockBuilder(Response::class)->getMock();
 
         $response->headers = new Headers([
             'Date'                         => '2016-01-13',
@@ -59,16 +60,16 @@ class WNSResponseSetTest extends WNSResponseTestCase
     /**
      * Test parsing the status for a failed request.
      *
-     * @param int    $code     Status code
-     * @param string $nstatus  Notification status string
-     * @param int    $expected Expected push notification status
+     * @param int                    $code     Status code
+     * @param string                 $nstatus  Notification status string
+     * @param PushNotificationStatus $expected Expected push notification status
      *
      * @dataProvider failedRequestProvider
      * @covers       Lunr\Vortex\WNS\WNSResponse::parseStatus
      */
-    public function testParseStatusForNonSuccessRequestStatus($code, $nstatus, $expected): void
+    public function testParseStatusForNonSuccessRequestStatus(int $code, string $nstatus, PushNotificationStatus $expected): void
     {
-        $response = $this->getMockBuilder('WpOrg\Requests\Response')->getMock();
+        $response = $this->getMockBuilder(Response::class)->getMock();
 
         $response->headers = new Headers([
             'Date'                         => '2016-01-13',
@@ -94,10 +95,7 @@ class WNSResponseSetTest extends WNSResponseTestCase
 
         $this->logger->expects($this->once())
                      ->method('warning')
-                     ->with(
-                         $this->equalTo($message),
-                         $this->equalTo($context)
-                     );
+                     ->with($message, $context);
 
         $class = new WNSResponse($response, $this->logger, '<?xml version="1.0" encoding="utf-8"?>');
 

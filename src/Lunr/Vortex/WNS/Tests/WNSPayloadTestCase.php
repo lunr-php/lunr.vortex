@@ -56,7 +56,7 @@ abstract class WNSPayloadTestCase extends LunrBaseTestCase
      *
      * @return array $strings Array of strings
      */
-    public function stringProvider(): array
+    public static function stringProvider(): array
     {
         $strings   = [];
         $strings[] = [ 'string', 'string' ];

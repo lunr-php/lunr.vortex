@@ -89,12 +89,12 @@ class WNSDispatcherSetTest extends WNSDispatcherTestCase
     /**
      * Test that set_type() sets the type if it is valid.
      *
-     * @param int $type Valid WNS Type
+     * @param string $type Valid WNS Type
      *
      * @dataProvider validTypeProvider
      * @covers       Lunr\Vortex\WNS\WNSDispatcher::set_type
      */
-    public function testSetTypeSetsValidType($type): void
+    public function testSetTypeSetsValidType(string $type): void
     {
         $this->class->set_type($type);
 

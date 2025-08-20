@@ -13,7 +13,9 @@ namespace Lunr\Vortex\WNS\Tests;
 use Lunr\Halo\LunrBaseTestCase;
 use Lunr\Vortex\PushNotificationStatus;
 use Lunr\Vortex\WNS\WNSResponse;
+use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
+use WpOrg\Requests\Response;
 use WpOrg\Requests\Response\Headers;
 
 /**
@@ -27,9 +29,9 @@ abstract class WNSResponseTestCase extends LunrBaseTestCase
 
     /**
      * Mock instance of the Logger class.
-     * @var LoggerInterface
+     * @var LoggerInterface&MockObject
      */
-    protected $logger;
+    protected LoggerInterface&MockObject $logger;
 
     /**
      * Instance of the tested class.
@@ -44,9 +46,9 @@ abstract class WNSResponseTestCase extends LunrBaseTestCase
      */
     public function setUpError(): void
     {
-        $this->logger = $this->getMockBuilder('Psr\Log\LoggerInterface')->getMock();
+        $this->logger = $this->getMockBuilder(LoggerInterface::class)->getMock();
 
-        $response = $this->getMockBuilder('WpOrg\Requests\Response')->getMock();
+        $response = $this->getMockBuilder(Response::class)->getMock();
 
         $response->status_code = FALSE;
         $response->url         = 'http://localhost/';
@@ -63,9 +65,9 @@ abstract class WNSResponseTestCase extends LunrBaseTestCase
      */
     public function setUpSuccess(): void
     {
-        $this->logger = $this->getMockBuilder('Psr\Log\LoggerInterface')->getMock();
+        $this->logger = $this->getMockBuilder(LoggerInterface::class)->getMock();
 
-        $response = $this->getMockBuilder('WpOrg\Requests\Response')->getMock();
+        $response = $this->getMockBuilder(Response::class)->getMock();
 
         $response->headers = new Headers([
             'Date'                         => '2016-01-13',
@@ -99,7 +101,7 @@ abstract class WNSResponseTestCase extends LunrBaseTestCase
      *
      * @return array $requests Array of failed request info
      */
-    public function failedRequestProvider()
+    public static function failedRequestProvider(): array
     {
         $requests   = [];
         $requests[] = [ 200, 'channelthrottled', PushNotificationStatus::TemporaryError ];
