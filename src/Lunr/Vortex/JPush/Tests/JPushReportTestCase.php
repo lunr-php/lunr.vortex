@@ -11,6 +11,9 @@ namespace Lunr\Vortex\JPush\Tests;
 
 use Lunr\Halo\LunrBaseTestCase;
 use Lunr\Vortex\JPush\JPushReport;
+use Mockery;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use Mockery\MockInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 use WpOrg\Requests\Response;
@@ -25,6 +28,8 @@ use WpOrg\Requests\Session;
 abstract class JPushReportTestCase extends LunrBaseTestCase
 {
 
+    use MockeryPHPUnitIntegration;
+
     /**
      * Mock instance of the Requests\Session class.
      * @var Session&MockObject
@@ -33,9 +38,9 @@ abstract class JPushReportTestCase extends LunrBaseTestCase
 
     /**
      * Mock instance of the Logger class.
-     * @var LoggerInterface|MockObject
+     * @var LoggerInterface&MockInterface
      */
-    protected $logger;
+    protected LoggerInterface&MockInterface $logger;
 
     /**
      * Mock instance of the Requests\Response class.
@@ -56,13 +61,13 @@ abstract class JPushReportTestCase extends LunrBaseTestCase
      */
     public function setUp(): void
     {
-        $this->http = $this->getMockBuilder('WpOrg\Requests\Session')->getMock();
+        $this->http = $this->getMockBuilder(Session::class)->getMock();
 
-        $this->logger = $this->getMockBuilder('Psr\Log\LoggerInterface')->getMock();
+        $this->logger = Mockery::mock(LoggerInterface::class);
 
-        $this->response = $this->getMockBuilder('WpOrg\Requests\Response')->getMock();
+        $this->response = $this->getMockBuilder(Response::class)->getMock();
 
-        $this->class = new JPushReport($this->http, $this->logger, 12, [ 'endpoint1' ]);
+        $this->class = new JPushReport($this->http, $this->logger);
 
         parent::baseSetUp($this->class);
     }

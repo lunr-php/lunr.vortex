@@ -11,6 +11,7 @@
 namespace Lunr\Vortex\JPush\Tests;
 
 use Lunr\Halo\PropertyTraits\PsrLoggerTestTrait;
+use WpOrg\Requests\Response;
 
 /**
  * This class contains test for the constructor of the JPushDispatcher class.
@@ -49,7 +50,7 @@ class JPushDispatcherBaseTest extends JPushDispatcherTestCase
 
         $result = $method->invoke($this->class);
 
-        $this->assertInstanceOf('WpOrg\Requests\Response', $result);
+        $this->assertInstanceOf(Response::class, $result);
         $this->assertEquals('https://api.jpush.cn/v3/push', $result->url);
     }
 
@@ -72,6 +73,10 @@ class JPushDispatcherBaseTest extends JPushDispatcherTestCase
      */
     public function testGetBatchResponseReturnsJPushBatchResponseObject(): void
     {
+        $this->logger->expects('warning')
+                     ->once()
+                     ->withAnyArgs();
+
         $method = $this->getReflectionMethod('get_batch_response');
         $result = $method->invokeArgs($this->class, [ $this->response, [ 'endpoint' ], '[]' ]);
 

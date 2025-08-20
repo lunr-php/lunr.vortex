@@ -167,7 +167,7 @@ class JPushBatchResponseBasePushErrorTest extends JPushBatchResponseTestCase
      *
      * @return array $data http code
      */
-    public function internalErrorHTTPCodeDataProvider(): array
+    public static function internalErrorHTTPCodeDataProvider(): array
     {
         $data = [];
 
@@ -187,7 +187,7 @@ class JPushBatchResponseBasePushErrorTest extends JPushBatchResponseTestCase
      * @dataProvider internalErrorHTTPCodeDataProvider
      * @covers       \Lunr\Vortex\JPush\JPushBatchResponse::__construct
      */
-    public function testPushErrorInternalError($http_code): void
+    public function testPushErrorInternalError(int $http_code): void
     {
         $content = 'stuff';
 
@@ -214,7 +214,7 @@ class JPushBatchResponseBasePushErrorTest extends JPushBatchResponseTestCase
      *
      * @return array $data http code
      */
-    public function unknownErrorHTTPCodeDataProvider(): array
+    public static function unknownErrorHTTPCodeDataProvider(): array
     {
         $data = [];
 
@@ -232,7 +232,7 @@ class JPushBatchResponseBasePushErrorTest extends JPushBatchResponseTestCase
      * @dataProvider unknownErrorHTTPCodeDataProvider
      * @covers       \Lunr\Vortex\JPush\JPushBatchResponse::__construct
      */
-    public function testPushErrorUnknownError($http_code): void
+    public function testPushErrorUnknownError(int $http_code): void
     {
         $content = 'stuff';
 

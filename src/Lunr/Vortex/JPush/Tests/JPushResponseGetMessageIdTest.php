@@ -24,7 +24,7 @@ class JPushResponseGetMessageIdTest extends JPushResponseTestCase
      *
      * @return array $data array of endpoints statuses / status result
      */
-    public function endpointDataProvider(): array
+    public static function endpointDataProvider(): array
     {
         $data = [];
 
@@ -103,13 +103,13 @@ class JPushResponseGetMessageIdTest extends JPushResponseTestCase
     /**
      * Test the get_message_id() behavior.
      *
-     * @param array $statuses Endpoints statuses
-     * @param int   $batch    Expected function result
+     * @param array       $statuses Endpoints statuses
+     * @param string|null $batch    Expected function result
      *
      * @dataProvider endpointDataProvider
      * @covers       Lunr\Vortex\JPush\JPushResponse::get_message_id
      */
-    public function testGetBatch($statuses, $batch): void
+    public function testGetBatch(array $statuses, ?string $batch): void
     {
         $this->setReflectionPropertyValue('statuses', $statuses);
 

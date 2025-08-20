@@ -24,7 +24,7 @@ class JPushReportReportEndpointErrorTest extends JPushReportTestCase
      *
      * @return array Endpoint errors
      */
-    public function endpointErrorProvider(): array
+    public static function endpointErrorProvider(): array
     {
         $return = [];
 
@@ -56,7 +56,7 @@ class JPushReportReportEndpointErrorTest extends JPushReportTestCase
             'endpoint5',
             5,
             PushNotificationStatus::Unknown,
-            5
+            '5'
         ];
 
         return $return;
@@ -65,15 +65,15 @@ class JPushReportReportEndpointErrorTest extends JPushReportTestCase
     /**
      * Test the report_endpoint_error() succeeds.
      *
-     * @param string $endpoint   Endpoint of the notification
-     * @param int    $error_code Error response code
-     * @param int    $status     Lunr status
-     * @param string $message    Reported message
+     * @param string                 $endpoint   Endpoint of the notification
+     * @param int                    $error_code Error response code
+     * @param PushNotificationStatus $status     Lunr status
+     * @param string                 $message    Reported message
      *
      * @dataProvider endpointErrorProvider
      * @covers       \Lunr\Vortex\JPush\JPushReport::report_endpoint_error
      */
-    public function testReportEndpointErrorSucceeds($endpoint, $error_code, $status, $message): void
+    public function testReportEndpointErrorSucceeds(string $endpoint, int $error_code, PushNotificationStatus $status, string $message): void
     {
         $log_message = 'Dispatching JPush notification failed for endpoint {endpoint}: {error}';
 
@@ -82,8 +82,8 @@ class JPushReportReportEndpointErrorTest extends JPushReportTestCase
             'error'    => $message
         ];
 
-        $this->logger->expects($this->once())
-                     ->method('warning')
+        $this->logger->expects('warning')
+                     ->once()
                      ->with($log_message, $context);
 
         $method = $this->getReflectionMethod('report_endpoint_error');

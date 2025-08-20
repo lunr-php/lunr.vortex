@@ -24,7 +24,7 @@ class JPushReportReportErrorTest extends JPushReportTestCase
      *
      * @return array Errors
      */
-    public function errorProvider(): array
+    public static function errorProvider(): array
     {
         $return = [];
 
@@ -41,19 +41,19 @@ class JPushReportReportErrorTest extends JPushReportTestCase
     /**
      * Test the report_error() succeeds.
      *
-     * @param int    $http_code Endpoint of the notification
-     * @param int    $status    Lunr endpoint status
-     * @param string $message   Reported message
+     * @param int                    $http_code Endpoint of the notification
+     * @param PushNotificationStatus $status    Lunr endpoint status
+     * @param string                 $message   Reported message
      *
      * @dataProvider errorProvider
      * @covers       \Lunr\Vortex\JPush\JPushReport::report_error
      */
-    public function testReportEndpointErrorSucceeds($http_code, $status, $message): void
+    public function testReportEndpointErrorSucceeds(int $http_code, PushNotificationStatus $status, string $message): void
     {
         $endpoints = [ 'endpoint1' ];
 
-        $this->logger->expects($this->once())
-                     ->method('warning')
+        $this->logger->expects('warning')
+                     ->once()
                      ->with('Getting JPush notification report failed: {error}', [ 'error' => $message ]);
 
         $this->response->status_code = $http_code;
@@ -73,8 +73,8 @@ class JPushReportReportErrorTest extends JPushReportTestCase
     {
         $endpoints = [ 'endpoint1' ];
 
-        $this->logger->expects($this->once())
-                     ->method('warning')
+        $this->logger->expects('warning')
+                     ->once()
                      ->with('Getting JPush notification report failed: {error}', [ 'error' => 'message_id is invalid' ]);
 
         $this->response->status_code = 400;
@@ -95,8 +95,8 @@ class JPushReportReportErrorTest extends JPushReportTestCase
     {
         $endpoints = [ 'endpoint1' ];
 
-        $this->logger->expects($this->once())
-                     ->method('warning')
+        $this->logger->expects('warning')
+                     ->once()
                      ->with('Getting JPush notification report failed: {error}', [ 'error' => 'Msgid does not exist.' ]);
 
         $this->response->status_code = 400;
