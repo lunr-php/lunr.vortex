@@ -43,8 +43,8 @@ class FCMDispatcherConfigureOAuthTokenTest extends FCMDispatcherTestCase
         $this->http->expects($this->never())
                    ->method('post');
 
-        $this->logger->expects($this->never())
-                     ->method('warning');
+        $this->logger->expects('warning')
+                     ->never();
 
         $this->class->configure_oauth_token('invalid relative time');
     }
@@ -65,8 +65,8 @@ class FCMDispatcherConfigureOAuthTokenTest extends FCMDispatcherTestCase
         $this->http->expects($this->never())
                    ->method('post');
 
-        $this->logger->expects($this->never())
-                     ->method('warning');
+        $this->logger->expects('warning')
+                     ->never();
 
         $this->class->configure_oauth_token();
 
@@ -91,8 +91,8 @@ class FCMDispatcherConfigureOAuthTokenTest extends FCMDispatcherTestCase
         $this->http->expects($this->never())
                    ->method('post');
 
-        $this->logger->expects($this->never())
-                     ->method('warning');
+        $this->logger->expects('warning')
+                     ->never();
 
         $this->class->configure_oauth_token();
 
@@ -175,8 +175,8 @@ class FCMDispatcherConfigureOAuthTokenTest extends FCMDispatcherTestCase
                    ->with('https://oauth2.googleapis.com/token', $headers, json_encode($payload, JSON_UNESCAPED_UNICODE), [])
                    ->willThrowException(new RequestsException('cURL error 10: Request error', 'curlerror', NULL));
 
-        $this->logger->expects($this->once())
-                     ->method('warning')
+        $this->logger->expects('warning')
+                     ->once()
                      ->with('Fetching OAuth token for FCM notification(s) failed: {message}', [ 'message' => 'cURL error 10: Request error' ]);
 
         $this->class->configure_oauth_token('+10 minutes');
@@ -268,8 +268,8 @@ class FCMDispatcherConfigureOAuthTokenTest extends FCMDispatcherTestCase
                    ->with('https://oauth2.googleapis.com/token', $headers, json_encode($payload, JSON_UNESCAPED_UNICODE), [])
                    ->willReturn($response);
 
-        $this->logger->expects($this->once())
-                     ->method('warning')
+        $this->logger->expects('warning')
+                     ->once()
                      ->with(
                          'Processing json response for fetching OAuth token for FCM notification(s) failed: {message}',
                          [ 'message' => 'Syntax error' ]
@@ -364,8 +364,8 @@ class FCMDispatcherConfigureOAuthTokenTest extends FCMDispatcherTestCase
                    ->with('https://oauth2.googleapis.com/token', $headers, json_encode($payload, JSON_UNESCAPED_UNICODE), [])
                    ->willReturn($response);
 
-        $this->logger->expects($this->once())
-                     ->method('warning')
+        $this->logger->expects('warning')
+                     ->once()
                      ->with(
                          'Fetching OAuth token for FCM notification(s) failed: {error}',
                          [ 'error' => 'No access token in the response body' ]
@@ -463,8 +463,8 @@ class FCMDispatcherConfigureOAuthTokenTest extends FCMDispatcherTestCase
                    ->with('https://oauth2.googleapis.com/token', $headers, json_encode($payload, JSON_UNESCAPED_UNICODE), [])
                    ->willReturn($response);
 
-        $this->logger->expects($this->once())
-                     ->method('warning')
+        $this->logger->expects('warning')
+                     ->once()
                      ->with(
                          'Fetching OAuth token for FCM notification(s) failed: {error}',
                          [ 'error' => $error_msg ]

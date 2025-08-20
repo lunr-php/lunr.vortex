@@ -103,7 +103,7 @@ class FCMApnsPayloadSetTest extends FCMApnsPayloadTestCase
      *
      * @return array
      */
-    public function priorityProvider(): array
+    public static function priorityProvider(): array
     {
         $return = [];
 

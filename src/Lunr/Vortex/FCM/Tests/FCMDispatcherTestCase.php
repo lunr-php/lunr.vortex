@@ -16,6 +16,7 @@ use Lunr\Halo\LunrBaseTestCase;
 use Lunr\Vortex\FCM\FCMDispatcher;
 use Lunr\Vortex\FCM\FCMPayload;
 use Mockery;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
@@ -30,41 +31,43 @@ use WpOrg\Requests\Session;
  */
 abstract class FCMDispatcherTestCase extends LunrBaseTestCase
 {
+    use MockeryPHPUnitIntegration;
+
     /**
      * Mock instance of the Requests\Session class.
-     * @var Session
+     * @var Session&MockObject
      */
-    protected $http;
+    protected Session&MockObject $http;
 
     /**
      * Mock instance of the Requests\Response class.
-     * @var Response
+     * @var Response&MockObject
      */
-    protected $response;
+    protected Response&MockObject $response;
 
     /**
      * Mock instance of a Logger class.
-     * @var LoggerInterface
+     * @var LoggerInterface&MockInterface
      */
-    protected $logger;
+    protected LoggerInterface&MockInterface $logger;
 
     /**
      * Mock instance of the FCM Payload class.
-     * @var FCMPayload
+     * @var FCMPayload&MockInterface
      */
-    protected $payload;
+    protected FCMPayload&MockInterface $payload;
 
     /**
      * Mock instance of the token builder class.
-     * @var MockInterface<Builder>
+     * @var Builder&MockInterface
      */
-    protected $token_builder;
+    protected Builder&MockInterface $token_builder;
 
     /**
      * Mock instance of the token UnencryptedToken class.
-     * @var MockObject<UnencryptedToken>
+     * @var UnencryptedToken&MockObject
      */
-    protected $token_plain;
+    protected UnencryptedToken&MockObject $token_plain;
 
     /**
      * Instance of the tested class.
@@ -77,16 +80,13 @@ abstract class FCMDispatcherTestCase extends LunrBaseTestCase
      */
     public function setUp(): void
     {
-        $this->http     = $this->getMockBuilder('WpOrg\Requests\Session')->getMock();
-        $this->response = $this->getMockBuilder('WpOrg\Requests\Response')->getMock();
-        $this->logger   = $this->getMockBuilder('Psr\Log\LoggerInterface')->getMock();
-        $this->payload  = $this->getMockBuilder('Lunr\Vortex\FCM\FCMPayload')
-                              ->disableOriginalConstructor()
-                              ->getMock();
-
-        $this->token_builder = Mockery::mock(Builder::class);
-
+        $this->http        = $this->getMockBuilder(Session::class)->getMock();
+        $this->response    = $this->getMockBuilder(Response::class)->getMock();
         $this->token_plain = $this->getMockBuilder(UnencryptedToken::class)->getMock();
+
+        $this->logger        = Mockery::mock(LoggerInterface::class);
+        $this->payload       = Mockery::mock(FCMPayload::class);
+        $this->token_builder = Mockery::mock(Builder::class);
 
         $this->class = new FCMDispatcher($this->http, $this->logger);
 
@@ -98,8 +98,6 @@ abstract class FCMDispatcherTestCase extends LunrBaseTestCase
      */
     public function tearDown(): void
     {
-        Mockery::close();
-
         unset($this->logger);
         unset($this->payload);
         unset($this->class);
