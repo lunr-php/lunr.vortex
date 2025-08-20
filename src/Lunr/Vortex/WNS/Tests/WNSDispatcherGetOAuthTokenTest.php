@@ -57,8 +57,8 @@ class WNSDispatcherGetOAuthTokenTest extends WNSDispatcherTestCase
 
         $this->http->expects($this->once())
                    ->method('post')
-                   ->with($this->equalTo($url), $this->equalTo($headers), $this->equalTo($request_post))
-                   ->will($this->returnValue($this->response));
+                   ->with($url, $headers, $request_post)
+                   ->willReturn($this->response);
 
         $this->class->get_oauth_token();
     }
@@ -84,8 +84,8 @@ class WNSDispatcherGetOAuthTokenTest extends WNSDispatcherTestCase
 
         $this->http->expects($this->once())
                    ->method('post')
-                   ->with($this->equalTo($url), $this->equalTo($headers), $this->equalTo($request_post))
-                   ->will($this->throwException(new RequestsException('Network error!', 'curlerror', NULL)));
+                   ->with($url, $headers, $request_post)
+                   ->willThrowException(new RequestsException('Network error!', 'curlerror', NULL));
 
         $this->logger->expects($this->once())
                      ->method('warning')
@@ -121,8 +121,8 @@ class WNSDispatcherGetOAuthTokenTest extends WNSDispatcherTestCase
 
         $this->http->expects($this->once())
                    ->method('post')
-                   ->with($this->equalTo($url), $this->equalTo($headers), $this->equalTo($request_post))
-                   ->will($this->returnValue($this->response));
+                   ->with($url, $headers, $request_post)
+                   ->willReturn($this->response);
 
         $this->logger->expects($this->once())
                      ->method('warning')
@@ -158,8 +158,8 @@ class WNSDispatcherGetOAuthTokenTest extends WNSDispatcherTestCase
 
         $this->http->expects($this->once())
                    ->method('post')
-                   ->with($this->equalTo($url), $this->equalTo($headers), $this->equalTo($request_post))
-                   ->will($this->returnValue($this->response));
+                   ->with($url, $headers, $request_post)
+                   ->willReturn($this->response);
 
         $this->logger->expects($this->once())
                      ->method('warning')
@@ -195,8 +195,8 @@ class WNSDispatcherGetOAuthTokenTest extends WNSDispatcherTestCase
 
         $this->http->expects($this->once())
                    ->method('post')
-                   ->with($this->equalTo($url), $this->equalTo($headers), $this->equalTo($request_post))
-                   ->will($this->returnValue($this->response));
+                   ->with($url, $headers, $request_post)
+                   ->willReturn($this->response);
 
         $this->assertSame('access_token', $this->class->get_oauth_token());
     }

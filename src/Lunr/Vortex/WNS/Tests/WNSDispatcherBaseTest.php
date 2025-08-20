@@ -12,6 +12,7 @@ namespace Lunr\Vortex\WNS\Tests;
 
 use Lunr\Halo\PropertyTraits\PsrLoggerTestTrait;
 use Lunr\Vortex\WNS\WNSType;
+use WpOrg\Requests\Response;
 
 /**
  * This class contains test for the constructor of the WNSDispatcher class.
@@ -50,7 +51,7 @@ class WNSDispatcherBaseTest extends WNSDispatcherTestCase
 
         $result = $method->invokeArgs($this->class, [ 'http://localhost/' ]);
 
-        $this->assertInstanceOf('WpOrg\Requests\Response', $result);
+        $this->assertInstanceOf(Response::class, $result);
         $this->assertEquals('http://localhost/', $result->url);
     }
 

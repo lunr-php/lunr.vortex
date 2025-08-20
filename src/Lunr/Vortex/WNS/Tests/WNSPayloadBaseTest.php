@@ -28,7 +28,7 @@ class WNSPayloadBaseTest extends WNSPayloadTestCase
      * @dataProvider stringProvider
      * @covers       Lunr\Vortex\WNS\WNSPayload::escape_string
      */
-    public function testEscapeString($string, $expected): void
+    public function testEscapeString(string $string, string $expected): void
     {
         $method = $this->getReflectionMethod('escape_string');
 

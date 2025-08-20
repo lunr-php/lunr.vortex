@@ -63,7 +63,7 @@ abstract class WNSDispatcherTestCase extends LunrBaseTestCase
     {
         $this->http = $this->getMockBuilder('WpOrg\Requests\Session')->getMock();
 
-        $this->response = $this->getMockBuilder('WpOrg\Requests\Response')->getMock();
+        $this->response = $this->getMockBuilder(Response::class)->getMock();
 
         $this->logger = $this->getMockBuilder('Psr\Log\LoggerInterface')->getMock();
 
@@ -95,7 +95,7 @@ abstract class WNSDispatcherTestCase extends LunrBaseTestCase
      *
      * @return array $types Array of WNS types.
      */
-    public function validTypeProvider(): array
+    public static function validTypeProvider(): array
     {
         $types   = [];
         $types[] = [ WNSType::TILE ];

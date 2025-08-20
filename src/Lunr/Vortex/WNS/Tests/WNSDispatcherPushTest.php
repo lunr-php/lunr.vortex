@@ -49,7 +49,7 @@ class WNSDispatcherPushTest extends WNSDispatcherTestCase
      * @dataProvider unsupportedPayloadProvider
      * @covers       Lunr\Vortex\WNS\WNSDispatcher::push
      */
-    public function testPushingWithUnsupportedPayloadThrowsException($payload): void
+    public function testPushingWithUnsupportedPayloadThrowsException(object $payload): void
     {
         $endpoints = [ 'endpoint' ];
 
@@ -234,7 +234,7 @@ class WNSDispatcherPushTest extends WNSDispatcherTestCase
         $this->http->expects($this->once())
                    ->method('post')
                    ->with('endpoint', $headers, 'payload')
-                   ->will($this->throwException(new RequestsException('Network error!', 'curlerror', NULL)));
+                   ->willThrowException(new RequestsException('Network error!', 'curlerror', NULL));
 
         $message = 'Dispatching WNS notification to {endpoint} failed: {error}';
         $context = [ 'endpoint' => 'endpoint', 'error' => 'Network error!' ];
@@ -307,7 +307,7 @@ class WNSDispatcherPushTest extends WNSDispatcherTestCase
         $this->http->expects($this->once())
                    ->method('post')
                    ->with('endpoint', $headers, 'payload')
-                   ->will($this->throwException(new RequestsException('Network error!', 'curlerror', NULL)));
+                   ->willThrowException(new RequestsException('Network error!', 'curlerror', NULL));
 
         $message = 'Dispatching WNS notification to {endpoint} failed: {error}';
         $context = [ 'endpoint' => 'endpoint', 'error' => 'Network error!' ];
