@@ -187,7 +187,7 @@ class APNSDispatcherPushTest extends APNSDispatcherTestCase
 
         $this->apns_push->expects($this->once())
                         ->method('connect')
-                        ->will($this->throwException(new ApnsPHPException('Failed to connect')));
+                        ->willThrowException(new ApnsPHPException('Failed to connect'));
 
         $this->logger->expects($this->once())
                      ->method('warning')
@@ -216,7 +216,7 @@ class APNSDispatcherPushTest extends APNSDispatcherTestCase
 
         $this->apns_push->expects($this->once())
                         ->method('send')
-                        ->will($this->throwException(new PushException('Failed to send')));
+                        ->willThrowException(new PushException('Failed to send'));
 
         $this->logger->expects($this->once())
                      ->method('warning')

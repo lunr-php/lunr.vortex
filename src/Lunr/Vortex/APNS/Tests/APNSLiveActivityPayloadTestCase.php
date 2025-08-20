@@ -71,7 +71,7 @@ abstract class APNSLiveActivityPayloadTestCase extends LunrBaseTestCase
      *
      * @return array<string, mixed> $values Array of non-object values
      */
-    public function payloadProvider(): array
+    public static function payloadProvider(): array
     {
         $values = [];
 
