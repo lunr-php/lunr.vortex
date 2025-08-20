@@ -538,15 +538,15 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
         $this->apns->expects($this->once())
                    ->method('push')
                    ->with($apns_payload, [ 'abcde-12345' ])
-                   ->willReturn($this->apns_response);
+                   ->willReturn($this->apnsResponse);
 
         $this->fcm_response->expects($this->once())
                            ->method('get_status')
                            ->willReturn(PushNotificationStatus::Success);
 
-        $this->apns_response->expects($this->once())
-                            ->method('get_status')
-                            ->willReturn(PushNotificationStatus::Success);
+        $this->apnsResponse->expects('get_status')
+                           ->once()
+                           ->andReturn(PushNotificationStatus::Success);
 
         $this->class->dispatch($endpoints, $payloads);
 
@@ -624,15 +624,17 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
 
         $this->wns->expects($this->exactly(2))
                   ->method('push')
-                  ->willReturn($this->wns_response);
+                  ->willReturn($this->wnsResponse);
 
-        $this->wns_response->expects($this->exactly(2))
-                           ->method('get_status')
-                           ->withConsecutive([ 'abcde-12345' ], [ 'abcde-56789' ])
-                           ->will($this->onConsecutiveCalls(
-                            PushNotificationStatus::Success,
-                            PushNotificationStatus::Error
-                           ));
+        $this->wnsResponse->expects('get_status')
+                          ->once()
+                          ->with('abcde-12345')
+                          ->andReturn(PushNotificationStatus::Success);
+
+        $this->wnsResponse->expects('get_status')
+                          ->once()
+                          ->with('abcde-56789')
+                          ->andReturn(PushNotificationStatus::Error);
 
         $this->class->dispatch($endpoints, $payloads);
 
@@ -712,15 +714,18 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
         $this->apns->expects($this->once())
                    ->method('push')
                    ->with($apns_payload, [ 'endpoint1', 'endpoint2' ])
-                   ->willReturn($this->apns_response);
+                   ->willReturn($this->apnsResponse);
 
-        $this->apns_response->expects($this->exactly(2))
-                            ->method('get_status')
-                            ->withConsecutive([ 'endpoint1' ], [ 'endpoint2' ])
-                            ->will($this->onConsecutiveCalls(
-                                PushNotificationStatus::Success,
-                                PushNotificationStatus::Error
-                            ));
+        $this->apnsResponse->expects('get_status')
+                           ->once()
+                           ->with('endpoint1')
+                           ->andReturn(PushNotificationStatus::Success);
+
+        $this->apnsResponse->expects('get_status')
+                           ->once()
+                           ->with('endpoint2')
+                           ->andReturn(PushNotificationStatus::Error);
+
         $this->class->dispatch($endpoints, $payloads);
 
         $this->assertPropertySame('statuses', $expected_statuses);
@@ -804,12 +809,12 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
         $this->apns->expects($this->once())
                    ->method('push')
                    ->with($apns_payload, [ 'abcde-12345' ])
-                   ->willReturn($this->apns_response);
+                   ->willReturn($this->apnsResponse);
 
-        $this->apns_response->expects($this->once())
-                            ->method('get_status')
+        $this->apnsResponse->expects('get_status')
+                            ->once()
                             ->with('abcde-12345')
-                            ->willReturn(PushNotificationStatus::Success);
+                            ->andReturn(PushNotificationStatus::Success);
 
         $this->class->dispatch($endpoints, $payloads);
 
@@ -902,21 +907,32 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
         $this->jpush->expects($this->once())
                     ->method('push')
                     ->with($jpush_payload, [ 'abcde-12345', 'fghij-67890', 'endpoint1' ])
-                    ->willReturn($this->jpush_response);
+                    ->willReturn($this->jpushResponse);
 
-        $this->jpush_response->expects($this->exactly(3))
-                             ->method('get_status')
-                             ->withConsecutive([ 'abcde-12345' ], [ 'fghij-67890' ], [ 'endpoint1' ])
-                             ->willReturnOnConsecutiveCalls(
-                                 PushNotificationStatus::Deferred,
-                                 PushNotificationStatus::Deferred,
-                                 PushNotificationStatus::Success,
-                             );
+        $this->jpushResponse->expects('get_status')
+                             ->once()
+                             ->with('abcde-12345')
+                             ->andReturn(PushNotificationStatus::Deferred);
 
-        $this->jpush_response->expects($this->exactly(2))
-                             ->method('get_message_id')
-                             ->withConsecutive([ 'abcde-12345' ], [ 'fghij-67890' ])
-                             ->willReturnOnConsecutiveCalls('165465645', '555165655');
+        $this->jpushResponse->expects('get_status')
+                             ->once()
+                             ->with('fghij-67890')
+                             ->andReturn(PushNotificationStatus::Deferred);
+
+        $this->jpushResponse->expects('get_status')
+                             ->once()
+                             ->with('endpoint1')
+                             ->andReturn(PushNotificationStatus::Success);
+
+        $this->jpushResponse->expects('get_message_id')
+                             ->once()
+                             ->with('abcde-12345')
+                             ->andReturn('165465645');
+
+        $this->jpushResponse->expects('get_message_id')
+                             ->once()
+                             ->with('fghij-67890')
+                             ->andReturn('555165655');
 
         $this->class->dispatch($endpoints, [ 'jpush'  => [ 'notification' => $jpush_payload ]]);
 
