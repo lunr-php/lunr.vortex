@@ -31,6 +31,7 @@ class FCMBatchResponseGetBroadcastStatusTest extends FCMBatchResponseTestCase
 
         $content = file_get_contents(TEST_STATICS . '/Vortex/fcm/response_single_success.json');
 
+        // phpcs:ignore Lunr.NamingConventions.CamelCapsVariableName
         $this->response->status_code = 200;
         $this->response->body        = $content;
 
@@ -56,7 +57,7 @@ class FCMBatchResponseGetBroadcastStatusTest extends FCMBatchResponseTestCase
      */
     public function testGetStatusReturnsUnknown(): void
     {
-        $this->setReflectionPropertyValue('broadcast_status', PushNotificationStatus::Unknown);
+        $this->setReflectionPropertyValue('broadcastStatus', PushNotificationStatus::Unknown);
 
         $this->assertSame(PushNotificationStatus::Unknown, $this->class->get_broadcast_status());
     }

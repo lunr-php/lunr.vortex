@@ -113,11 +113,11 @@ class FCMPayloadGetTest extends FCMPayloadTestCase
         ];
 
         $this->setReflectionPropertyValue('elements', $elements);
-        $this->setReflectionPropertyValue('android_payload', $this->android_payload);
+        $this->setReflectionPropertyValue('androidPayload', $this->androidPayload);
 
-        $this->android_payload->expects($this->once())
-                              ->method('get_payload')
-                              ->willReturn([ 'notification' => 'title' ]);
+        $this->androidPayload->expects($this->once())
+                             ->method('get_payload')
+                             ->willReturn([ 'notification' => 'title' ]);
 
         $this->assertStringMatchesFormatFile($file, $this->class->get_json_payload());
     }
@@ -141,11 +141,11 @@ class FCMPayloadGetTest extends FCMPayloadTestCase
         ];
 
         $this->setReflectionPropertyValue('elements', $elements);
-        $this->setReflectionPropertyValue('apns_payload', $this->apns_payload);
+        $this->setReflectionPropertyValue('apnsPayload', $this->apnsPayload);
 
-        $this->apns_payload->expects($this->once())
-                           ->method('get_payload')
-                           ->willReturn([ 'notification' => 'title' ]);
+        $this->apnsPayload->expects($this->once())
+                          ->method('get_payload')
+                          ->willReturn([ 'notification' => 'title' ]);
 
         $this->assertStringMatchesFormatFile($file, $this->class->get_json_payload());
     }
@@ -161,9 +161,7 @@ class FCMPayloadGetTest extends FCMPayloadTestCase
 
         $this->assertInstanceOf(FCMAndroidPayload::class, $return);
 
-        $property_value = $this->getReflectionPropertyValue('android_payload');
-
-        $this->assertSame($return, $property_value);
+        $this->assertPropertySame('androidPayload', $return);
     }
 
     /**
@@ -173,9 +171,9 @@ class FCMPayloadGetTest extends FCMPayloadTestCase
      */
     public function testAndroidPayloadReturnsSavedPayload(): void
     {
-        $this->setReflectionPropertyValue('android_payload', $this->android_payload);
+        $this->setReflectionPropertyValue('androidPayload', $this->androidPayload);
 
-        $this->assertSame($this->android_payload, $this->class->android_payload());
+        $this->assertSame($this->androidPayload, $this->class->android_payload());
     }
 
     /**
@@ -189,9 +187,7 @@ class FCMPayloadGetTest extends FCMPayloadTestCase
 
         $this->assertInstanceOf(FCMApnsPayload::class, $return);
 
-        $property_value = $this->getReflectionPropertyValue('apns_payload');
-
-        $this->assertSame($return, $property_value);
+        $this->assertPropertySame('apnsPayload', $return);
     }
 
     /**
@@ -201,9 +197,9 @@ class FCMPayloadGetTest extends FCMPayloadTestCase
      */
     public function testGetApnsPayloadReturnsSavedPayload(): void
     {
-        $this->setReflectionPropertyValue('apns_payload', $this->apns_payload);
+        $this->setReflectionPropertyValue('apnsPayload', $this->apnsPayload);
 
-        $this->assertSame($this->apns_payload, $this->class->apns_payload());
+        $this->assertSame($this->apnsPayload, $this->class->apns_payload());
     }
 
 }

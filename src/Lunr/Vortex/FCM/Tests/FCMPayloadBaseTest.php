@@ -31,7 +31,7 @@ class FCMPayloadBaseTest extends FCMPayloadTestCase
      */
     public function testAndroidPayloadIsInitializedWithNULL(): void
     {
-        $this->assertPropertySame('android_payload', NULL);
+        $this->assertPropertySame('androidPayload', NULL);
     }
 
     /**
@@ -39,7 +39,7 @@ class FCMPayloadBaseTest extends FCMPayloadTestCase
      */
     public function testApnsPayloadIsInitializedWithNULL(): void
     {
-        $this->assertPropertySame('apns_payload', NULL);
+        $this->assertPropertySame('apnsPayload', NULL);
     }
 
     /**

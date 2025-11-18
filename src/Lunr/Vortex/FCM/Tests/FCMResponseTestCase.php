@@ -26,7 +26,7 @@ abstract class FCMResponseTestCase extends LunrBaseTestCase
      * Mock instance of the FCMBatchResponse class.
      * @var Lunr\Vortex\FCM\FCMBatchResponse
      */
-    protected $batch_response;
+    protected $batchResponse;
 
     /**
      * Instance of the tested class.
@@ -41,9 +41,9 @@ abstract class FCMResponseTestCase extends LunrBaseTestCase
      */
     public function setUp(): void
     {
-        $this->batch_response = $this->getMockBuilder('Lunr\Vortex\FCM\FCMBatchResponse')
-                                     ->disableOriginalConstructor()
-                                     ->getMock();
+        $this->batchResponse = $this->getMockBuilder('Lunr\Vortex\FCM\FCMBatchResponse')
+                                    ->disableOriginalConstructor()
+                                    ->getMock();
 
         $this->class = new FCMResponse();
 
@@ -55,7 +55,7 @@ abstract class FCMResponseTestCase extends LunrBaseTestCase
      */
     public function tearDown(): void
     {
-        unset($this->batch_response);
+        unset($this->batchResponse);
         unset($this->class);
         unset($this->reflection);
     }

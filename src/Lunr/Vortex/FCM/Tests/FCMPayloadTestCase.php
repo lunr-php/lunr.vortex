@@ -36,13 +36,13 @@ abstract class FCMPayloadTestCase extends LunrBaseTestCase
      * Sample android payload
      * @var FCMAndroidPayload
      */
-    protected $android_payload;
+    protected $androidPayload;
 
     /**
      * Sample apns payload
      * @var FCMApnsPayload
      */
-    protected $apns_payload;
+    protected $apnsPayload;
 
     /**
      * Instance of the tested class.
@@ -55,7 +55,7 @@ abstract class FCMPayloadTestCase extends LunrBaseTestCase
      */
     public function setUp(): void
     {
-        $elements_array = [
+        $elementsArray = [
             'registration_ids' => [ 'one', 'two', 'three' ],
             'collapse_key'     => 'test',
             'data'             => [
@@ -65,13 +65,13 @@ abstract class FCMPayloadTestCase extends LunrBaseTestCase
             'time_to_live'     => 10,
         ];
 
-        $this->payload = json_encode($elements_array);
+        $this->payload = json_encode($elementsArray);
 
-        $this->android_payload = $this->getMockBuilder(FCMAndroidPayload::class)
-                                      ->getMock();
+        $this->androidPayload = $this->getMockBuilder(FCMAndroidPayload::class)
+                                     ->getMock();
 
-        $this->apns_payload = $this->getMockBuilder(FCMApnsPayload::class)
-                                   ->getMock();
+        $this->apnsPayload = $this->getMockBuilder(FCMApnsPayload::class)
+                                  ->getMock();
 
         $this->class = $this->getMockBuilder('Lunr\Vortex\FCM\FCMPayload')
                             ->getMockForAbstractClass();
@@ -85,8 +85,8 @@ abstract class FCMPayloadTestCase extends LunrBaseTestCase
     public function tearDown(): void
     {
         unset($this->payload);
-        unset($this->android_payload);
-        unset($this->apns_payload);
+        unset($this->androidPayload);
+        unset($this->apnsPayload);
         unset($this->class);
 
         parent::tearDown();

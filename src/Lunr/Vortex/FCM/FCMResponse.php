@@ -30,7 +30,7 @@ class FCMResponse implements PushNotificationResponseInterface, PushNotification
      * The status for a broadcast.
      * @var PushNotificationStatus
      */
-    protected PushNotificationStatus $broadcast_status;
+    protected PushNotificationStatus $broadcastStatus;
 
     /**
      * Constructor.
@@ -46,35 +46,35 @@ class FCMResponse implements PushNotificationResponseInterface, PushNotification
     public function __destruct()
     {
         unset($this->statuses);
-        unset($this->broadcast_status);
+        unset($this->broadcastStatus);
     }
 
     /**
      * Add the results of a batch response.
      *
-     * @param FCMBatchResponse $batch_response Batch response
-     * @param string[]         $endpoints      Endpoints of the batch
+     * @param FCMBatchResponse $batchResponse Batch response
+     * @param string[]         $endpoints     Endpoints of the batch
      *
      * @return void
      */
-    public function add_batch_response(FCMBatchResponse $batch_response, array $endpoints): void
+    public function add_batch_response(FCMBatchResponse $batchResponse, array $endpoints): void
     {
         foreach ($endpoints as $endpoint)
         {
-            $this->statuses[$endpoint] = $batch_response->get_status($endpoint);
+            $this->statuses[$endpoint] = $batchResponse->get_status($endpoint);
         }
     }
 
     /**
      * Add the results of a batch response.
      *
-     * @param FCMBatchResponse $batch_response Push response.
+     * @param FCMBatchResponse $batchResponse Push response.
      *
      * @return void
      */
-    public function add_broadcast_response(FCMBatchResponse $batch_response): void
+    public function add_broadcast_response(FCMBatchResponse $batchResponse): void
     {
-        $this->broadcast_status = $batch_response->get_broadcast_status();
+        $this->broadcastStatus = $batchResponse->get_broadcast_status();
     }
 
     /**
@@ -96,7 +96,7 @@ class FCMResponse implements PushNotificationResponseInterface, PushNotification
      */
     public function get_broadcast_status(): PushNotificationStatus
     {
-        return $this->broadcast_status ?? PushNotificationStatus::Unknown;
+        return $this->broadcastStatus ?? PushNotificationStatus::Unknown;
     }
 
 }

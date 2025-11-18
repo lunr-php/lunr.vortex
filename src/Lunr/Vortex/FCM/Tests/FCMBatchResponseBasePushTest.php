@@ -34,6 +34,7 @@ class FCMBatchResponseBasePushTest extends FCMBatchResponseTestCase
         $content   = file_get_contents(TEST_STATICS . '/Vortex/fcm/response_single_success.json');
         $endpoints = [ 'endpoint1', 'endpoint2', 'endpoint3' ];
 
+        // phpcs:ignore Lunr.NamingConventions.CamelCapsVariableName
         $this->response->status_code = 200;
         $this->response->body        = $content;
 
@@ -70,6 +71,7 @@ class FCMBatchResponseBasePushTest extends FCMBatchResponseTestCase
     {
         $endpoints = [ 'endpoint1' ];
 
+        // phpcs:ignore Lunr.NamingConventions.CamelCapsVariableName
         $this->response->status_code = 400;
 
         $context = [
@@ -102,6 +104,7 @@ class FCMBatchResponseBasePushTest extends FCMBatchResponseTestCase
     {
         $endpoints = [ 'endpoint1', 'endpoint2' ];
 
+        // phpcs:ignore Lunr.NamingConventions.CamelCapsVariableName
         $this->response->status_code = 400;
 
         $context = [
@@ -568,11 +571,11 @@ class FCMBatchResponseBasePushTest extends FCMBatchResponseTestCase
      */
     public function testPushErrorBadRequestError(): void
     {
-        $http_code = 400;
+        $httpCode  = 400;
         $content   = file_get_contents(TEST_STATICS . '/Vortex/fcm/response_single_error.json');
         $endpoints = [ 'endpoint1' ];
 
-        $this->response->status_code = $http_code;
+        $this->response->status_code = $httpCode;
         $this->response->body        = $content;
 
         $responses = [ 'endpoint1' => $this->response ];
@@ -601,11 +604,11 @@ class FCMBatchResponseBasePushTest extends FCMBatchResponseTestCase
      */
     public function testPushErrorGenericBadRequestError(): void
     {
-        $http_code = 400;
+        $httpCode  = 400;
         $content   = file_get_contents(TEST_STATICS . '/Vortex/fcm/response_generic_error.json');
         $endpoints = [ 'endpoint1' ];
 
-        $this->response->status_code = $http_code;
+        $this->response->status_code = $httpCode;
         $this->response->body        = $content;
 
         $responses = [ 'endpoint1' => $this->response ];
@@ -651,19 +654,20 @@ class FCMBatchResponseBasePushTest extends FCMBatchResponseTestCase
     /**
      * Test constructor behavior for error of push notification.
      *
-     * @param string                 $error_msg Error message.
-     * @param int                    $http_code Http code of the response.
-     * @param PushNotificationStatus $status    The expected status.
+     * @param string                 $errorMessage Error message.
+     * @param int                    $httpCode     Http code of the response.
+     * @param PushNotificationStatus $status       The expected status.
      *
      * @dataProvider errorDataProvider
      * @covers       Lunr\Vortex\FCM\FCMBatchResponse::__construct
      */
-    public function testPushErrorsSingle(string $error_msg, int $http_code, PushNotificationStatus $status): void
+    public function testPushErrorsSingle(string $errorMessage, int $httpCode, PushNotificationStatus $status): void
     {
         $content   = 'stuff';
         $endpoints = [ 'endpoint1' ];
 
-        $this->response->status_code = $http_code;
+        // phpcs:ignore Lunr.NamingConventions.CamelCapsVariableName
+        $this->response->status_code = $httpCode;
         $this->response->body        = $content;
 
         $responses = [ 'endpoint1' => $this->response ];
@@ -672,7 +676,7 @@ class FCMBatchResponseBasePushTest extends FCMBatchResponseTestCase
                      ->once()
                      ->with(
                          'Dispatching FCM notification failed for endpoint {endpoint}: {error}',
-                         [ 'endpoint' => 'endpoint1', 'error' => $error_msg ]
+                         [ 'endpoint' => 'endpoint1', 'error' => $errorMessage ]
                      );
 
         $this->class = new FCMBatchResponse($responses, $this->logger, $endpoints);
@@ -704,6 +708,7 @@ class FCMBatchResponseBasePushTest extends FCMBatchResponseTestCase
 
             $endpoints[] = $endpoint;
 
+            // phpcs:ignore Lunr.NamingConventions.CamelCapsVariableName
             $this->response->status_code = $value[1];
 
             $responses[$endpoint] = clone $this->response;
@@ -736,6 +741,7 @@ class FCMBatchResponseBasePushTest extends FCMBatchResponseTestCase
         $content   = file_get_contents(TEST_STATICS . '/Vortex/fcm/response_single_success.json');
         $endpoints = [];
 
+        // phpcs:ignore Lunr.NamingConventions.CamelCapsVariableName
         $this->response->status_code = 200;
         $this->response->body        = $content;
 
@@ -749,11 +755,11 @@ class FCMBatchResponseBasePushTest extends FCMBatchResponseTestCase
 
         parent::baseSetUp($this->class);
 
-        $broadcast_status = PushNotificationStatus::Success;
+        $broadcastStatus = PushNotificationStatus::Success;
 
         $this->assertPropertySame('logger', $this->logger);
         $this->assertPropertySame('endpoints', $endpoints);
-        $this->assertPropertySame('broadcast_status', $broadcast_status);
+        $this->assertPropertySame('broadcastStatus', $broadcastStatus);
         $this->assertPropertySame('responses', $responses);
     }
 
@@ -783,7 +789,7 @@ class FCMBatchResponseBasePushTest extends FCMBatchResponseTestCase
 
         $this->assertPropertySame('logger', $this->logger);
         $this->assertPropertySame('endpoints', $endpoints);
-        $this->assertPropertySame('broadcast_status', PushNotificationStatus::TemporaryError);
+        $this->assertPropertySame('broadcastStatus', PushNotificationStatus::TemporaryError);
         $this->assertPropertySame('responses', $responses);
 
         $this->unmockFunction('curl_errno');
@@ -815,7 +821,7 @@ class FCMBatchResponseBasePushTest extends FCMBatchResponseTestCase
 
         $this->assertPropertySame('logger', $this->logger);
         $this->assertPropertySame('endpoints', $endpoints);
-        $this->assertPropertySame('broadcast_status', PushNotificationStatus::Unknown);
+        $this->assertPropertySame('broadcastStatus', PushNotificationStatus::Unknown);
         $this->assertPropertySame('responses', $responses);
 
         $this->unmockFunction('curl_errno');
@@ -843,25 +849,26 @@ class FCMBatchResponseBasePushTest extends FCMBatchResponseTestCase
     /**
      * Test constructor behavior for push success with broadcast success.
      *
-     * @param string                 $error_msg Error message.
-     * @param int                    $http_code Http code of the response.
-     * @param PushNotificationStatus $status    The expected status.
+     * @param string                 $errorMessage Error message.
+     * @param int                    $httpCode     Http code of the response.
+     * @param PushNotificationStatus $status       The expected status.
      *
      * @dataProvider errorBroadcastDataProvider
      * @covers       Lunr\Vortex\FCM\FCMBatchResponse::__construct
      */
-    public function testPushWithBroadcastFailures(string $error_msg, int $http_code, PushNotificationStatus $status): void
+    public function testPushWithBroadcastFailures(string $errorMessage, int $httpCode, PushNotificationStatus $status): void
     {
         $endpoints = [];
 
-        $this->response->status_code = $http_code;
+        // phpcs:ignore Lunr.NamingConventions.CamelCapsVariableName
+        $this->response->status_code = $httpCode;
         $this->response->body        = '';
 
         $this->logger->expects('warning')
                      ->once()
                      ->with(
                          'Dispatching FCM broadcast failed: {error}',
-                         [ 'error' => $error_msg ]
+                         [ 'error' => $errorMessage ]
                      );
 
         $responses = [
@@ -874,7 +881,7 @@ class FCMBatchResponseBasePushTest extends FCMBatchResponseTestCase
 
         $this->assertPropertySame('logger', $this->logger);
         $this->assertPropertySame('endpoints', $endpoints);
-        $this->assertPropertySame('broadcast_status', $status);
+        $this->assertPropertySame('broadcastStatus', $status);
         $this->assertPropertySame('responses', $responses);
     }
 

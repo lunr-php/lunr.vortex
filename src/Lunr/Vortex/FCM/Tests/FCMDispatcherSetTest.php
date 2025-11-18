@@ -27,9 +27,9 @@ class FCMDispatcherSetTest extends FCMDispatcherTestCase
      */
     public function testSetProjectIDSetsProjectId(): void
     {
-        $this->class->set_project_id('project_id');
+        $this->class->set_project_id('projectID');
 
-        $this->assertPropertyEquals('project_id', 'project_id');
+        $this->assertPropertyEquals('projectID', 'projectID');
     }
 
     /**
@@ -39,7 +39,7 @@ class FCMDispatcherSetTest extends FCMDispatcherTestCase
      */
     public function testSetProjectIdReturnsSelfReference(): void
     {
-        $this->assertEquals($this->class, $this->class->set_project_id('project_id'));
+        $this->assertEquals($this->class, $this->class->set_project_id('projectID'));
     }
 
     /**
@@ -51,7 +51,7 @@ class FCMDispatcherSetTest extends FCMDispatcherTestCase
     {
         $this->class->set_client_email('email');
 
-        $this->assertPropertyEquals('client_email', 'email');
+        $this->assertPropertyEquals('clientEmail', 'email');
     }
 
     /**
@@ -73,7 +73,7 @@ class FCMDispatcherSetTest extends FCMDispatcherTestCase
     {
         $this->class->set_private_key('key');
 
-        $this->assertPropertyEquals('private_key', 'key');
+        $this->assertPropertyEquals('privateKey', 'key');
     }
 
     /**
@@ -114,7 +114,7 @@ class FCMDispatcherSetTest extends FCMDispatcherTestCase
 
         $this->class->set_private_key_from_file('private.key');
 
-        $this->assertPropertyEquals('private_key', 'key');
+        $this->assertPropertyEquals('privateKey', 'key');
 
         $this->unmockFunction('file_get_contents');
     }
@@ -142,7 +142,7 @@ class FCMDispatcherSetTest extends FCMDispatcherTestCase
     {
         $this->class->set_oauth_token('token');
 
-        $this->assertPropertyEquals('oauth_token', 'token');
+        $this->assertPropertyEquals('oauthToken', 'token');
     }
 
 }
