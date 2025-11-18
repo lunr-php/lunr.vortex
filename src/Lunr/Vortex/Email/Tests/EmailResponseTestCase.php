@@ -62,12 +62,13 @@ abstract class EmailResponseTestCase extends LunrBaseTestCase
                  ->method('isError')
                  ->willReturn(TRUE);
 
+        // phpcs:ignore Lunr.NamingConventions.CamelCapsVariableName
         $response->ErrorInfo = 'ErrorInfo';
 
-        $mail_results = [
+        $mailResults = [
             'error-endpoint' => [
                 'is_error'      => $response->isError(),
-                'error_message' => $response->ErrorInfo
+                'error_message' => $response->ErrorInfo // phpcs:ignore Lunr.NamingConventions.CamelCapsVariableName
             ]
         ];
 
@@ -78,7 +79,7 @@ abstract class EmailResponseTestCase extends LunrBaseTestCase
                [ 'endpoint' => 'error-endpoint', 'message' => 'ErrorInfo' ]
              );
 
-        $this->class = new EmailResponse($mail_results, $this->logger, 'The email');
+        $this->class = new EmailResponse($mailResults, $this->logger, 'The email');
 
         parent::baseSetUp($this->class);
     }
@@ -98,14 +99,14 @@ abstract class EmailResponseTestCase extends LunrBaseTestCase
                  ->method('isError')
                  ->willReturn(FALSE);
 
-        $mail_results = [
+        $mailResults = [
             'success-endpoint' => [
                 'is_error'      => $response->isError(),
-                'error_message' => $response->ErrorInfo
+                'error_message' => $response->ErrorInfo // phpcs:ignore Lunr.NamingConventions.CamelCapsVariableName
             ]
         ];
 
-        $this->class = new EmailResponse($mail_results, $this->logger, 'The email');
+        $this->class = new EmailResponse($mailResults, $this->logger, 'The email');
 
         parent::baseSetUp($this->class);
     }

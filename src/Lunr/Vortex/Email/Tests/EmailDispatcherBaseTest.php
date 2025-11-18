@@ -35,7 +35,7 @@ class EmailDispatcherBaseTest extends EmailDispatcherTestCase
      */
     public function testMailIsSetCorrectly(): void
     {
-        $this->assertSame($this->mail_transport, $this->getReflectionPropertyValue('mail_transport'));
+        $this->assertSame($this->mailTransport, $this->getReflectionPropertyValue('mailTransport'));
     }
 
     /**
@@ -49,7 +49,7 @@ class EmailDispatcherBaseTest extends EmailDispatcherTestCase
 
         $mail = $method->invoke($this->class);
 
-        $this->assertNotSame($mail, $this->mail_transport);
+        $this->assertNotSame($mail, $this->mailTransport);
     }
 
 }

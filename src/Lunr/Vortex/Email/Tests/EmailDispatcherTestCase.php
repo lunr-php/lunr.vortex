@@ -29,7 +29,7 @@ abstract class EmailDispatcherTestCase extends LunrBaseTestCase
      * Mock instance of the PHPMailer class.
      * @var PHPMailer
      */
-    protected $mail_transport;
+    protected $mailTransport;
 
     /**
      * Mock instance of a Logger class.
@@ -54,7 +54,7 @@ abstract class EmailDispatcherTestCase extends LunrBaseTestCase
      */
     public function setUp(): void
     {
-        $this->mail_transport = $this->getMockBuilder('PHPMailer\PHPMailer\PHPMailer')->getMock();
+        $this->mailTransport = $this->getMockBuilder('PHPMailer\PHPMailer\PHPMailer')->getMock();
 
         $this->logger = $this->getMockBuilder('Psr\Log\LoggerInterface')->getMock();
 
@@ -62,7 +62,7 @@ abstract class EmailDispatcherTestCase extends LunrBaseTestCase
                               ->disableOriginalConstructor()
                               ->getMock();
 
-        $this->class = new EmailDispatcher($this->mail_transport, $this->logger);
+        $this->class = new EmailDispatcher($this->mailTransport, $this->logger);
 
         parent::baseSetUp($this->class);
     }
@@ -73,7 +73,7 @@ abstract class EmailDispatcherTestCase extends LunrBaseTestCase
     public function tearDown(): void
     {
         unset($this->logger);
-        unset($this->mail_transport);
+        unset($this->mailTransport);
         unset($this->payload);
         unset($this->class);
 

@@ -49,17 +49,17 @@ class EmailResponse implements PushNotificationResponseInterface
     /**
      * Constructor.
      *
-     * @param MailResults     $mail_results Contains endpoints with corresponding PHPMailer results.
-     * @param LoggerInterface $logger       Shared instance of a Logger.
-     * @param string          $payload      Raw payload that was sent out.
+     * @param MailResults     $mailResults Contains endpoints with corresponding PHPMailer results.
+     * @param LoggerInterface $logger      Shared instance of a Logger.
+     * @param string          $payload     Raw payload that was sent out.
      */
-    public function __construct(array $mail_results, LoggerInterface $logger, string $payload)
+    public function __construct(array $mailResults, LoggerInterface $logger, string $payload)
     {
         $this->logger   = $logger;
         $this->statuses = [];
         $this->payload  = $payload;
 
-        $this->handle_sent_notifications($mail_results);
+        $this->handle_sent_notifications($mailResults);
     }
 
     /**
@@ -90,15 +90,15 @@ class EmailResponse implements PushNotificationResponseInterface
     /**
      * Store the results per endpoint in the statuses property
      *
-     * @param MailResults $mail_results Array containing is_error and a possible error message per endpoint
+     * @param MailResults $mailResults Array containing is_error and a possible error message per endpoint
      *
      * @return void
      */
-    private function handle_sent_notifications(array $mail_results): void
+    private function handle_sent_notifications(array $mailResults): void
     {
-        foreach ($mail_results as $endpoint => $result_array)
+        foreach ($mailResults as $endpoint => $resultArray)
         {
-            if ($result_array['is_error'] === FALSE)
+            if ($resultArray['is_error'] === FALSE)
             {
                 $this->statuses[$endpoint] = PushNotificationStatus::Success;
             }
@@ -106,7 +106,7 @@ class EmailResponse implements PushNotificationResponseInterface
             {
                 $this->statuses[$endpoint] = PushNotificationStatus::Error;
 
-                $context = [ 'endpoint' => $endpoint, 'message' => $result_array['error_message'] ];
+                $context = [ 'endpoint' => $endpoint, 'message' => $resultArray['error_message'] ];
 
                 $this->logger->warning('Sending email notification to {endpoint} failed: {message}', $context);
             }

@@ -41,12 +41,12 @@ abstract class EmailPayloadTestCase extends LunrBaseTestCase
      */
     public function setUp(): void
     {
-        $elements_array = [
+        $elementsArray = [
             'subject' => 'value1',
             'body'    => 'value2',
         ];
 
-        $this->payload = json_encode($elements_array);
+        $this->payload = json_encode($elementsArray);
 
         $this->class = $this->getMockBuilder('Lunr\Vortex\Email\EmailPayload')
                             ->getMockForAbstractClass();

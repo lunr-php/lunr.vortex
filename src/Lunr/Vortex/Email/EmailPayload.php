@@ -137,13 +137,13 @@ class EmailPayload implements PushNotificationPayloadInterface
     /**
      * Configure if the body should be treated as HTML.
      *
-     * @param bool $as_html If the body should be treated as HTML
+     * @param bool $asHtml If the body should be treated as HTML
      *
      * @return self Self reference
      */
-    public function body_as_html(bool $as_html): self
+    public function body_as_html(bool $asHtml): self
     {
-        $this->elements['body_as_html'] = $as_html;
+        $this->elements['body_as_html'] = $asHtml;
 
         return $this;
     }

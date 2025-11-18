@@ -32,7 +32,7 @@ class EmailDispatcher implements PushNotificationMultiDispatcherInterface
      *
      * @var PHPMailer
      */
-    private readonly PHPMailer $mail_transport;
+    private readonly PHPMailer $mailTransport;
 
     /**
      * Shared instance of a Logger class.
@@ -44,15 +44,15 @@ class EmailDispatcher implements PushNotificationMultiDispatcherInterface
     /**
      * Constructor.
      *
-     * @param PHPMailer       $mail_transport Shared instance of the mail transport class.
-     * @param LoggerInterface $logger         Shared instance of a Logger.
+     * @param PHPMailer       $mailTransport Shared instance of the mail transport class.
+     * @param LoggerInterface $logger        Shared instance of a Logger.
      */
-    public function __construct(PHPMailer $mail_transport, LoggerInterface $logger)
+    public function __construct(PHPMailer $mailTransport, LoggerInterface $logger)
     {
         $this->source = '';
         $this->logger = $logger;
 
-        $this->mail_transport = $mail_transport;
+        $this->mailTransport = $mailTransport;
     }
 
     /**
@@ -70,7 +70,7 @@ class EmailDispatcher implements PushNotificationMultiDispatcherInterface
      */
     public function clone_mail(): PHPMailer
     {
-        return clone $this->mail_transport;
+        return clone $this->mailTransport;
     }
 
     /**
@@ -88,48 +88,48 @@ class EmailDispatcher implements PushNotificationMultiDispatcherInterface
             throw new InvalidArgumentException('Invalid payload object!');
         }
 
-        $payload_array = $payload->get_payload();
+        $payloadArray = $payload->get_payload();
 
         // PHPMailer is not reentrant, so we have to clone it before we can do endpoint specific configuration.
-        $mail_transport = $this->clone_mail();
-        $mail_transport->setFrom($this->source);
+        $mailTransport = $this->clone_mail();
+        $mailTransport->setFrom($this->source);
 
-        $mail_transport->Subject  = $payload_array['subject'];
-        $mail_transport->Body     = $payload_array['body'];
-        $mail_transport->CharSet  = $payload_array['charset'];
-        $mail_transport->Encoding = $payload_array['encoding'];
+        $mailTransport->Subject  = $payloadArray['subject']; // phpcs:ignore Lunr.NamingConventions.CamelCapsVariableName
+        $mailTransport->Body     = $payloadArray['body']; // phpcs:ignore Lunr.NamingConventions.CamelCapsVariableName
+        $mailTransport->CharSet  = $payloadArray['charset']; // phpcs:ignore Lunr.NamingConventions.CamelCapsVariableName
+        $mailTransport->Encoding = $payloadArray['encoding']; // phpcs:ignore Lunr.NamingConventions.CamelCapsVariableName
 
-        $mail_transport->isHTML($payload_array['body_as_html']);
+        $mailTransport->isHTML($payloadArray['body_as_html']);
 
-        $mail_results = [];
+        $mailResults = [];
 
         foreach ($endpoints as $endpoint)
         {
             try
             {
-                $mail_transport->addAddress($endpoint);
+                $mailTransport->addAddress($endpoint);
 
-                $mail_transport->send();
+                $mailTransport->send();
 
-                $mail_results[$endpoint] = [
-                    'is_error'      => $mail_transport->isError(),
-                    'error_message' => $mail_transport->ErrorInfo,
+                $mailResults[$endpoint] = [
+                    'is_error'      => $mailTransport->isError(),
+                    'error_message' => $mailTransport->ErrorInfo, // phpcs:ignore Lunr.NamingConventions.CamelCapsVariableName
                 ];
             }
             catch (PHPMailerException $e)
             {
-                $mail_results[$endpoint] = [
-                    'is_error'      => $mail_transport->isError(),
-                    'error_message' => $mail_transport->ErrorInfo,
+                $mailResults[$endpoint] = [
+                    'is_error'      => $mailTransport->isError(),
+                    'error_message' => $mailTransport->ErrorInfo, // phpcs:ignore Lunr.NamingConventions.CamelCapsVariableName
                 ];
             }
             finally
             {
-                $mail_transport->clearAddresses();
+                $mailTransport->clearAddresses();
             }
         }
 
-        return new EmailResponse($mail_results, $this->logger, $mail_transport->getSentMIMEMessage());
+        return new EmailResponse($mailResults, $this->logger, $mailTransport->getSentMIMEMessage());
     }
 
     /**

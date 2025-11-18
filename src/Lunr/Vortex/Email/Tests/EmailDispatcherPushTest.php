@@ -79,37 +79,37 @@ class EmailDispatcherPushTest extends EmailDispatcherTestCase
 
         $this->setReflectionPropertyValue('source', 'sender@domain.com');
 
-        $this->mockMethod([ $this->class, 'clone_mail' ], function () { return $this->mail_transport; }, 'private');
+        $this->mockMethod([ $this->class, 'clone_mail' ], function () { return $this->mailTransport; }, 'private');
 
-        $this->mail_transport->expects($this->once())
-                             ->method('isHTML')
-                             ->with(FALSE);
+        $this->mailTransport->expects($this->once())
+                            ->method('isHTML')
+                            ->with(FALSE);
 
-        $this->mail_transport->expects($this->once())
-                             ->method('setFrom')
-                             ->with($this->getReflectionPropertyValue('source'));
+        $this->mailTransport->expects($this->once())
+                            ->method('setFrom')
+                            ->with($this->getReflectionPropertyValue('source'));
 
-        $this->mail_transport->expects($this->once())
-                             ->method('addAddress')
-                             ->with('recipient@domain.com');
+        $this->mailTransport->expects($this->once())
+                            ->method('addAddress')
+                            ->with('recipient@domain.com');
 
-        $this->mail_transport->expects($this->once())
-                             ->method('send')
-                             ->willReturn(TRUE);
+        $this->mailTransport->expects($this->once())
+                            ->method('send')
+                            ->willReturn(TRUE);
 
-        $this->mail_transport->expects($this->once())
-                             ->method('clearAddresses');
+        $this->mailTransport->expects($this->once())
+                            ->method('clearAddresses');
 
-        $this->mail_transport->expects($this->once())
-                             ->method('getSentMIMEMessage')
-                             ->willReturn('');
+        $this->mailTransport->expects($this->once())
+                            ->method('getSentMIMEMessage')
+                            ->willReturn('');
 
         $this->assertInstanceOf('Lunr\Vortex\Email\EmailResponse', $this->class->push($this->payload, $endpoints));
 
-        $this->assertEquals($this->mail_transport->Subject, 'subject');
-        $this->assertEquals($this->mail_transport->Body, 'body');
-        $this->assertEquals($this->mail_transport->CharSet, 'UTF-8');
-        $this->assertEquals($this->mail_transport->Encoding, 'base64');
+        $this->assertEquals($this->mailTransport->Subject, 'subject');
+        $this->assertEquals($this->mailTransport->Body, 'body');
+        $this->assertEquals($this->mailTransport->CharSet, 'UTF-8');
+        $this->assertEquals($this->mailTransport->Encoding, 'base64');
 
         $this->unmockMethod([ $this->class, 'clone_mail' ]);
     }
@@ -135,37 +135,37 @@ class EmailDispatcherPushTest extends EmailDispatcherTestCase
 
         $this->setReflectionPropertyValue('source', 'sender@domain.com');
 
-        $this->mockMethod([ $this->class, 'clone_mail' ], function () { return $this->mail_transport; }, 'private');
+        $this->mockMethod([ $this->class, 'clone_mail' ], function () { return $this->mailTransport; }, 'private');
 
-        $this->mail_transport->expects($this->once())
-                             ->method('isHTML')
-                             ->with(FALSE);
+        $this->mailTransport->expects($this->once())
+                            ->method('isHTML')
+                            ->with(FALSE);
 
-        $this->mail_transport->expects($this->once())
-                             ->method('setFrom')
-                             ->with($this->getReflectionPropertyValue('source'));
+        $this->mailTransport->expects($this->once())
+                            ->method('setFrom')
+                            ->with($this->getReflectionPropertyValue('source'));
 
-        $this->mail_transport->expects($this->once())
-                             ->method('addAddress')
-                             ->with('recipient@domain.com');
+        $this->mailTransport->expects($this->once())
+                            ->method('addAddress')
+                            ->with('recipient@domain.com');
 
-        $this->mail_transport->expects($this->once())
-                             ->method('send')
-                             ->willThrowException(new PHPMailerException());
+        $this->mailTransport->expects($this->once())
+                            ->method('send')
+                            ->willThrowException(new PHPMailerException());
 
-        $this->mail_transport->expects($this->once())
-                             ->method('clearAddresses');
+        $this->mailTransport->expects($this->once())
+                            ->method('clearAddresses');
 
-        $this->mail_transport->expects($this->once())
-                             ->method('getSentMIMEMessage')
-                             ->willReturn('');
+        $this->mailTransport->expects($this->once())
+                            ->method('getSentMIMEMessage')
+                            ->willReturn('');
 
         $this->assertInstanceOf('Lunr\Vortex\Email\EmailResponse', $this->class->push($this->payload, $endpoints));
 
-        $this->assertEquals($this->mail_transport->Subject, 'subject');
-        $this->assertEquals($this->mail_transport->Body, 'body');
-        $this->assertEquals($this->mail_transport->CharSet, 'UTF-8');
-        $this->assertEquals($this->mail_transport->Encoding, 'base64');
+        $this->assertEquals($this->mailTransport->Subject, 'subject');
+        $this->assertEquals($this->mailTransport->Body, 'body');
+        $this->assertEquals($this->mailTransport->CharSet, 'UTF-8');
+        $this->assertEquals($this->mailTransport->Encoding, 'base64');
 
         $this->unmockMethod([ $this->class, 'clone_mail' ]);
     }
@@ -191,15 +191,15 @@ class EmailDispatcherPushTest extends EmailDispatcherTestCase
 
         $this->setReflectionPropertyValue('source', 'sender@domain.com');
 
-        $this->mockMethod([ $this->class, 'clone_mail' ], function () { return $this->mail_transport; }, 'private');
+        $this->mockMethod([ $this->class, 'clone_mail' ], function () { return $this->mailTransport; }, 'private');
 
-        $this->mail_transport->expects($this->once())
-                             ->method('send')
-                             ->willReturn(TRUE);
+        $this->mailTransport->expects($this->once())
+                            ->method('send')
+                            ->willReturn(TRUE);
 
-        $this->mail_transport->expects($this->once())
-                             ->method('getSentMIMEMessage')
-                             ->willReturn('');
+        $this->mailTransport->expects($this->once())
+                            ->method('getSentMIMEMessage')
+                            ->willReturn('');
 
         $this->class->push($this->payload, $endpoints);
 
