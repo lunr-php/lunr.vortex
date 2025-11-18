@@ -58,15 +58,15 @@ class WNSTilePayload extends WNSPayload
      */
     public function get_payload(): string
     {
-        $inner_xml = '';
+        $innerXML = '';
         foreach ($this->elements['image'] as $key => $value)
         {
-            $inner_xml .= '            <image id="' . ($key + 1) . '" src="' . $value . "\"/>\r\n";
+            $innerXML .= '            <image id="' . ($key + 1) . '" src="' . $value . "\"/>\r\n";
         }
 
         foreach ($this->elements['text'] as $key => $value)
         {
-            $inner_xml .= '            <text id="' . ($key + 1) . '">' . $value . "</text>\r\n";
+            $innerXML .= '            <text id="' . ($key + 1) . '">' . $value . "</text>\r\n";
         }
 
         $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\r\n";
@@ -76,7 +76,7 @@ class WNSTilePayload extends WNSPayload
             $xml .= '<tile>' . "\r\n";
             $xml .= '    <visual version="2">' . "\r\n";
             $xml .= '        <binding template="' . $template . '">' . "\r\n";
-            $xml .= $inner_xml;
+            $xml .= $innerXML;
             $xml .= '        </binding>' . "\r\n";
             $xml .= '    </visual>' . "\r\n";
             $xml .= '</tile>';

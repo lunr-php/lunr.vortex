@@ -28,19 +28,19 @@ class WNSDispatcher implements PushNotificationDispatcherInterface
      * Client Secret to use when obtaining an oauth token
      * @var string|null
      */
-    protected ?string $client_secret;
+    protected ?string $clientSecret;
 
     /**
      * Client ID to use when obtaining an oauth token
      * @var string|null
      */
-    protected ?string $client_id;
+    protected ?string $clientID;
 
     /**
      * The authentication token to identify the app channel
      * @var string|null
      */
-    private ?string $oauth_token;
+    private ?string $oauthToken;
 
     /**
      * Push notification type.
@@ -81,12 +81,12 @@ class WNSDispatcher implements PushNotificationDispatcherInterface
      */
     public function __construct(Session $http, LoggerInterface $logger)
     {
-        $this->http          = $http;
-        $this->logger        = $logger;
-        $this->type          = WNSType::RAW;
-        $this->client_id     = NULL;
-        $this->client_secret = NULL;
-        $this->oauth_token   = NULL;
+        $this->http         = $http;
+        $this->logger       = $logger;
+        $this->type         = WNSType::RAW;
+        $this->clientID     = NULL;
+        $this->clientSecret = NULL;
+        $this->oauthToken   = NULL;
     }
 
     /**
@@ -95,9 +95,9 @@ class WNSDispatcher implements PushNotificationDispatcherInterface
     public function __destruct()
     {
         unset($this->type);
-        unset($this->client_id);
-        unset($this->client_secret);
-        unset($this->oauth_token);
+        unset($this->clientID);
+        unset($this->clientSecret);
+        unset($this->oauthToken);
     }
 
     /**
@@ -115,7 +115,7 @@ class WNSDispatcher implements PushNotificationDispatcherInterface
             throw new InvalidArgumentException('Invalid payload object!');
         }
 
-        if (!isset($this->oauth_token))
+        if (!isset($this->oauthToken))
         {
             $this->logger->warning('Tried to push WNS notification to {endpoint} but wasn\'t authenticated.', [ 'endpoint' => $endpoints[0] ]);
             $response = $this->get_new_response_object_for_failed_request($endpoints[0]);
@@ -145,7 +145,7 @@ class WNSDispatcher implements PushNotificationDispatcherInterface
         $headers = [
             'X-WNS-Type'             => 'wns/' . $this->type,
             'Accept'                 => 'application/*',
-            'Authorization'          => 'Bearer ' . $this->oauth_token,
+            'Authorization'          => 'Bearer ' . $this->oauthToken,
             'X-WNS-RequestForStatus' => 'true',
         ];
 
@@ -158,11 +158,11 @@ class WNSDispatcher implements PushNotificationDispatcherInterface
             $headers['Content-Type'] = 'text/xml';
         }
 
-        $raw_payload = $payload->get_payload();
+        $rawPayload = $payload->get_payload();
 
         try
         {
-            $response = $this->http->post($endpoints[0], $headers, $raw_payload);
+            $response = $this->http->post($endpoints[0], $headers, $rawPayload);
         }
         catch (RequestsException $e)
         {
@@ -174,7 +174,7 @@ class WNSDispatcher implements PushNotificationDispatcherInterface
 
         $this->type = WNSType::RAW;
 
-        return new WNSResponse($response, $this->logger, $raw_payload);
+        return new WNSResponse($response, $this->logger, $rawPayload);
     }
 
     /**
@@ -197,26 +197,26 @@ class WNSDispatcher implements PushNotificationDispatcherInterface
     /**
      * Set the client_id for the oauth request
      *
-     * @param string $client_id The client id from the Windows Dashboard
+     * @param string $clientID The client id from the Windows Dashboard
      *
      * @return WNSDispatcher Self reference
      */
-    public function set_client_id(string $client_id): self
+    public function set_client_id(string $clientID): self
     {
-        $this->client_id = $client_id;
+        $this->clientID = $clientID;
         return $this;
     }
 
     /**
      * Set the client_secret for the oauth request
      *
-     * @param string $client_secret The client secret from the Windows Dashboard
+     * @param string $clientSecret The client secret from the Windows Dashboard
      *
      * @return WNSDispatcher Self reference
      */
-    public function set_client_secret(string $client_secret): self
+    public function set_client_secret(string $clientSecret): self
     {
-        $this->client_secret = $client_secret;
+        $this->clientSecret = $clientSecret;
         return $this;
     }
 
@@ -227,10 +227,10 @@ class WNSDispatcher implements PushNotificationDispatcherInterface
      */
     public function get_oauth_token(): string
     {
-        $request_post = [
+        $requestPost = [
             'grant_type'    => 'client_credentials',
-            'client_id'     => $this->client_id,
-            'client_secret' => $this->client_secret,
+            'client_id'     => $this->clientID,
+            'client_secret' => $this->clientSecret,
             'scope'         => self::NOTIFICATION_SCOPE,
         ];
 
@@ -239,7 +239,7 @@ class WNSDispatcher implements PushNotificationDispatcherInterface
         try
         {
             /** @var Response */
-            $response = $this->http->post(self::TOKEN_URL, $headers, $request_post);
+            $response = $this->http->post(self::TOKEN_URL, $headers, $requestPost);
         }
         catch (RequestsException $e)
         {
@@ -248,9 +248,9 @@ class WNSDispatcher implements PushNotificationDispatcherInterface
         }
 
         /**
-         * @var object{'access_token'?: string} $response_object
+         * @var object{'access_token'?: string} $responseObject
          */
-        $response_object = json_decode($response->body);
+        $responseObject = json_decode($response->body);
 
         if (!(json_last_error() === JSON_ERROR_NONE))
         {
@@ -258,13 +258,14 @@ class WNSDispatcher implements PushNotificationDispatcherInterface
             throw new UnexpectedValueException('Requesting token failed: Malformed JSON response');
         }
 
-        if (!property_exists($response_object, 'access_token'))
+        if (!property_exists($responseObject, 'access_token'))
         {
             $this->logger->warning('Requesting token failed: Not a valid JSON response');
             throw new UnexpectedValueException('Requesting token failed: Not a valid JSON response');
         }
 
-        return $response_object->access_token;
+        // phpcs:ignore Lunr.NamingConventions.CamelCapsVariableName
+        return $responseObject->access_token;
     }
 
     /**
@@ -276,7 +277,7 @@ class WNSDispatcher implements PushNotificationDispatcherInterface
      */
     public function set_oauth_token(string $token): void
     {
-        $this->oauth_token = $token;
+        $this->oauthToken = $token;
     }
 
     /**
@@ -298,11 +299,11 @@ class WNSDispatcher implements PushNotificationDispatcherInterface
      */
     protected function get_new_response_object_for_failed_request(string $endpoint): Response
     {
-        $http_response = new Response();
+        $httpResponse = new Response();
 
-        $http_response->url = $endpoint;
+        $httpResponse->url = $endpoint;
 
-        return $http_response;
+        return $httpResponse;
     }
 
 }

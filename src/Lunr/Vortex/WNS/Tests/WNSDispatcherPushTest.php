@@ -118,7 +118,7 @@ class WNSDispatcherPushTest extends WNSDispatcherTestCase
                               ->disableOriginalConstructor()
                               ->getMock();
 
-        $this->setReflectionPropertyValue('oauth_token', '123456');
+        $this->setReflectionPropertyValue('oauthToken', '123456');
 
         $endpoints = [ 'endpoint' ];
 
@@ -153,7 +153,7 @@ class WNSDispatcherPushTest extends WNSDispatcherTestCase
                               ->disableOriginalConstructor()
                               ->getMock();
 
-        $this->setReflectionPropertyValue('oauth_token', '123456');
+        $this->setReflectionPropertyValue('oauthToken', '123456');
 
         $endpoints = [ 'endpoint' ];
 
@@ -184,7 +184,7 @@ class WNSDispatcherPushTest extends WNSDispatcherTestCase
      */
     public function testPushingRawDoesNotSetTargetHeader(): void
     {
-        $this->setReflectionPropertyValue('oauth_token', '123456');
+        $this->setReflectionPropertyValue('oauthToken', '123456');
 
         $endpoints = [ 'endpoint' ];
 
@@ -215,7 +215,7 @@ class WNSDispatcherPushTest extends WNSDispatcherTestCase
      */
     public function testPushReturnsWNSResponseObjectOnRequestFailure(): void
     {
-        $this->setReflectionPropertyValue('oauth_token', '123456');
+        $this->setReflectionPropertyValue('oauthToken', '123456');
 
         $endpoints = [ 'endpoint' ];
 
@@ -253,7 +253,7 @@ class WNSDispatcherPushTest extends WNSDispatcherTestCase
      */
     public function testPushReturnsWNSResponseObject(): void
     {
-        $this->setReflectionPropertyValue('oauth_token', '123456');
+        $this->setReflectionPropertyValue('oauthToken', '123456');
 
         $endpoints = [ 'endpoint' ];
 
@@ -288,7 +288,7 @@ class WNSDispatcherPushTest extends WNSDispatcherTestCase
                               ->disableOriginalConstructor()
                               ->getMock();
 
-        $this->setReflectionPropertyValue('oauth_token', '123456');
+        $this->setReflectionPropertyValue('oauthToken', '123456');
 
         $endpoints = [ 'endpoint' ];
 
@@ -331,7 +331,7 @@ class WNSDispatcherPushTest extends WNSDispatcherTestCase
                               ->disableOriginalConstructor()
                               ->getMock();
 
-        $this->setReflectionPropertyValue('oauth_token', '123456');
+        $this->setReflectionPropertyValue('oauthToken', '123456');
 
         $endpoints = [ 'endpoint' ];
 

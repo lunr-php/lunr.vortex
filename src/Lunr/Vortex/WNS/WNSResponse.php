@@ -32,7 +32,7 @@ class WNSResponse implements PushNotificationResponseInterface
      * HTTP status code.
      * @var int|bool
      */
-    private readonly int|bool $http_code;
+    private readonly int|bool $httpCode;
 
     /**
      * Delivery status.
@@ -61,11 +61,11 @@ class WNSResponse implements PushNotificationResponseInterface
      */
     public function __construct(Response $response, LoggerInterface $logger, ?string $payload)
     {
-        $this->http_code = $response->status_code;
-        $this->endpoint  = $response->url;
-        $this->payload   = $payload;
+        $this->httpCode = $response->status_code; // phpcs:ignore Lunr.NamingConventions.CamelCapsVariableName
+        $this->endpoint = $response->url;
+        $this->payload  = $payload;
 
-        if ($this->http_code === FALSE)
+        if ($this->httpCode === FALSE)
         {
             $this->status = PushNotificationStatus::Error;
         }
@@ -94,7 +94,7 @@ class WNSResponse implements PushNotificationResponseInterface
      */
     private function parseStatus(string $endpoint, LoggerInterface $logger): PushNotificationStatus
     {
-        switch ($this->http_code)
+        switch ($this->httpCode)
         {
             case 200:
                 if ($this->headers['X-WNS-Status'] === 'received')
