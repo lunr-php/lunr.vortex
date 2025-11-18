@@ -31,18 +31,18 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
      */
     public function testDispatchDoesNoPushIfNoEndpoint(): void
     {
-        $apns_payload = $this->getMockBuilder(APNSPayload::class)
-                             ->disableOriginalConstructor()
-                             ->getMock();
+        $apnsPayload = $this->getMockBuilder(APNSPayload::class)
+                            ->disableOriginalConstructor()
+                            ->getMock();
 
-        $data_payload = $this->getMockBuilder(FCMPayload::class)
-                             ->disableOriginalConstructor()
-                             ->getMock();
+        $dataPayload = $this->getMockBuilder(FCMPayload::class)
+                            ->disableOriginalConstructor()
+                            ->getMock();
 
         $endpoints = [];
         $payloads  = [
-            'apns' => [ 'apns' => $apns_payload ],
-            'fcm'  => [ 'data' => $data_payload ],
+            'apns' => [ 'apns' => $apnsPayload ],
+            'fcm'  => [ 'data' => $dataPayload ],
         ];
 
         $this->apns->expects($this->never())
@@ -53,7 +53,7 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
 
         $this->class->dispatch($endpoints, $payloads);
 
-        $empty_statuses = [
+        $emptyStatuses = [
             PushNotificationStatus::Unknown->value         => [],
             PushNotificationStatus::Success->value         => [],
             PushNotificationStatus::TemporaryError->value  => [],
@@ -64,7 +64,7 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
             PushNotificationStatus::Deferred->value        => [],
         ];
 
-        $this->assertPropertySame('statuses', $empty_statuses);
+        $this->assertPropertySame('statuses', $emptyStatuses);
     }
 
     /**
@@ -91,8 +91,8 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
             ],
         ];
 
-        $payloads          = [];
-        $expected_statuses = [
+        $payloads         = [];
+        $expectedStatuses = [
             PushNotificationStatus::Unknown->value         => [],
             PushNotificationStatus::Success->value         => [],
             PushNotificationStatus::TemporaryError->value  => [],
@@ -103,7 +103,7 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
             PushNotificationStatus::Deferred->value        => [],
         ];
 
-        $expected_statuses[PushNotificationStatus::NotHandled->value] = [
+        $expectedStatuses[PushNotificationStatus::NotHandled->value] = [
             [
                 'endpoint'    => 'abcde-12345',
                 'platform'    => 'apns',
@@ -128,7 +128,7 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
 
         $this->class->dispatch($endpoints, $payloads);
 
-        $this->assertPropertySame('statuses', $expected_statuses);
+        $this->assertPropertySame('statuses', $expectedStatuses);
     }
 
     /**
@@ -138,13 +138,13 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
      */
     public function testDispatchDoesNoPushIfNoEndpointsForPayloads(): void
     {
-        $wns_payload = $this->getMockBuilder(WNSTilePayload::class)
-                            ->disableOriginalConstructor()
-                            ->getMock();
+        $wnsPayload = $this->getMockBuilder(WNSTilePayload::class)
+                           ->disableOriginalConstructor()
+                           ->getMock();
 
-        $email_payload = $this->getMockBuilder(EmailPayload::class)
-                              ->disableOriginalConstructor()
-                              ->getMock();
+        $emailPayload = $this->getMockBuilder(EmailPayload::class)
+                             ->disableOriginalConstructor()
+                             ->getMock();
 
         $endpoints = [
             [
@@ -164,11 +164,11 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
         ];
 
         $payloads = [
-            'wns'   => [ 'tile'  => $wns_payload ],
-            'email' => [ 'email' => $email_payload ],
+            'wns'   => [ 'tile'  => $wnsPayload ],
+            'email' => [ 'email' => $emailPayload ],
         ];
 
-        $expected_statuses = [
+        $expectedStatuses = [
             PushNotificationStatus::Unknown->value         => [],
             PushNotificationStatus::Success->value         => [],
             PushNotificationStatus::TemporaryError->value  => [],
@@ -179,7 +179,7 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
             PushNotificationStatus::Deferred->value        => [],
         ];
 
-        $expected_statuses[PushNotificationStatus::NotHandled->value] = [
+        $expectedStatuses[PushNotificationStatus::NotHandled->value] = [
             [
                 'endpoint'    => 'abcde-12345',
                 'platform'    => 'apns',
@@ -210,7 +210,7 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
 
         $this->class->dispatch($endpoints, $payloads);
 
-        $this->assertPropertySame('statuses', $expected_statuses);
+        $this->assertPropertySame('statuses', $expectedStatuses);
     }
 
     /**
@@ -227,13 +227,13 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
 
         $this->setReflectionPropertyValue('dispatchers', $dispatchers);
 
-        $apns_payload = $this->getMockBuilder(APNSPayload::class)
-                             ->disableOriginalConstructor()
-                             ->getMock();
-
-        $fcm_payload = $this->getMockBuilder(FCMPayload::class)
+        $apnsPayload = $this->getMockBuilder(APNSPayload::class)
                             ->disableOriginalConstructor()
                             ->getMock();
+
+        $fcmPayload = $this->getMockBuilder(FCMPayload::class)
+                           ->disableOriginalConstructor()
+                           ->getMock();
 
         $endpoints = [
             [
@@ -253,11 +253,11 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
         ];
 
         $payloads = [
-            'apns' => [ 'notification' => $apns_payload ],
-            'fcm'  => [ 'notification' => $fcm_payload ],
+            'apns' => [ 'notification' => $apnsPayload ],
+            'fcm'  => [ 'notification' => $fcmPayload ],
         ];
 
-        $expected_statuses = [
+        $expectedStatuses = [
             PushNotificationStatus::Unknown->value         => [],
             PushNotificationStatus::Success->value         => [],
             PushNotificationStatus::TemporaryError->value  => [],
@@ -268,7 +268,7 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
             PushNotificationStatus::Deferred->value        => [],
         ];
 
-        $expected_statuses[PushNotificationStatus::NotHandled->value] = [
+        $expectedStatuses[PushNotificationStatus::NotHandled->value] = [
             [
                 'endpoint'    => 'abcde-12345',
                 'platform'    => 'apns',
@@ -299,7 +299,7 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
 
         $this->class->dispatch($endpoints, $payloads);
 
-        $this->assertPropertySame('statuses', $expected_statuses);
+        $this->assertPropertySame('statuses', $expectedStatuses);
     }
 
     /**
@@ -309,13 +309,13 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
      */
     public function testDispatchDoesNoPushIfNoEndpointsForPayloadTypeAndNoDispatcher(): void
     {
-        $apns_payload = $this->getMockBuilder(APNSPayload::class)
-                             ->disableOriginalConstructor()
-                             ->getMock();
-
-        $fcm_payload = $this->getMockBuilder(FCMPayload::class)
+        $apnsPayload = $this->getMockBuilder(APNSPayload::class)
                             ->disableOriginalConstructor()
                             ->getMock();
+
+        $fcmPayload = $this->getMockBuilder(FCMPayload::class)
+                           ->disableOriginalConstructor()
+                           ->getMock();
 
         $endpoints = [
             [
@@ -335,11 +335,11 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
         ];
 
         $payloads = [
-            'apns' => [ 'notification' => $apns_payload ],
-            'fcm'  => [ 'notification' => $fcm_payload ],
+            'apns' => [ 'notification' => $apnsPayload ],
+            'fcm'  => [ 'notification' => $fcmPayload ],
         ];
 
-        $expected_statuses = [
+        $expectedStatuses = [
             PushNotificationStatus::Unknown->value         => [],
             PushNotificationStatus::Success->value         => [],
             PushNotificationStatus::TemporaryError->value  => [],
@@ -350,7 +350,7 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
             PushNotificationStatus::Deferred->value        => [],
         ];
 
-        $expected_statuses[PushNotificationStatus::NotHandled->value] = [
+        $expectedStatuses[PushNotificationStatus::NotHandled->value] = [
             [
                 'endpoint'    => 'abcde-12345',
                 'platform'    => 'apns',
@@ -381,7 +381,7 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
 
         $this->class->dispatch($endpoints, $payloads);
 
-        $this->assertPropertySame('statuses', $expected_statuses);
+        $this->assertPropertySame('statuses', $expectedStatuses);
     }
 
     /**
@@ -397,17 +397,17 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
         ];
         $this->setReflectionPropertyValue('dispatchers', $dispatchers);
 
-        $apns_payload = $this->getMockBuilder(APNSPayload::class)
+        $apnsPayload = $this->getMockBuilder(APNSPayload::class)
+                            ->disableOriginalConstructor()
+                            ->getMock();
+
+        $dataPayload = $this->getMockBuilder(FCMPayload::class)
+                            ->disableOriginalConstructor()
+                            ->getMock();
+
+        $emailPayload = $this->getMockBuilder(EmailPayload::class)
                              ->disableOriginalConstructor()
                              ->getMock();
-
-        $data_payload = $this->getMockBuilder(FCMPayload::class)
-                             ->disableOriginalConstructor()
-                             ->getMock();
-
-        $email_payload = $this->getMockBuilder(EmailPayload::class)
-                              ->disableOriginalConstructor()
-                              ->getMock();
 
         $endpoints = [
             [
@@ -427,12 +427,12 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
         ];
 
         $payloads = [
-            'apns'  => [ 'apns' => $apns_payload ],
-            'email' => [ 'email' => $email_payload ],
-            'fcm'   => [ 'data' => $data_payload ],
+            'apns'  => [ 'apns' => $apnsPayload ],
+            'email' => [ 'email' => $emailPayload ],
+            'fcm'   => [ 'data' => $dataPayload ],
         ];
 
-        $expected_statuses = [
+        $expectedStatuses = [
             PushNotificationStatus::Unknown->value         => [],
             PushNotificationStatus::Success->value         => [],
             PushNotificationStatus::TemporaryError->value  => [],
@@ -443,7 +443,7 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
             PushNotificationStatus::Deferred->value        => [],
         ];
 
-        $expected_statuses[PushNotificationStatus::Success->value] = [
+        $expectedStatuses[PushNotificationStatus::Success->value] = [
             [
                 'endpoint'    => 'fghij-67890',
                 'platform'    => 'fcm',
@@ -453,7 +453,7 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
             ],
         ];
 
-        $expected_statuses[PushNotificationStatus::NotHandled->value] = [
+        $expectedStatuses[PushNotificationStatus::NotHandled->value] = [
             [
                 'endpoint'    => 'abcde-12345',
                 'platform'    => 'apns',
@@ -465,10 +465,10 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
 
         $this->fcm->expects($this->once())
                    ->method('push')
-                   ->with($data_payload, [ 'fghij-67890' ])
-                   ->willReturn($this->fcm_response);
+                   ->with($dataPayload, [ 'fghij-67890' ])
+                   ->willReturn($this->fcmResponse);
 
-        $this->fcm_response->expects($this->once())
+        $this->fcmResponse->expects($this->once())
                           ->method('get_status')
                           ->with('fghij-67890')
                           ->willReturn(PushNotificationStatus::Success);
@@ -478,7 +478,7 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
 
         $this->class->dispatch($endpoints, $payloads);
 
-        $this->assertPropertySame('statuses', $expected_statuses);
+        $this->assertPropertySame('statuses', $expectedStatuses);
     }
 
     /**
@@ -495,17 +495,17 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
         ];
         $this->setReflectionPropertyValue('dispatchers', $dispatchers);
 
-        $apns_payload = $this->getMockBuilder(APNSPayload::class)
+        $apnsPayload = $this->getMockBuilder(APNSPayload::class)
+                            ->disableOriginalConstructor()
+                            ->getMock();
+
+        $dataPayload = $this->getMockBuilder(FCMPayload::class)
+                            ->disableOriginalConstructor()
+                            ->getMock();
+
+        $emailPayload = $this->getMockBuilder(EmailPayload::class)
                              ->disableOriginalConstructor()
                              ->getMock();
-
-        $data_payload = $this->getMockBuilder(FCMPayload::class)
-                             ->disableOriginalConstructor()
-                             ->getMock();
-
-        $email_payload = $this->getMockBuilder(EmailPayload::class)
-                              ->disableOriginalConstructor()
-                              ->getMock();
 
         $endpoints = [
             [
@@ -525,24 +525,24 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
         ];
 
         $payloads = [
-            'apns'  => [ 'apns' => $apns_payload ],
-            'email' => [ 'email' => $email_payload ],
-            'fcm'   => [ 'data' => $data_payload ],
+            'apns'  => [ 'apns' => $apnsPayload ],
+            'email' => [ 'email' => $emailPayload ],
+            'fcm'   => [ 'data' => $dataPayload ],
         ];
 
         $this->fcm->expects($this->once())
                    ->method('push')
-                   ->with($data_payload, [ 'fghij-67890' ])
-                   ->willReturn($this->fcm_response);
+                   ->with($dataPayload, [ 'fghij-67890' ])
+                   ->willReturn($this->fcmResponse);
 
         $this->apns->expects($this->once())
                    ->method('push')
-                   ->with($apns_payload, [ 'abcde-12345' ])
+                   ->with($apnsPayload, [ 'abcde-12345' ])
                    ->willReturn($this->apnsResponse);
 
-        $this->fcm_response->expects($this->once())
-                           ->method('get_status')
-                           ->willReturn(PushNotificationStatus::Success);
+        $this->fcmResponse->expects($this->once())
+                          ->method('get_status')
+                          ->willReturn(PushNotificationStatus::Success);
 
         $this->apnsResponse->expects('get_status')
                            ->once()
@@ -566,9 +566,9 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
     {
         $this->setReflectionPropertyValue('dispatchers', [ 'wns' => $this->wns ]);
 
-        $tile_payload = $this->getMockBuilder(WNSTilePayload::class)
-                             ->disableOriginalConstructor()
-                             ->getMock();
+        $tilePayload = $this->getMockBuilder(WNSTilePayload::class)
+                            ->disableOriginalConstructor()
+                            ->getMock();
 
         $endpoints = [
             [
@@ -588,10 +588,10 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
         ];
 
         $payloads = [
-            'wns' => [ 'tile' => $tile_payload ],
+            'wns' => [ 'tile' => $tilePayload ],
         ];
 
-        $expected_statuses = [
+        $expectedStatuses = [
             PushNotificationStatus::Unknown->value         => [],
             PushNotificationStatus::Success->value         => [],
             PushNotificationStatus::TemporaryError->value  => [],
@@ -602,7 +602,7 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
             PushNotificationStatus::Deferred->value        => [],
         ];
 
-        $expected_statuses[PushNotificationStatus::Success->value] = [
+        $expectedStatuses[PushNotificationStatus::Success->value] = [
             [
                 'endpoint'    => 'abcde-12345',
                 'platform'    => 'wns',
@@ -612,7 +612,7 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
             ],
         ];
 
-        $expected_statuses[PushNotificationStatus::Error->value] = [
+        $expectedStatuses[PushNotificationStatus::Error->value] = [
             [
                 'endpoint'    => 'abcde-56789',
                 'platform'    => 'wns',
@@ -638,7 +638,7 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
 
         $this->class->dispatch($endpoints, $payloads);
 
-        $this->assertPropertySame('statuses', $expected_statuses);
+        $this->assertPropertySame('statuses', $expectedStatuses);
     }
 
     /**
@@ -655,9 +655,9 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
         ];
         $this->setReflectionPropertyValue('dispatchers', $dispatchers);
 
-        $apns_payload = $this->getMockBuilder(APNSPayload::class)
-                             ->disableOriginalConstructor()
-                             ->getMock();
+        $apnsPayload = $this->getMockBuilder(APNSPayload::class)
+                            ->disableOriginalConstructor()
+                            ->getMock();
 
         $endpoints = [
             [
@@ -677,10 +677,10 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
         ];
 
         $payloads = [
-            'apns' => [ 'apns' => $apns_payload ],
+            'apns' => [ 'apns' => $apnsPayload ],
         ];
 
-        $expected_statuses = [
+        $expectedStatuses = [
             PushNotificationStatus::Unknown->value         => [],
             PushNotificationStatus::Success->value         => [],
             PushNotificationStatus::TemporaryError->value  => [],
@@ -691,7 +691,7 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
             PushNotificationStatus::Deferred->value        => [],
         ];
 
-        $expected_statuses[PushNotificationStatus::Success->value] = [
+        $expectedStatuses[PushNotificationStatus::Success->value] = [
             [
                 'endpoint'    => 'endpoint1',
                 'platform'    => 'apns',
@@ -701,7 +701,7 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
             ],
         ];
 
-        $expected_statuses[PushNotificationStatus::Error->value] = [
+        $expectedStatuses[PushNotificationStatus::Error->value] = [
             [
                 'endpoint'    => 'endpoint2',
                 'platform'    => 'apns',
@@ -713,7 +713,7 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
 
         $this->apns->expects($this->once())
                    ->method('push')
-                   ->with($apns_payload, [ 'endpoint1', 'endpoint2' ])
+                   ->with($apnsPayload, [ 'endpoint1', 'endpoint2' ])
                    ->willReturn($this->apnsResponse);
 
         $this->apnsResponse->expects('get_status')
@@ -728,7 +728,7 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
 
         $this->class->dispatch($endpoints, $payloads);
 
-        $this->assertPropertySame('statuses', $expected_statuses);
+        $this->assertPropertySame('statuses', $expectedStatuses);
     }
 
     /**
@@ -745,13 +745,13 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
         ];
         $this->setReflectionPropertyValue('dispatchers', $dispatchers);
 
-        $apns_payload = $this->getMockBuilder(APNSPayload::class)
+        $apnsPayload = $this->getMockBuilder(APNSPayload::class)
+                            ->disableOriginalConstructor()
+                            ->getMock();
+
+        $emailPayload = $this->getMockBuilder(EmailPayload::class)
                              ->disableOriginalConstructor()
                              ->getMock();
-
-        $email_payload = $this->getMockBuilder(EmailPayload::class)
-                              ->disableOriginalConstructor()
-                              ->getMock();
 
         $endpoints = [
             [
@@ -771,11 +771,11 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
         ];
 
         $payloads = [
-            'apns'  => [ 'apns' => $apns_payload ],
-            'email' => [ 'email' => $email_payload ],
+            'apns'  => [ 'apns' => $apnsPayload ],
+            'email' => [ 'email' => $emailPayload ],
         ];
 
-        $expected_statuses = [
+        $expectedStatuses = [
             PushNotificationStatus::Unknown->value         => [],
             PushNotificationStatus::Success->value         => [],
             PushNotificationStatus::TemporaryError->value  => [],
@@ -786,7 +786,7 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
             PushNotificationStatus::Deferred->value        => [],
         ];
 
-        $expected_statuses[PushNotificationStatus::Success->value] = [
+        $expectedStatuses[PushNotificationStatus::Success->value] = [
             [
                 'endpoint'    => 'abcde-12345',
                 'platform'    => 'apns',
@@ -796,7 +796,7 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
             ],
         ];
 
-        $expected_statuses[PushNotificationStatus::NotHandled->value] = [
+        $expectedStatuses[PushNotificationStatus::NotHandled->value] = [
             [
                 'endpoint'    => 'fghij-67890',
                 'platform'    => 'fcm',
@@ -808,7 +808,7 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
 
         $this->apns->expects($this->once())
                    ->method('push')
-                   ->with($apns_payload, [ 'abcde-12345' ])
+                   ->with($apnsPayload, [ 'abcde-12345' ])
                    ->willReturn($this->apnsResponse);
 
         $this->apnsResponse->expects('get_status')
@@ -824,7 +824,7 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
         $this->assertArrayHasKey('apns', $dispatchers);
         $this->assertArrayHasKey('fcm', $dispatchers);
 
-        $this->assertPropertySame('statuses', $expected_statuses);
+        $this->assertPropertySame('statuses', $expectedStatuses);
     }
 
     /**
@@ -836,7 +836,7 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
     {
         $this->setReflectionPropertyValue('dispatchers', [ 'jpush' => $this->jpush ]);
 
-        $jpush_payload = $this->getMockBuilder(JPushMessagePayload::class)
+        $jpushPayload = $this->getMockBuilder(JPushMessagePayload::class)
                              ->disableOriginalConstructor()
                              ->getMock();
 
@@ -864,7 +864,7 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
             ],
         ];
 
-        $expected_statuses = [
+        $expectedStatuses = [
             PushNotificationStatus::Unknown->value         => [],
             PushNotificationStatus::Success->value         => [],
             PushNotificationStatus::TemporaryError->value  => [],
@@ -875,7 +875,7 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
             PushNotificationStatus::Deferred->value        => [],
         ];
 
-        $expected_statuses[PushNotificationStatus::Success->value] = [
+        $expectedStatuses[PushNotificationStatus::Success->value] = [
             [
                 'endpoint'    => 'endpoint1',
                 'platform'    => 'jpush',
@@ -885,7 +885,7 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
             ],
         ];
 
-        $expected_statuses[PushNotificationStatus::Deferred->value] = [
+        $expectedStatuses[PushNotificationStatus::Deferred->value] = [
             [
                 'endpoint'    => 'abcde-12345',
                 'platform'    => 'jpush',
@@ -906,7 +906,7 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
 
         $this->jpush->expects($this->once())
                     ->method('push')
-                    ->with($jpush_payload, [ 'abcde-12345', 'fghij-67890', 'endpoint1' ])
+                    ->with($jpushPayload, [ 'abcde-12345', 'fghij-67890', 'endpoint1' ])
                     ->willReturn($this->jpushResponse);
 
         $this->jpushResponse->expects('get_status')
@@ -934,14 +934,14 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
                              ->with('fghij-67890')
                              ->andReturn('555165655');
 
-        $this->class->dispatch($endpoints, [ 'jpush'  => [ 'notification' => $jpush_payload ]]);
+        $this->class->dispatch($endpoints, [ 'jpush'  => [ 'notification' => $jpushPayload ]]);
 
         $property    = $this->getReflectionProperty('dispatchers');
         $dispatchers = $property->getValue($this->class);
 
         $this->assertArrayHasKey('jpush', $dispatchers);
 
-        $this->assertPropertySame('statuses', $expected_statuses);
+        $this->assertPropertySame('statuses', $expectedStatuses);
     }
 
     /**
@@ -957,62 +957,62 @@ class PushNotificationDispatcherDispatchTest extends PushNotificationDispatcherT
         ];
         $this->setReflectionPropertyValue('dispatchers', $dispatchers);
 
-        $data_payload = $this->getMockBuilder(FCMPayload::class)
+        $dataPayload = $this->getMockBuilder(FCMPayload::class)
+                            ->disableOriginalConstructor()
+                            ->getMock();
+
+        $apnsPayload = $this->getMockBuilder(APNSPayload::class)
+                            ->disableOriginalConstructor()
+                            ->getMock();
+
+        $emailPayload = $this->getMockBuilder(EmailPayload::class)
                              ->disableOriginalConstructor()
                              ->getMock();
-
-        $apns_payload = $this->getMockBuilder(APNSPayload::class)
-                             ->disableOriginalConstructor()
-                             ->getMock();
-
-        $email_payload = $this->getMockBuilder(EmailPayload::class)
-                              ->disableOriginalConstructor()
-                              ->getMock();
 
         $payloads = [
-            'apns'  => [ 'apns' => $apns_payload ],
-            'fcm'  => [ 'data' => $data_payload ],
-            'email' => [ 'email' => $email_payload ],
+            'apns'  => [ 'apns' => $apnsPayload ],
+            'fcm'  => [ 'data' => $dataPayload ],
+            'email' => [ 'email' => $emailPayload ],
         ];
 
-        $apns_payload->expects($this->exactly(2))
+        $apnsPayload->expects($this->exactly(2))
+                    ->method('is_broadcast')
+                    ->willReturn(TRUE);
+
+        $emailPayload->expects($this->exactly(3))
                      ->method('is_broadcast')
                      ->willReturn(TRUE);
 
-        $email_payload->expects($this->exactly(3))
-                     ->method('is_broadcast')
-                     ->willReturn(TRUE);
-
-        $data_payload->expects($this->exactly(3))
-                     ->method('is_broadcast')
-                     ->willReturn(TRUE);
+        $dataPayload->expects($this->exactly(3))
+                    ->method('is_broadcast')
+                    ->willReturn(TRUE);
 
         $this->fcm->expects($this->once())
-                   ->method('push')
-                   ->with($data_payload, [])
-                   ->willReturn($this->fcm_response);
+                  ->method('push')
+                  ->with($dataPayload, [])
+                  ->willReturn($this->fcmResponse);
 
-        $this->fcm_response->expects($this->never())
-                           ->method('get_status');
+        $this->fcmResponse->expects($this->never())
+                          ->method('get_status');
 
-        $this->fcm_response->expects($this->once())
-                           ->method('get_broadcast_status')
-                           ->willReturn(PushNotificationStatus::Success);
+        $this->fcmResponse->expects($this->once())
+                          ->method('get_broadcast_status')
+                          ->willReturn(PushNotificationStatus::Success);
 
         $this->class->dispatch([], $payloads);
 
-        $expected_statuses = [
-            PushNotificationStatus::Unknown->value         => [ 'email' => [ 'email' => $email_payload ]],
-            PushNotificationStatus::Success->value         => [ 'fcm' => [ 'data' => $data_payload ] ],
+        $expectedStatuses = [
+            PushNotificationStatus::Unknown->value         => [ 'email' => [ 'email' => $emailPayload ]],
+            PushNotificationStatus::Success->value         => [ 'fcm' => [ 'data' => $dataPayload ] ],
             PushNotificationStatus::TemporaryError->value  => [],
             PushNotificationStatus::InvalidEndpoint->value => [],
             PushNotificationStatus::ClientError->value     => [],
             PushNotificationStatus::Error->value           => [],
-            PushNotificationStatus::NotHandled->value      => [ 'apns' => [ 'apns' => $apns_payload ]],
+            PushNotificationStatus::NotHandled->value      => [ 'apns' => [ 'apns' => $apnsPayload ]],
             PushNotificationStatus::Deferred->value        => [],
         ];
 
-        $this->assertPropertySame('broadcast_statuses', $expected_statuses);
+        $this->assertPropertySame('broadcastStatuses', $expectedStatuses);
     }
 
 }

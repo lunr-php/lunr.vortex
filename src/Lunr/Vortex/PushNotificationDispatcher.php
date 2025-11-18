@@ -34,7 +34,7 @@ class PushNotificationDispatcher
      * List of Push Notification status codes for every broadcast.
      * @var array<value-of<PushNotificationStatus>, array<string, array<string, PushNotificationPayloadInterface>>>
      */
-    protected array $broadcast_statuses;
+    protected array $broadcastStatuses;
 
     /**
      * Constructor.
@@ -49,7 +49,7 @@ class PushNotificationDispatcher
             $this->statuses[$case->value] = [];
         }
 
-        $this->broadcast_statuses = $this->statuses;
+        $this->broadcastStatuses = $this->statuses;
     }
 
     /**
@@ -59,7 +59,7 @@ class PushNotificationDispatcher
     {
         unset($this->dispatchers);
         unset($this->statuses);
-        unset($this->broadcast_statuses);
+        unset($this->broadcastStatuses);
     }
 
     /**
@@ -87,65 +87,65 @@ class PushNotificationDispatcher
      */
     public function dispatch(array $endpoints, array $payloads): void
     {
-        $grouped_endpoints = [];
+        $groupedEndpoints = [];
 
         foreach ($endpoints as $endpoint)
         {
-            $grouped_endpoints[$endpoint['platform']][$endpoint['payloadType']][] = $endpoint;
+            $groupedEndpoints[$endpoint['platform']][$endpoint['payloadType']][] = $endpoint;
         }
 
-        foreach ($payloads as $platform => $platform_payloads)
+        foreach ($payloads as $platform => $platformPayloads)
         {
-            if (!isset($grouped_endpoints[$platform]) && array_filter($platform_payloads, fn($payload) => $payload->is_broadcast()) === [])
+            if (!isset($groupedEndpoints[$platform]) && array_filter($platformPayloads, fn($payload) => $payload->is_broadcast()) === [])
             {
                 continue;
             }
 
             if (!isset($this->dispatchers[$platform]))
             {
-                if (isset($grouped_endpoints[$platform]))
+                if (isset($groupedEndpoints[$platform]))
                 {
-                    foreach ($grouped_endpoints[$platform] as $payload_endpoints)
+                    foreach ($groupedEndpoints[$platform] as $payloadEndpoints)
                     {
-                        $this->statuses[Status::NotHandled->value] = array_merge($this->statuses[Status::NotHandled->value], $payload_endpoints);
+                        $this->statuses[Status::NotHandled->value] = array_merge($this->statuses[Status::NotHandled->value], $payloadEndpoints);
                     }
                 }
 
-                foreach (array_filter($platform_payloads, fn($payload) => $payload->is_broadcast()) as $payload_type => $payload)
+                foreach (array_filter($platformPayloads, fn($payload) => $payload->is_broadcast()) as $payloadType => $payload)
                 {
-                    $this->broadcast_statuses[Status::NotHandled->value][$platform][$payload_type] = $payload;
+                    $this->broadcastStatuses[Status::NotHandled->value][$platform][$payloadType] = $payload;
                 }
 
                 continue;
             }
 
-            foreach ($platform_payloads as $payload_type => $payload)
+            foreach ($platformPayloads as $payloadType => $payload)
             {
-                if (!isset($grouped_endpoints[$platform][$payload_type]) && $payload->is_broadcast() === FALSE)
+                if (!isset($groupedEndpoints[$platform][$payloadType]) && $payload->is_broadcast() === FALSE)
                 {
                     continue;
                 }
 
                 if ($payload->is_broadcast())
                 {
-                    $this->dispatch_broadcast($platform, $payload_type, $payload);
+                    $this->dispatch_broadcast($platform, $payloadType, $payload);
                 }
                 elseif ($this->dispatchers[$platform] instanceof PushNotificationMultiDispatcherInterface)
                 {
-                    $this->dispatch_multiple($platform, $grouped_endpoints[$platform][$payload_type], $payload);
+                    $this->dispatch_multiple($platform, $groupedEndpoints[$platform][$payloadType], $payload);
                 }
                 else
                 {
-                    $this->dispatch_single($platform, $grouped_endpoints[$platform][$payload_type], $payload);
+                    $this->dispatch_single($platform, $groupedEndpoints[$platform][$payloadType], $payload);
                 }
             }
         }
 
-        foreach ($grouped_endpoints as $platform => $platform_endpoints)
+        foreach ($groupedEndpoints as $platform => $platformEndpoints)
         {
-            foreach ($platform_endpoints as $payload_type => $payload_endpoints)
+            foreach ($platformEndpoints as $payloadType => $payloadEndpoints)
             {
-                if (isset($payloads[$platform][$payload_type]))
+                if (isset($payloads[$platform][$payloadType]))
                 {
                     continue;
                 }
@@ -155,7 +155,7 @@ class PushNotificationDispatcher
                     continue;
                 }
 
-                $this->statuses[Status::NotHandled->value] = array_merge($this->statuses[Status::NotHandled->value], $payload_endpoints);
+                $this->statuses[Status::NotHandled->value] = array_merge($this->statuses[Status::NotHandled->value], $payloadEndpoints);
             }
         }
     }
@@ -216,13 +216,13 @@ class PushNotificationDispatcher
     /**
      * Push a notification payload to each endpoint in a multicast way
      *
-     * @param string                           $platform     Notification platform
-     * @param string                           $payload_type Notification payload type
-     * @param PushNotificationPayloadInterface $payload      Payload to send
+     * @param string                           $platform    Notification platform
+     * @param string                           $payloadType Notification payload type
+     * @param PushNotificationPayloadInterface $payload     Payload to send
      *
      * @return void
      */
-    protected function dispatch_broadcast(string $platform, string $payload_type, PushNotificationPayloadInterface $payload): void
+    protected function dispatch_broadcast(string $platform, string $payloadType, PushNotificationPayloadInterface $payload): void
     {
         $endpoints = [];
 
@@ -235,21 +235,21 @@ class PushNotificationDispatcher
             $status = $response->get_broadcast_status();
         }
 
-        $this->broadcast_statuses[$status->value][$platform][$payload_type] = $payload;
+        $this->broadcastStatuses[$status->value][$platform][$payloadType] = $payload;
     }
 
     /**
      * Returns a list of endpoint & platform pairs for a given list of delivery status codes.
      *
-     * @param value-of<PushNotificationStatus>[] $status_codes The list of status codes
+     * @param value-of<PushNotificationStatus>[] $statusCodes The list of status codes
      *
      * @return array The endpoint & platform pairs
      */
-    public function get_endpoints_by_status(array $status_codes): array
+    public function get_endpoints_by_status(array $statusCodes): array
     {
         $endpoints = [];
 
-        foreach ($status_codes as $code)
+        foreach ($statusCodes as $code)
         {
             if (!isset($this->statuses[$code]) || empty($this->statuses[$code]))
             {
@@ -284,7 +284,7 @@ class PushNotificationDispatcher
      */
     public function get_broadcast_statuses(): array
     {
-        return $this->broadcast_statuses;
+        return $this->broadcastStatuses;
     }
 
 }

@@ -165,27 +165,27 @@ class PushNotificationDispatcherGetTest extends PushNotificationDispatcherTestCa
     public function testGetBroadcastStatusesReturnsBroadcastStatuses(): void
     {
 
-        $data_payload = $this->getMockBuilder(FCMPayload::class)
-                             ->disableOriginalConstructor()
-                             ->getMock();
+        $dataPayload = $this->getMockBuilder(FCMPayload::class)
+                            ->disableOriginalConstructor()
+                            ->getMock();
 
-        $apns_payload = $this->getMockBuilder(APNSPayload::class)
-                             ->disableOriginalConstructor()
-                             ->getMock();
+        $apnsPayload = $this->getMockBuilder(APNSPayload::class)
+                            ->disableOriginalConstructor()
+                            ->getMock();
 
-        $broadcast_statuses = [
+        $broadcastStatuses = [
             PushNotificationStatus::TemporaryError->value => [
-                $data_payload,
-                $apns_payload
+                $dataPayload,
+                $apnsPayload
             ],
             PushNotificationStatus::Error->value => [
-                $data_payload
+                $dataPayload
             ],
         ];
 
-        $this->setReflectionPropertyValue('broadcast_statuses', $broadcast_statuses);
+        $this->setReflectionPropertyValue('broadcastStatuses', $broadcastStatuses);
 
-        $this->assertSame($broadcast_statuses, $this->class->get_broadcast_statuses());
+        $this->assertSame($broadcastStatuses, $this->class->get_broadcast_statuses());
     }
 
 }

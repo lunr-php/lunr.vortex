@@ -79,13 +79,13 @@ abstract class PushNotificationDispatcherTestCase extends LunrBaseTestCase
      * Mock instance of the FCMResponse class
      * @var FCMResponse&MockObject&Stub
      */
-    protected FCMResponse&MockObject&Stub $fcm_response;
+    protected FCMResponse&MockObject&Stub $fcmResponse;
 
     /**
      * Mock instance of the EmailResponse class
      * @var EmailResponse&MockObject&Stub
      */
-    protected EmailResponse&MockObject&Stub $email_response;
+    protected EmailResponse&MockObject&Stub $emailResponse;
 
     /**
      * Mock instance of the WNSResponse class
@@ -130,13 +130,13 @@ abstract class PushNotificationDispatcherTestCase extends LunrBaseTestCase
                             ->disableOriginalConstructor()
                             ->getMock();
 
-        $this->fcm_response = $this->getMockBuilder(FCMResponse::class)
-                                   ->disableOriginalConstructor()
-                                   ->getMock();
+        $this->fcmResponse = $this->getMockBuilder(FCMResponse::class)
+                                  ->disableOriginalConstructor()
+                                  ->getMock();
 
-        $this->email_response = $this->getMockBuilder(EmailResponse::class)
-                                     ->disableOriginalConstructor()
-                                     ->getMock();
+        $this->emailResponse = $this->getMockBuilder(EmailResponse::class)
+                                    ->disableOriginalConstructor()
+                                    ->getMock();
 
         $this->apnsResponse  = Mockery::mock(APNSResponse::class);
         $this->wnsResponse   = Mockery::mock(WNSResponse::class);
@@ -158,8 +158,8 @@ abstract class PushNotificationDispatcherTestCase extends LunrBaseTestCase
         unset($this->wns);
         unset($this->jpush);
         unset($this->apnsResponse);
-        unset($this->email_response);
-        unset($this->fcm_response);
+        unset($this->emailResponse);
+        unset($this->fcmResponse);
         unset($this->wnsResponse);
         unset($this->jpushResponse);
         unset($this->class);
