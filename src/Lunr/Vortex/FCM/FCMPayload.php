@@ -52,22 +52,22 @@ class FCMPayload implements PushNotificationPayloadInterface
      * The Android payload Push Notification Element.
      * @var ?FCMAndroidPayload
      */
-    protected ?FCMAndroidPayload $android_payload;
+    protected ?FCMAndroidPayload $androidPayload;
 
     /**
      * The Apns payload Push Notification Element.
      * @var ?FCMApnsPayload
      */
-    protected ?FCMApnsPayload $apns_payload;
+    protected ?FCMApnsPayload $apnsPayload;
 
     /**
      * Constructor.
      */
     public function __construct()
     {
-        $this->elements        = [];
-        $this->android_payload = NULL;
-        $this->apns_payload    = NULL;
+        $this->elements       = [];
+        $this->androidPayload = NULL;
+        $this->apnsPayload    = NULL;
     }
 
     /**
@@ -76,8 +76,8 @@ class FCMPayload implements PushNotificationPayloadInterface
     public function __destruct()
     {
         unset($this->elements);
-        unset($this->android_payload);
-        unset($this->apns_payload);
+        unset($this->androidPayload);
+        unset($this->apnsPayload);
     }
 
     /**
@@ -101,14 +101,14 @@ class FCMPayload implements PushNotificationPayloadInterface
     {
         $payload = $this->elements;
 
-        if ($this->android_payload !== NULL)
+        if ($this->androidPayload !== NULL)
         {
-            $payload['android'] = $this->android_payload->get_payload();
+            $payload['android'] = $this->androidPayload->get_payload();
         }
 
-        if ($this->apns_payload !== NULL)
+        if ($this->apnsPayload !== NULL)
         {
-            $payload['apns'] = $this->apns_payload->get_payload();
+            $payload['apns'] = $this->apnsPayload->get_payload();
         }
 
         return json_encode([ 'message' => $payload ], $flag);
@@ -255,9 +255,9 @@ class FCMPayload implements PushNotificationPayloadInterface
      */
     public function android_payload(): FCMAndroidPayload
     {
-        $this->android_payload ??= new FCMAndroidPayload();
+        $this->androidPayload ??= new FCMAndroidPayload();
 
-        return $this->android_payload;
+        return $this->androidPayload;
     }
 
     /**
@@ -267,9 +267,9 @@ class FCMPayload implements PushNotificationPayloadInterface
      */
     public function apns_payload(): FCMApnsPayload
     {
-        $this->apns_payload ??= new FCMApnsPayload();
+        $this->apnsPayload ??= new FCMApnsPayload();
 
-        return $this->apns_payload;
+        return $this->apnsPayload;
     }
 
 }

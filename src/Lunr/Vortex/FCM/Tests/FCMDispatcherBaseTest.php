@@ -36,7 +36,7 @@ class FCMDispatcherBaseTest extends FCMDispatcherTestCase
      */
     public function testOAuthTokenIsSetToNull(): void
     {
-        $this->assertPropertyEquals('oauth_token', NULL);
+        $this->assertPropertyEquals('oauthToken', NULL);
     }
 
     /**
@@ -44,7 +44,7 @@ class FCMDispatcherBaseTest extends FCMDispatcherTestCase
      */
     public function testProjectIdIsSetToNull(): void
     {
-        $this->assertPropertyEquals('project_id', NULL);
+        $this->assertPropertyEquals('projectID', NULL);
     }
 
     /**
@@ -52,7 +52,7 @@ class FCMDispatcherBaseTest extends FCMDispatcherTestCase
      */
     public function testClientEmailIsSetToNull(): void
     {
-        $this->assertPropertyEquals('client_email', NULL);
+        $this->assertPropertyEquals('clientEmail', NULL);
     }
 
     /**
@@ -60,7 +60,7 @@ class FCMDispatcherBaseTest extends FCMDispatcherTestCase
      */
     public function testPrivateKeyIsSetToNull(): void
     {
-        $this->assertPropertyEquals('private_key', NULL);
+        $this->assertPropertyEquals('privateKey', NULL);
     }
 
     /**
@@ -70,7 +70,7 @@ class FCMDispatcherBaseTest extends FCMDispatcherTestCase
      */
     public function testGetNewResponseObjectForFailedRequest(): void
     {
-        $this->setReflectionPropertyValue('project_id', 'fcm-project');
+        $this->setReflectionPropertyValue('projectID', 'fcm-project');
 
         $method = $this->getReflectionMethod('get_new_response_object_for_failed_request');
 

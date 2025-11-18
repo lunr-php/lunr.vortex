@@ -41,25 +41,25 @@ class FCMDispatcher implements PushNotificationMultiDispatcherInterface
      * Push Notification Oauth token.
      * @var string
      */
-    protected ?string $oauth_token;
+    protected ?string $oauthToken;
 
     /**
      * FCM id of the project.
      * @var ?string
      */
-    protected ?string $project_id;
+    protected ?string $projectID;
 
     /**
      * FCM client email of the project.
      * @var ?string
      */
-    protected ?string $client_email;
+    protected ?string $clientEmail;
 
     /**
      * FCM id of the project.
      * @var ?string
      */
-    protected ?string $private_key;
+    protected ?string $privateKey;
 
     /**
      * Shared instance of the Requests\Session class.
@@ -100,12 +100,12 @@ class FCMDispatcher implements PushNotificationMultiDispatcherInterface
      */
     public function __construct(Session $http, LoggerInterface $logger)
     {
-        $this->http         = $http;
-        $this->logger       = $logger;
-        $this->oauth_token  = NULL;
-        $this->project_id   = NULL;
-        $this->client_email = NULL;
-        $this->private_key  = NULL;
+        $this->http        = $http;
+        $this->logger      = $logger;
+        $this->oauthToken  = NULL;
+        $this->projectID   = NULL;
+        $this->clientEmail = NULL;
+        $this->privateKey  = NULL;
     }
 
     /**
@@ -113,10 +113,10 @@ class FCMDispatcher implements PushNotificationMultiDispatcherInterface
      */
     public function __destruct()
     {
-        unset($this->oauth_token);
-        unset($this->project_id);
-        unset($this->client_email);
-        unset($this->private_key);
+        unset($this->oauthToken);
+        unset($this->projectID);
+        unset($this->clientEmail);
+        unset($this->privateKey);
         unset($this->http);
         unset($this->logger);
     }
@@ -124,13 +124,13 @@ class FCMDispatcher implements PushNotificationMultiDispatcherInterface
     /**
      * Set the FCM project id for sending notifications.
      *
-     * @param string $project_id The id of the FCM project
+     * @param string $projectID The id of the FCM project
      *
      * @return $this
      */
-    public function set_project_id(string $project_id): static
+    public function set_project_id(string $projectID): static
     {
-        $this->project_id = $project_id;
+        $this->projectID = $projectID;
 
         return $this;
     }
@@ -138,13 +138,13 @@ class FCMDispatcher implements PushNotificationMultiDispatcherInterface
     /**
      * Set the FCM client email for sending notifications.
      *
-     * @param string $client_email The client email of the FCM project
+     * @param string $clientEmail The client email of the FCM project
      *
      * @return $this
      */
-    public function set_client_email(string $client_email): static
+    public function set_client_email(string $clientEmail): static
     {
-        $this->client_email = $client_email;
+        $this->clientEmail = $clientEmail;
 
         return $this;
     }
@@ -152,13 +152,13 @@ class FCMDispatcher implements PushNotificationMultiDispatcherInterface
     /**
      * Set the FCM private key for sending notifications.
      *
-     * @param string $private_key The private key of the FCM project
+     * @param string $privateKey The private key of the FCM project
      *
      * @return $this
      */
-    public function set_private_key(string $private_key): static
+    public function set_private_key(string $privateKey): static
     {
-        $this->private_key = $private_key;
+        $this->privateKey = $privateKey;
 
         return $this;
     }
@@ -166,20 +166,20 @@ class FCMDispatcher implements PushNotificationMultiDispatcherInterface
     /**
      * Set the FCM private key for sending notifications from a file.
      *
-     * @param string $private_key_file The file with the private key of the FCM project
+     * @param string $privateKeyFile The file with the private key of the FCM project
      *
      * @return $this
      */
-    public function set_private_key_from_file(string $private_key_file): static
+    public function set_private_key_from_file(string $privateKeyFile): static
     {
-        $private_key = file_get_contents($private_key_file);
+        $privateKey = file_get_contents($privateKeyFile);
 
-        if ($private_key === FALSE)
+        if ($privateKey === FALSE)
         {
             throw new RuntimeException('File does not exists or is not readable!');
         }
 
-        $this->private_key = $private_key;
+        $this->privateKey = $privateKey;
 
         return $this;
     }
@@ -193,7 +193,7 @@ class FCMDispatcher implements PushNotificationMultiDispatcherInterface
      */
     public function set_oauth_token(string $token): static
     {
-        $this->oauth_token = $token;
+        $this->oauthToken = $token;
 
         return $this;
     }
@@ -201,15 +201,15 @@ class FCMDispatcher implements PushNotificationMultiDispatcherInterface
     /**
      * Request and set an oauth token from FCM.
      *
-     * @param string $oauth_lifetime Relative time as a string for strtotime() to parse into an expiry timestamp.
+     * @param string $oauthLifetime Relative time as a string for strtotime() to parse into an expiry timestamp.
      *
      * @see https://www.php.net/manual/en/datetime.formats.php#datetime.formats.relative
      *
      * @return $this
      */
-    public function configure_oauth_token(string $oauth_lifetime = self::DEFAULT_OAUTH_LIFETIME): static
+    public function configure_oauth_token(string $oauthLifetime = self::DEFAULT_OAUTH_LIFETIME): static
     {
-        $this->set_oauth_token($this->get_oauth_token($oauth_lifetime));
+        $this->set_oauth_token($this->get_oauth_token($oauthLifetime));
 
         return $this;
     }
@@ -227,15 +227,15 @@ class FCMDispatcher implements PushNotificationMultiDispatcherInterface
     /**
      * Getter for FCMBatchResponse.
      *
-     * @param array<string|int,Response|RequestsException> $http_responses Array of Requests\Response object.
-     * @param LoggerInterface                              $logger         Shared instance of a Logger.
-     * @param string[]                                     $endpoints      The endpoints the message was sent to.
+     * @param array<string|int,Response|RequestsException> $httpResponses Array of Requests\Response object.
+     * @param LoggerInterface                              $logger        Shared instance of a Logger.
+     * @param string[]                                     $endpoints     The endpoints the message was sent to.
      *
      * @return FCMBatchResponse
      */
-    public function get_batch_response(array $http_responses, LoggerInterface $logger, array $endpoints): FCMBatchResponse
+    public function get_batch_response(array $httpResponses, LoggerInterface $logger, array $endpoints): FCMBatchResponse
     {
-        return new FCMBatchResponse($http_responses, $logger, $endpoints);
+        return new FCMBatchResponse($httpResponses, $logger, $endpoints);
     }
 
     /**
@@ -258,51 +258,51 @@ class FCMDispatcher implements PushNotificationMultiDispatcherInterface
             throw new InvalidArgumentException('No target provided!');
         }
 
-        $fcm_response = $this->get_response();
+        $fcmResponse = $this->get_response();
 
-        if ($this->oauth_token === NULL || $this->project_id === NULL)
+        if ($this->oauthToken === NULL || $this->projectID === NULL)
         {
-            if ($this->oauth_token === NULL)
+            if ($this->oauthToken === NULL)
             {
-                $http_code = 401;
-                $error_msg = 'Tried to push FCM notification but wasn\'t authenticated.';
+                $httpCode     = 401;
+                $errorMessage = 'Tried to push FCM notification but wasn\'t authenticated.';
             }
             else
             {
-                $http_code = 400;
-                $error_msg = 'Tried to push FCM notification but project id is not provided.';
+                $httpCode     = 400;
+                $errorMessage = 'Tried to push FCM notification but project id is not provided.';
             }
 
-            $this->logger->warning($error_msg);
+            $this->logger->warning($errorMessage);
 
-            $http_response = $this->get_new_response_object_for_failed_request($http_code);
+            $httpResponse = $this->get_new_response_object_for_failed_request($httpCode);
 
-            $fcm_response->add_batch_response($this->get_batch_response([ $http_response ], $this->logger, $endpoints), $endpoints);
+            $fcmResponse->add_batch_response($this->get_batch_response([ $httpResponse ], $this->logger, $endpoints), $endpoints);
 
-            return $fcm_response;
+            return $fcmResponse;
         }
 
         if ($payload->is_broadcast())
         {
-            $batch_response = $this->push_batch($payload, $endpoints);
+            $batchResponse = $this->push_batch($payload, $endpoints);
 
-            $fcm_response->add_broadcast_response($batch_response);
+            $fcmResponse->add_broadcast_response($batchResponse);
 
-            return $fcm_response;
+            return $fcmResponse;
         }
 
         foreach (array_chunk($endpoints, self::BATCH_SIZE) as &$batch)
         {
-            $batch_response = $this->push_batch($payload, $batch);
+            $batchResponse = $this->push_batch($payload, $batch);
 
-            $fcm_response->add_batch_response($batch_response, $batch);
+            $fcmResponse->add_batch_response($batchResponse, $batch);
 
-            unset($batch_response);
+            unset($batchResponse);
         }
 
         unset($batch);
 
-        return $fcm_response;
+        return $fcmResponse;
     }
 
     /**
@@ -317,7 +317,7 @@ class FCMDispatcher implements PushNotificationMultiDispatcherInterface
     {
         $headers = [
             'Content-Type'  => 'application/json',
-            'Authorization' => 'Bearer ' . $this->oauth_token,
+            'Authorization' => 'Bearer ' . $this->oauthToken,
         ];
 
         $options = [
@@ -326,7 +326,7 @@ class FCMDispatcher implements PushNotificationMultiDispatcherInterface
             'protocol_version' => 2.0,
         ];
 
-        $url = self::GOOGLE_SEND_URL . $this->project_id . '/messages:send';
+        $url = self::GOOGLE_SEND_URL . $this->projectID . '/messages:send';
 
         $responses = [];
 
@@ -372,41 +372,41 @@ class FCMDispatcher implements PushNotificationMultiDispatcherInterface
     /**
      * Get the oauth token for the http headers.
      *
-     * @param string $oauth_lifetime Relative time as a string for strtotime() to parse into an expiry timestamp
+     * @param string $oauthLifetime Relative time as a string for strtotime() to parse into an expiry timestamp
      *
      * @see https://www.php.net/manual/en/datetime.formats.php#datetime.formats.relative
      *
      * @return string The OAuth_token
      */
-    public function get_oauth_token(string $oauth_lifetime = self::DEFAULT_OAUTH_LIFETIME): string
+    public function get_oauth_token(string $oauthLifetime = self::DEFAULT_OAUTH_LIFETIME): string
     {
-        if (strtotime($oauth_lifetime) === FALSE)
+        if (strtotime($oauthLifetime) === FALSE)
         {
             throw new InvalidArgumentException('Invalid oauth lifetime!');
         }
 
-        if ($this->client_email === NULL)
+        if ($this->clientEmail === NULL)
         {
             throw new BadMethodCallException('Requesting token failed: No client email provided');
         }
 
-        if ($this->private_key === NULL)
+        if ($this->privateKey === NULL)
         {
             throw new BadMethodCallException('Requesting token failed: No private key provided');
         }
 
-        $issued_at = new DateTimeImmutable();
+        $issuedAt = new DateTimeImmutable();
 
-        $token_builder = new Builder(new JoseEncoder(), ChainedFormatter::default());
+        $tokenBuilder = new Builder(new JoseEncoder(), ChainedFormatter::default());
 
-        $token = $token_builder->issuedBy($this->client_email)
-                               ->permittedFor('https://oauth2.googleapis.com/token')
-                               ->issuedAt($issued_at)
-                               ->expiresAt($issued_at->modify($oauth_lifetime))
-                               ->withClaim('scope', 'https://www.googleapis.com/auth/firebase.messaging')
-                               ->withHeader('alg', 'RS2256')
-                               ->withHeader('typ', 'JWT')
-                               ->getToken(new Sha256(), InMemory::plainText($this->private_key));
+        $token = $tokenBuilder->issuedBy($this->clientEmail)
+                              ->permittedFor('https://oauth2.googleapis.com/token')
+                              ->issuedAt($issuedAt)
+                              ->expiresAt($issuedAt->modify($oauthLifetime))
+                              ->withClaim('scope', 'https://www.googleapis.com/auth/firebase.messaging')
+                              ->withHeader('alg', 'RS2256')
+                              ->withHeader('typ', 'JWT')
+                              ->getToken(new Sha256(), InMemory::plainText($this->privateKey));
 
         $headers = [
             'Content-Type' => 'application/json'
@@ -419,7 +419,7 @@ class FCMDispatcher implements PushNotificationMultiDispatcherInterface
 
         try
         {
-            $http_response = $this->http->post(self::GOOGLE_OAUTH_URL, $headers, json_encode($payload, JSON_UNESCAPED_UNICODE), []);
+            $httpResponse = $this->http->post(self::GOOGLE_OAUTH_URL, $headers, json_encode($payload, JSON_UNESCAPED_UNICODE), []);
         }
         catch (RequestsException $e)
         {
@@ -429,7 +429,7 @@ class FCMDispatcher implements PushNotificationMultiDispatcherInterface
             throw new RuntimeException('Fetching OAuth token for FCM notification(s) failed', 0, $e);
         }
 
-        $response_body = json_decode($http_response->body, TRUE);
+        $responseBody = json_decode($httpResponse->body, TRUE);
 
         if (json_last_error() !== JSON_ERROR_NONE)
         {
@@ -440,35 +440,36 @@ class FCMDispatcher implements PushNotificationMultiDispatcherInterface
             throw new UnexpectedValueException($message);
         }
 
-        if (!array_key_exists('access_token', $response_body))
+        if (!array_key_exists('access_token', $responseBody))
         {
-            $error_msg = $response_body['error_description'] ?? 'No access token in the response body';
+            $errorMessage = $responseBody['error_description'] ?? 'No access token in the response body';
 
-            $context = [ 'error' => $error_msg ];
+            $context = [ 'error' => $errorMessage ];
             $this->logger->warning('Fetching OAuth token for FCM notification(s) failed: {error}', $context);
 
-            throw new UnexpectedValueException('Fetching OAuth token for FCM notification(s) failed: ' . $error_msg);
+            throw new UnexpectedValueException('Fetching OAuth token for FCM notification(s) failed: ' . $errorMessage);
         }
 
-        return $response_body['access_token'];
+        return $responseBody['access_token'];
     }
 
     /**
      * Get a Requests\Response object for a failed request.
      *
-     * @param int $http_code Set http code for the request.
+     * @param int $httpCode Set http code for the request.
      *
      * @return Response New instance of a Requests\Response object.
      */
-    protected function get_new_response_object_for_failed_request(?int $http_code = NULL): Response
+    protected function get_new_response_object_for_failed_request(?int $httpCode = NULL): Response
     {
-        $http_response = new Response();
+        $httpResponse = new Response();
 
-        $http_response->url = self::GOOGLE_SEND_URL . $this->project_id . '/messages:send';
+        $httpResponse->url = self::GOOGLE_SEND_URL . $this->projectID . '/messages:send';
 
-        $http_response->status_code = $http_code ?? FALSE;
+        // phpcs:ignore Lunr.NamingConventions.CamelCapsVariableName
+        $httpResponse->status_code = $httpCode ?? FALSE;
 
-        return $http_response;
+        return $httpResponse;
     }
 
 }

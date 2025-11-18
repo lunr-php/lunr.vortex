@@ -34,7 +34,7 @@ class FCMResponseAddBatchResponseTest extends FCMResponseTestCase
 
         $this->setReflectionPropertyValue('statuses', $statuses);
 
-        $this->class->add_batch_response($this->batch_response, []);
+        $this->class->add_batch_response($this->batchResponse, []);
 
         $this->assertPropertySame('statuses', $statuses);
     }
@@ -53,7 +53,7 @@ class FCMResponseAddBatchResponseTest extends FCMResponseTestCase
 
         $endpoints = [ 'endpoint2', 'endpoint3', 'endpoint4' ];
 
-        $expected_statuses = [
+        $expectedStatuses = [
             'endpoint1' => PushNotificationStatus::Error,
             'endpoint2' => PushNotificationStatus::InvalidEndpoint,
             'endpoint3' => PushNotificationStatus::Unknown,
@@ -62,7 +62,7 @@ class FCMResponseAddBatchResponseTest extends FCMResponseTestCase
 
         $this->setReflectionPropertyValue('statuses', $statuses);
 
-        $this->batch_response->expects($this->exactly(3))
+        $this->batchResponse->expects($this->exactly(3))
                              ->method('get_status')
                              ->willReturnMap(
                                  [
@@ -72,9 +72,9 @@ class FCMResponseAddBatchResponseTest extends FCMResponseTestCase
                                  ]
                              );
 
-        $this->class->add_batch_response($this->batch_response, $endpoints);
+        $this->class->add_batch_response($this->batchResponse, $endpoints);
 
-        $this->assertPropertySame('statuses', $expected_statuses);
+        $this->assertPropertySame('statuses', $expectedStatuses);
     }
 
 }

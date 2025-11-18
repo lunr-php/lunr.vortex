@@ -61,13 +61,13 @@ abstract class FCMDispatcherTestCase extends LunrBaseTestCase
      * Mock instance of the token builder class.
      * @var Builder&MockInterface
      */
-    protected Builder&MockInterface $token_builder;
+    protected Builder&MockInterface $tokenBuilder;
 
     /**
      * Mock instance of the token UnencryptedToken class.
      * @var UnencryptedToken&MockObject
      */
-    protected UnencryptedToken&MockObject $token_plain;
+    protected UnencryptedToken&MockObject $tokenPlain;
 
     /**
      * Instance of the tested class.
@@ -80,13 +80,13 @@ abstract class FCMDispatcherTestCase extends LunrBaseTestCase
      */
     public function setUp(): void
     {
-        $this->http        = $this->getMockBuilder(Session::class)->getMock();
-        $this->response    = $this->getMockBuilder(Response::class)->getMock();
-        $this->token_plain = $this->getMockBuilder(UnencryptedToken::class)->getMock();
+        $this->http       = $this->getMockBuilder(Session::class)->getMock();
+        $this->response   = $this->getMockBuilder(Response::class)->getMock();
+        $this->tokenPlain = $this->getMockBuilder(UnencryptedToken::class)->getMock();
 
-        $this->logger        = Mockery::mock(LoggerInterface::class);
-        $this->payload       = Mockery::mock(FCMPayload::class);
-        $this->token_builder = Mockery::mock(Builder::class);
+        $this->logger       = Mockery::mock(LoggerInterface::class);
+        $this->payload      = Mockery::mock(FCMPayload::class);
+        $this->tokenBuilder = Mockery::mock(Builder::class);
 
         $this->class = new FCMDispatcher($this->http, $this->logger);
 
@@ -98,8 +98,12 @@ abstract class FCMDispatcherTestCase extends LunrBaseTestCase
      */
     public function tearDown(): void
     {
+        unset($this->http);
+        unset($this->response);
+        unset($this->tokenPlain);
         unset($this->logger);
         unset($this->payload);
+        unset($this->tokenBuilder);
         unset($this->class);
 
         parent::tearDown();
