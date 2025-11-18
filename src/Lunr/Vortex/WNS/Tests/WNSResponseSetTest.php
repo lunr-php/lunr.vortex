@@ -46,6 +46,7 @@ class WNSResponseSetTest extends WNSResponseTestCase
             'X-WNS-DeviceConnectionStatus' => 'N/A',
         ]);
 
+        // phpcs:ignore Lunr.NamingConventions.CamelCapsVariableName
         $response->status_code = 200;
         $response->url         = 'http://localhost/';
 
@@ -79,6 +80,7 @@ class WNSResponseSetTest extends WNSResponseTestCase
             'X-WNS-Debug-Trace'            => 'Tracing brokenness',
         ]);
 
+        // phpcs:ignore Lunr.NamingConventions.CamelCapsVariableName
         $response->status_code = $code;
         $response->url         = 'http://localhost/';
 
