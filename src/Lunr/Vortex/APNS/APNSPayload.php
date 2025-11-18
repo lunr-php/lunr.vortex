@@ -159,13 +159,13 @@ abstract class APNSPayload implements PushNotificationPayloadInterface
     /**
      * Sets the payload thread_id.
      *
-     * @param string $thread_id The thread_id to set it to
+     * @param string $threadID The thread_id to set it to
      *
      * @return APNSPayload Self Reference
      */
-    public function set_thread_id(string $thread_id): self
+    public function set_thread_id(string $threadID): self
     {
-        $this->elements['thread_id'] = $thread_id;
+        $this->elements['thread_id'] = $threadID;
 
         return $this;
     }
@@ -201,13 +201,13 @@ abstract class APNSPayload implements PushNotificationPayloadInterface
     /**
      * Sets the payload content_available property.
      *
-     * @param bool $content_available If there is content available for download
+     * @param bool $contentAvailable If there is content available for download
      *
      * @return APNSPayload Self Reference
      */
-    public function set_content_available(bool $content_available): self
+    public function set_content_available(bool $contentAvailable): self
     {
-        $this->elements['content_available'] = $content_available;
+        $this->elements['content_available'] = $contentAvailable;
 
         return $this;
     }
@@ -215,13 +215,13 @@ abstract class APNSPayload implements PushNotificationPayloadInterface
     /**
      * Sets the payload mutable_content property.
      *
-     * @param bool $mutable_content If the notification is mutable
+     * @param bool $mutableContent If the notification is mutable
      *
      * @return APNSPayload Self Reference
      */
-    public function set_mutable_content(bool $mutable_content): self
+    public function set_mutable_content(bool $mutableContent): self
     {
-        $this->elements['mutable_content'] = $mutable_content;
+        $this->elements['mutable_content'] = $mutableContent;
 
         return $this;
     }

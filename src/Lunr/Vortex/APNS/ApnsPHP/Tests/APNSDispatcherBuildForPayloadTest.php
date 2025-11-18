@@ -67,12 +67,12 @@ class APNSDispatcherBuildForPayloadTest extends APNSDispatcherTestCase
             $message->setCustomProperty($key, $value);
         }
 
-        $this->alert_payload->expects($this->once())
-                            ->method('get_payload')
-                            ->willReturn($payload);
+        $this->alertPayload->expects($this->once())
+                           ->method('get_payload')
+                           ->willReturn($payload);
 
         $return = $this->getReflectionMethod('build_message_for_payload')
-                       ->invokeArgs($this->class, [ $this->alert_payload ]);
+                       ->invokeArgs($this->class, [ $this->alertPayload ]);
 
         $this->assertEquals($message, $return);
     }
@@ -141,12 +141,12 @@ class APNSDispatcherBuildForPayloadTest extends APNSDispatcherTestCase
             $message->setCustomProperty($key, $value);
         }
 
-        $this->la_payload->expects($this->exactly(2))
-                         ->method('get_payload')
-                         ->willReturn($payload);
+        $this->liveActivityPayload->expects($this->exactly(2))
+                                  ->method('get_payload')
+                                  ->willReturn($payload);
 
         $return = $this->getReflectionMethod('build_live_activity_for_payload')
-                       ->invokeArgs($this->class, [ $this->la_payload ]);
+                       ->invokeArgs($this->class, [ $this->liveActivityPayload ]);
 
         $this->assertEquals($message, $return);
     }

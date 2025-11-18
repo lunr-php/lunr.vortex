@@ -44,19 +44,19 @@ abstract class APNSDispatcherTestCase extends LunrBaseTestCase
      * Mock instance of an APNS Push class.
      * @var Push
      */
-    protected $apns_push;
+    protected $apnsPush;
 
     /**
      * Mock instance of the APNS Payload class.
      * @var APNSAlertPayload&MockObject
      */
-    protected APNSAlertPayload&MockObject $alert_payload;
+    protected APNSAlertPayload&MockObject $alertPayload;
 
     /**
      * Mock instance of the APNS LA Payload class.
      * @var APNSLiveActivityPayload&MockObject
      */
-    protected APNSLiveActivityPayload&MockObject $la_payload;
+    protected APNSLiveActivityPayload&MockObject $liveActivityPayload;
 
     /**
      * Testcase Constructor.
@@ -65,15 +65,15 @@ abstract class APNSDispatcherTestCase extends LunrBaseTestCase
     {
         $this->logger = $this->getMockBuilder('Psr\Log\LoggerInterface')->getMock();
 
-        $this->apns_push = $this->getMockBuilder('ApnsPHP\Push')
+        $this->apnsPush = $this->getMockBuilder('ApnsPHP\Push')
                                 ->disableOriginalConstructor()
                                 ->getMock();
 
-        $this->alert_payload = $this->getMockBuilder('Lunr\Vortex\APNS\APNSAlertPayload')->getMock();
+        $this->alertPayload = $this->getMockBuilder('Lunr\Vortex\APNS\APNSAlertPayload')->getMock();
 
-        $this->la_payload = $this->getMockBuilder('Lunr\Vortex\APNS\APNSLiveActivityPayload')->getMock();
+        $this->liveActivityPayload = $this->getMockBuilder('Lunr\Vortex\APNS\APNSLiveActivityPayload')->getMock();
 
-        $this->class = new APNSDispatcher($this->logger, $this->apns_push);
+        $this->class = new APNSDispatcher($this->logger, $this->apnsPush);
 
         parent::baseSetUp($this->class);
     }
@@ -84,8 +84,9 @@ abstract class APNSDispatcherTestCase extends LunrBaseTestCase
     public function tearDown(): void
     {
         unset($this->logger);
-        unset($this->apns_push);
-        unset($this->alert_payload);
+        unset($this->apnsPush);
+        unset($this->alertPayload);
+        unset($this->liveActivityPayload);
         unset($this->class);
 
         parent::tearDown();

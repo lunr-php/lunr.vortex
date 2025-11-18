@@ -42,19 +42,19 @@ class APNSResponse implements PushNotificationResponseInterface
     /**
      * Constructor.
      *
-     * @param LoggerInterface $logger            Shared instance of a Logger.
-     * @param array           $endpoints         The endpoints the message was sent to
-     * @param array           $invalid_endpoints List of invalid endpoints detected before the push.
-     * @param array|null      $errors            The errors response from the APNS Push.
-     * @param string          $payload           Raw payload that was sent to APNS.
+     * @param LoggerInterface $logger           Shared instance of a Logger.
+     * @param array           $endpoints        The endpoints the message was sent to
+     * @param array           $invalidEndpoints List of invalid endpoints detected before the push.
+     * @param array|null      $errors           The errors response from the APNS Push.
+     * @param string          $payload          Raw payload that was sent to APNS.
      */
-    public function __construct(LoggerInterface $logger, array $endpoints, array $invalid_endpoints, ?array $errors, string $payload)
+    public function __construct(LoggerInterface $logger, array $endpoints, array $invalidEndpoints, ?array $errors, string $payload)
     {
         $this->logger   = $logger;
         $this->statuses = [];
         $this->payload  = $payload;
 
-        $this->report_invalid_endpoints($invalid_endpoints);
+        $this->report_invalid_endpoints($invalidEndpoints);
 
         if (!is_null($errors))
         {
@@ -90,18 +90,18 @@ class APNSResponse implements PushNotificationResponseInterface
         {
             $message = $error['MESSAGE'];
 
-            foreach ($error['ERRORS'] as $sub_error)
+            foreach ($error['ERRORS'] as $subError)
             {
-                $status_code    = $sub_error['statusCode'];
-                $status_message = $sub_error['statusMessage'];
-                $reason         = NULL;
-                $message_data   = json_decode($status_message, TRUE);
+                $statusCode    = $subError['statusCode'];
+                $statusMessage = $subError['statusMessage'];
+                $reason        = NULL;
+                $messageData   = json_decode($statusMessage, TRUE);
                 if (json_last_error() === JSON_ERROR_NONE)
                 {
-                    $reason = $message_data['reason'] ?? NULL;
+                    $reason = $messageData['reason'] ?? NULL;
                 }
 
-                switch (APNSHttpStatus::tryFrom($status_code))
+                switch (APNSHttpStatus::tryFrom($statusCode))
                 {
                     case APNSHttpStatus::BadRequestError:
                     case APNSHttpStatus::UnregisteredError:
@@ -143,7 +143,7 @@ class APNSResponse implements PushNotificationResponseInterface
 
                 $this->statuses[$endpoint] = $status;
 
-                $context = [ 'endpoint' => $endpoint, 'error' => $reason ?? $status_message ];
+                $context = [ 'endpoint' => $endpoint, 'error' => $reason ?? $statusMessage ];
                 $this->logger->warning('Dispatching APNS notification failed for endpoint {endpoint}: {error}', $context);
             }
         }
@@ -162,15 +162,15 @@ class APNSResponse implements PushNotificationResponseInterface
     /**
      * Report invalid endpoints.
      *
-     * @param array $invalid_endpoints The invalid endpoints
+     * @param array $invalidEndpoints The invalid endpoints
      *
      * @return void
      */
-    protected function report_invalid_endpoints(array &$invalid_endpoints): void
+    protected function report_invalid_endpoints(array &$invalidEndpoints): void
     {
-        foreach ($invalid_endpoints as $invalid_endpoint)
+        foreach ($invalidEndpoints as $invalidEndpoint)
         {
-            $this->statuses[$invalid_endpoint] = PushNotificationStatus::InvalidEndpoint;
+            $this->statuses[$invalidEndpoint] = PushNotificationStatus::InvalidEndpoint;
         }
     }
 

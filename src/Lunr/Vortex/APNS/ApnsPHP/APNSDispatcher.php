@@ -32,7 +32,7 @@ class APNSDispatcher implements PushNotificationMultiDispatcherInterface
      *
      * @var Push
      */
-    protected Push $apns_push;
+    protected Push $apnsPush;
 
     /**
      * Shared instance of a Logger class.
@@ -44,13 +44,13 @@ class APNSDispatcher implements PushNotificationMultiDispatcherInterface
     /**
      * Constructor.
      *
-     * @param LoggerInterface $logger    Shared instance of a Logger.
-     * @param Push            $apns_push Apns Push instance.
+     * @param LoggerInterface $logger   Shared instance of a Logger.
+     * @param Push            $apnsPush Apns Push instance.
      */
-    public function __construct(LoggerInterface $logger, Push $apns_push)
+    public function __construct(LoggerInterface $logger, Push $apnsPush)
     {
-        $this->logger    = $logger;
-        $this->apns_push = $apns_push;
+        $this->logger   = $logger;
+        $this->apnsPush = $apnsPush;
     }
 
     /**
@@ -58,7 +58,7 @@ class APNSDispatcher implements PushNotificationMultiDispatcherInterface
      */
     public function __destruct()
     {
-        unset($this->apns_push);
+        unset($this->apnsPush);
         unset($this->logger);
     }
 
@@ -90,7 +90,7 @@ class APNSDispatcher implements PushNotificationMultiDispatcherInterface
         };
 
         // Add endpoints
-        $invalid_endpoints = [];
+        $invalidEndpoints = [];
 
         foreach ($endpoints as $endpoint)
         {
@@ -100,7 +100,7 @@ class APNSDispatcher implements PushNotificationMultiDispatcherInterface
             }
             catch (MessageException $e)
             {
-                $invalid_endpoints[] = $endpoint;
+                $invalidEndpoints[] = $endpoint;
 
                 $this->logger->warning($e->getMessage());
             }
@@ -109,12 +109,12 @@ class APNSDispatcher implements PushNotificationMultiDispatcherInterface
         // Send message
         try
         {
-            $this->apns_push->add($message);
-            $this->apns_push->connect();
-            $this->apns_push->send();
-            $this->apns_push->disconnect();
+            $this->apnsPush->add($message);
+            $this->apnsPush->connect();
+            $this->apnsPush->send();
+            $this->apnsPush->disconnect();
 
-            $errors = $this->apns_push->getErrors();
+            $errors = $this->apnsPush->getErrors();
         }
         catch (ApnsPHPException $e)
         {
@@ -125,7 +125,7 @@ class APNSDispatcher implements PushNotificationMultiDispatcherInterface
         }
 
         // Return response
-        return new APNSResponse($this->logger, $endpoints, $invalid_endpoints, $errors, (string) $message);
+        return new APNSResponse($this->logger, $endpoints, $invalidEndpoints, $errors, (string) $message);
     }
 
     /**

@@ -20,16 +20,16 @@ class APNSAlertPayloadGetTest extends APNSAlertPayloadTestCase
     /**
      * Test get_payload() with alert being present.
      *
-     * @param string $file       The path to the payload file
-     * @param array  $data_array The data to compare get_payload against
+     * @param string $file      The path to the payload file
+     * @param array  $dataArray The data to compare get_payload against
      *
      * @dataProvider payloadProvider
      * @covers       Lunr\Vortex\APNS\APNSAlertPayload::get_payload
      */
-    public function testGetPayloadWithAlert(string $file, array $data_array): void
+    public function testGetPayloadWithAlert(string $file, array $dataArray): void
     {
         $file     = TEST_STATICS . $file;
-        $elements = $data_array;
+        $elements = $dataArray;
 
         $this->setReflectionPropertyValue('elements', $elements);
 

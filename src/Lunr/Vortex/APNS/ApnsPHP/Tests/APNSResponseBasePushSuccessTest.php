@@ -29,12 +29,12 @@ class APNSResponseBasePushSuccessTest extends APNSResponseTestCase
      */
     public function testPushSuccessWithSingleSuccess(): void
     {
-        $endpoints         = [ 'endpoint1' ];
-        $invalid_endpoints = [];
-        $errors            = [];
-        $statuses          = [ 'endpoint1' => PushNotificationStatus::Success ];
+        $endpoints        = [ 'endpoint1' ];
+        $invalidEndpoints = [];
+        $errors           = [];
+        $statuses         = [ 'endpoint1' => PushNotificationStatus::Success ];
 
-        $this->class = new APNSResponse($this->logger, $endpoints, $invalid_endpoints, $errors, '{}');
+        $this->class = new APNSResponse($this->logger, $endpoints, $invalidEndpoints, $errors, '{}');
 
         parent::baseSetUp($this->class);
 
@@ -48,9 +48,9 @@ class APNSResponseBasePushSuccessTest extends APNSResponseTestCase
      */
     public function testPushSuccessWithSingleError(): void
     {
-        $endpoints         = [ 'endpoint1' ];
-        $invalid_endpoints = [];
-        $errors            = [
+        $endpoints        = [ 'endpoint1' ];
+        $invalidEndpoints = [];
+        $errors           = [
             1 => [
                 'MESSAGE'             => $this->apnsMessage,
                 'ERRORS'              => [
@@ -64,7 +64,7 @@ class APNSResponseBasePushSuccessTest extends APNSResponseTestCase
                 ],
             ],
         ];
-        $statuses          = [ 'endpoint1' => PushNotificationStatus::TemporaryError ];
+        $statuses         = [ 'endpoint1' => PushNotificationStatus::TemporaryError ];
 
         $this->apnsMessage->expects($this->once())
                           ->method('getRecipient')
@@ -77,7 +77,7 @@ class APNSResponseBasePushSuccessTest extends APNSResponseTestCase
                         [ 'endpoint' => 'endpoint1', 'error' => 'IdleTimeout' ]
                      );
 
-        $this->class = new APNSResponse($this->logger, $endpoints, $invalid_endpoints, $errors, '{}');
+        $this->class = new APNSResponse($this->logger, $endpoints, $invalidEndpoints, $errors, '{}');
 
         parent::baseSetUp($this->class);
 
@@ -91,16 +91,16 @@ class APNSResponseBasePushSuccessTest extends APNSResponseTestCase
      */
     public function testPushSuccessWithMultipleSuccess(): void
     {
-        $endpoints         = [ 'endpoint1', 'endpoint2', 'endpoint3' ];
-        $invalid_endpoints = [];
-        $errors            = [];
-        $statuses          = [
+        $endpoints        = [ 'endpoint1', 'endpoint2', 'endpoint3' ];
+        $invalidEndpoints = [];
+        $errors           = [];
+        $statuses         = [
             'endpoint1' => PushNotificationStatus::Success,
             'endpoint2' => PushNotificationStatus::Success,
             'endpoint3' => PushNotificationStatus::Success,
         ];
 
-        $this->class = new APNSResponse($this->logger, $endpoints, $invalid_endpoints, $errors, '{}');
+        $this->class = new APNSResponse($this->logger, $endpoints, $invalidEndpoints, $errors, '{}');
 
         parent::baseSetUp($this->class);
 
@@ -114,23 +114,23 @@ class APNSResponseBasePushSuccessTest extends APNSResponseTestCase
      */
     public function testPushSuccessWithMultipleErrors(): void
     {
-        $new_message = function () {
+        $newMessage = function () {
             return $this->getMockBuilder('ApnsPHP\Message')
                         ->disableOriginalConstructor()
                         ->getMock();
         };
 
-        $message1 = $new_message();
-        $message2 = $new_message();
-        $message3 = $new_message();
-        $message4 = $new_message();
-        $message5 = $new_message();
-        $message6 = $new_message();
-        $message7 = $new_message();
+        $message1 = $newMessage();
+        $message2 = $newMessage();
+        $message3 = $newMessage();
+        $message4 = $newMessage();
+        $message5 = $newMessage();
+        $message6 = $newMessage();
+        $message7 = $newMessage();
 
-        $endpoints         = [ 'endpoint1', 'endpoint2', 'endpoint3', 'endpoint4', 'endpoint5', 'endpoint6', 'endpoint7' ];
-        $invalid_endpoints = [];
-        $errors            = [
+        $endpoints        = [ 'endpoint1', 'endpoint2', 'endpoint3', 'endpoint4', 'endpoint5', 'endpoint6', 'endpoint7' ];
+        $invalidEndpoints = [];
+        $errors           = [
             1 => [
                 'MESSAGE'             => $message1,
                 'ERRORS'              => [
@@ -216,7 +216,7 @@ class APNSResponseBasePushSuccessTest extends APNSResponseTestCase
                 ],
             ],
         ];
-        $statuses          = [
+        $statuses         = [
             'endpoint1' => PushNotificationStatus::Error,
             'endpoint2' => PushNotificationStatus::Error,
             'endpoint3' => PushNotificationStatus::Error,
@@ -297,7 +297,7 @@ class APNSResponseBasePushSuccessTest extends APNSResponseTestCase
                         [ 'endpoint' => 'endpoint7', 'error' => 'DeviceTokenNotForTopic' ]
                      );
 
-        $this->class = new APNSResponse($this->logger, $endpoints, $invalid_endpoints, $errors, '{}');
+        $this->class = new APNSResponse($this->logger, $endpoints, $invalidEndpoints, $errors, '{}');
 
         parent::baseSetUp($this->class);
 
@@ -311,17 +311,17 @@ class APNSResponseBasePushSuccessTest extends APNSResponseTestCase
      */
     public function testPushSuccessWithMultipleMixedResultsAndInvalidEndpoints(): void
     {
-        $new_message = function () {
+        $newMessage = function () {
             return $this->getMockBuilder('ApnsPHP\Message')
                         ->disableOriginalConstructor()
                         ->getMock();
         };
 
-        $message = $new_message();
+        $message = $newMessage();
 
-        $endpoints         = [ 'endpoint1', 'endpoint2', 'endpoint3', 'endpoint4', 'endpoint5' ];
-        $invalid_endpoints = [ 'endpoint2', 'endpoint3' ];
-        $errors            = [
+        $endpoints        = [ 'endpoint1', 'endpoint2', 'endpoint3', 'endpoint4', 'endpoint5' ];
+        $invalidEndpoints = [ 'endpoint2', 'endpoint3' ];
+        $errors           = [
             4 => [
                 'MESSAGE'             => $message,
                 'ERRORS'              => [
@@ -335,7 +335,7 @@ class APNSResponseBasePushSuccessTest extends APNSResponseTestCase
                 ],
             ],
         ];
-        $statuses          = [
+        $statuses         = [
             'endpoint1' => PushNotificationStatus::Success,
             'endpoint2' => PushNotificationStatus::InvalidEndpoint,
             'endpoint3' => PushNotificationStatus::InvalidEndpoint,
@@ -354,7 +354,7 @@ class APNSResponseBasePushSuccessTest extends APNSResponseTestCase
                         [ 'endpoint' => 'endpoint4', 'error' => 'ExpiredProviderToken' ]
                      );
 
-        $this->class = new APNSResponse($this->logger, $endpoints, $invalid_endpoints, $errors, '{}');
+        $this->class = new APNSResponse($this->logger, $endpoints, $invalidEndpoints, $errors, '{}');
 
         parent::baseSetUp($this->class);
 

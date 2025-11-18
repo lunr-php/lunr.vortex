@@ -27,7 +27,7 @@ class APNSDispatcherBaseTest extends APNSDispatcherTestCase
      */
     public function testAPNSPushIsSet(): void
     {
-        $this->assertPropertySame('apns_push', $this->apns_push);
+        $this->assertPropertySame('apnsPush', $this->apnsPush);
     }
 
 }

@@ -41,7 +41,7 @@ abstract class APNSPayloadTestCase extends LunrBaseTestCase
      */
     public function setUp(): void
     {
-        $elements_array = [
+        $elementsArray = [
             'alert'       => 'apnsmessage',
             'badge'       => 10,
             'sound'       => 'bingbong.wav',
@@ -51,7 +51,7 @@ abstract class APNSPayloadTestCase extends LunrBaseTestCase
             ],
         ];
 
-        $this->payload = json_encode($elements_array);
+        $this->payload = json_encode($elementsArray);
 
         $this->class = $this->getMockBuilder(APNSPayload::class)
                             ->getMockForAbstractClass();

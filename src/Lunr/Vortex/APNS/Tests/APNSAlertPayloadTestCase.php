@@ -38,7 +38,7 @@ abstract class APNSAlertPayloadTestCase extends LunrBaseTestCase
      */
     public function setUp(): void
     {
-        $elements_array = [
+        $elementsArray = [
             'alert'       => 'apnsmessage',
             'badge'       => 10,
             'sound'       => 'bingbong.wav',
@@ -48,7 +48,7 @@ abstract class APNSAlertPayloadTestCase extends LunrBaseTestCase
             ],
         ];
 
-        $this->payload = json_encode($elements_array);
+        $this->payload = json_encode($elementsArray);
 
         $this->class = new APNSAlertPayload();
 

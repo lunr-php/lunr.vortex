@@ -29,16 +29,16 @@ class APNSResponseBasePushErrorTest extends APNSResponseTestCase
      */
     public function testPushErrorWithNoInvalidEndpoint(): void
     {
-        $endpoints         = [ 'endpoint1', 'endpoint2', 'endpoint3', 'endpoint4' ];
-        $invalid_endpoints = [];
-        $statuses          = [
+        $endpoints        = [ 'endpoint1', 'endpoint2', 'endpoint3', 'endpoint4' ];
+        $invalidEndpoints = [];
+        $statuses         = [
             'endpoint1' => PushNotificationStatus::Error,
             'endpoint2' => PushNotificationStatus::Error,
             'endpoint3' => PushNotificationStatus::Error,
             'endpoint4' => PushNotificationStatus::Error,
         ];
 
-        $this->class = new APNSResponse($this->logger, $endpoints, $invalid_endpoints, NULL, '{}');
+        $this->class = new APNSResponse($this->logger, $endpoints, $invalidEndpoints, NULL, '{}');
 
         parent::baseSetUp($this->class);
 
@@ -52,16 +52,16 @@ class APNSResponseBasePushErrorTest extends APNSResponseTestCase
      */
     public function testPushErrorWithSomeInvalidEndpoints(): void
     {
-        $endpoints         = [ 'endpoint1', 'endpoint2', 'endpoint3', 'endpoint4' ];
-        $invalid_endpoints = [ 'endpoint2', 'endpoint4' ];
-        $statuses          = [
+        $endpoints        = [ 'endpoint1', 'endpoint2', 'endpoint3', 'endpoint4' ];
+        $invalidEndpoints = [ 'endpoint2', 'endpoint4' ];
+        $statuses         = [
             'endpoint1' => PushNotificationStatus::Error,
             'endpoint2' => PushNotificationStatus::InvalidEndpoint,
             'endpoint3' => PushNotificationStatus::Error,
             'endpoint4' => PushNotificationStatus::InvalidEndpoint,
         ];
 
-        $this->class = new APNSResponse($this->logger, $endpoints, $invalid_endpoints, NULL, '{}');
+        $this->class = new APNSResponse($this->logger, $endpoints, $invalidEndpoints, NULL, '{}');
 
         parent::baseSetUp($this->class);
 
