@@ -39,7 +39,7 @@ class JPushDispatcher implements PushNotificationMultiDispatcherInterface
      * Push Notification authentication token.
      * @var string|null
      */
-    protected ?string $auth_token;
+    protected ?string $authToken;
 
     /**
      * Shared instance of the Requests\Session class.
@@ -62,9 +62,9 @@ class JPushDispatcher implements PushNotificationMultiDispatcherInterface
      */
     public function __construct(Session $http, LoggerInterface $logger)
     {
-        $this->http       = $http;
-        $this->logger     = $logger;
-        $this->auth_token = NULL;
+        $this->http      = $http;
+        $this->logger    = $logger;
+        $this->authToken = NULL;
     }
 
     /**
@@ -72,7 +72,7 @@ class JPushDispatcher implements PushNotificationMultiDispatcherInterface
      */
     public function __destruct()
     {
-        unset($this->auth_token);
+        unset($this->authToken);
         unset($this->http);
         unset($this->logger);
     }
@@ -90,15 +90,15 @@ class JPushDispatcher implements PushNotificationMultiDispatcherInterface
     /**
      * Getter for JPushBatchResponse.
      *
-     * @param Response $http_response Requests\Response object.
-     * @param string[] $endpoints     The endpoints the message was sent to (in the same order as sent).
-     * @param string   $payload       Raw payload that was sent to JPush.
+     * @param Response $httpResponse Requests\Response object.
+     * @param string[] $endpoints    The endpoints the message was sent to (in the same order as sent).
+     * @param string   $payload      Raw payload that was sent to JPush.
      *
      * @return JPushBatchResponse
      */
-    public function get_batch_response(Response $http_response, array $endpoints, string $payload): JPushBatchResponse
+    public function get_batch_response(Response $httpResponse, array $endpoints, string $payload): JPushBatchResponse
     {
-        return new JPushBatchResponse($this->http, $this->logger, $http_response, $endpoints, $payload);
+        return new JPushBatchResponse($this->http, $this->logger, $httpResponse, $endpoints, $payload);
     }
 
     /**
@@ -120,11 +120,11 @@ class JPushDispatcher implements PushNotificationMultiDispatcherInterface
 
         foreach (array_chunk($endpoints, self::BATCH_SIZE) as &$batch)
         {
-            $batch_response = $this->push_batch($payload, $batch);
+            $batchResponse = $this->push_batch($payload, $batch);
 
-            $response->add_batch_response($batch_response, $batch);
+            $response->add_batch_response($batchResponse, $batch);
 
-            unset($batch_response);
+            unset($batchResponse);
         }
 
         unset($batch);
@@ -142,19 +142,18 @@ class JPushDispatcher implements PushNotificationMultiDispatcherInterface
      */
     protected function push_batch(JPushPayload $payload, array &$endpoints): JPushBatchResponse
     {
+        $tmpPayload                                = $payload->get_payload();
+        $tmpPayload['audience']['registration_id'] = $endpoints;
 
-        $tmp_payload                                = $payload->get_payload();
-        $tmp_payload['audience']['registration_id'] = $endpoints;
-
-        $json_payload = json_encode($tmp_payload, JSON_UNESCAPED_UNICODE);
-        $options      = [
+        $jsonPayload = json_encode($tmpPayload, JSON_UNESCAPED_UNICODE);
+        $options     = [
             'timeout'         => 15, // timeout in seconds
             'connect_timeout' => 15  // timeout in seconds
         ];
 
         try
         {
-            $http_response = $this->http->post(self::JPUSH_SEND_URL, [], $json_payload, $options);
+            $httpResponse = $this->http->post(self::JPUSH_SEND_URL, [], $jsonPayload, $options);
         }
         catch (RequestsException $e)
         {
@@ -162,31 +161,32 @@ class JPushDispatcher implements PushNotificationMultiDispatcherInterface
                 'Dispatching JPush notification(s) failed: {message}',
                 [ 'message' => $e->getMessage() ]
             );
-            $http_response = $this->get_new_response_object_for_failed_request();
+            $httpResponse = $this->get_new_response_object_for_failed_request();
 
             if ($e->getType() == 'curlerror' && curl_errno($e->getData()) == 28)
             {
-                $http_response->status_code = 500;
+                // phpcs:ignore Lunr.NamingConventions.CamelCapsVariableName
+                $httpResponse->status_code = 500;
             }
         }
 
-        return $this->get_batch_response($http_response, $endpoints, $json_payload);
+        return $this->get_batch_response($httpResponse, $endpoints, $jsonPayload);
     }
 
     /**
      * Set the the auth token for the http headers.
      *
-     * @param string $auth_token The auth token for the JPush push notifications
+     * @param string $authToken The auth token for the JPush push notifications
      *
      * @return JPushDispatcher Self reference
      */
-    public function set_auth_token(string $auth_token): self
+    public function set_auth_token(string $authToken): self
     {
-        $this->auth_token = $auth_token;
+        $this->authToken = $authToken;
 
         $this->http->headers = [
             'Content-Type'  => 'application/json',
-            'Authorization' => 'Basic ' . $this->auth_token,
+            'Authorization' => 'Basic ' . $this->authToken,
         ];
 
         return $this;
@@ -199,11 +199,11 @@ class JPushDispatcher implements PushNotificationMultiDispatcherInterface
      */
     protected function get_new_response_object_for_failed_request(): Response
     {
-        $http_response = new Response();
+        $httpResponse = new Response();
 
-        $http_response->url = self::JPUSH_SEND_URL;
+        $httpResponse->url = self::JPUSH_SEND_URL;
 
-        return $http_response;
+        return $httpResponse;
     }
 
 }

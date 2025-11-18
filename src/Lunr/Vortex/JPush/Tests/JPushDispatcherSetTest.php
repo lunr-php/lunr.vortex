@@ -30,7 +30,7 @@ class JPushDispatcherSetTest extends JPushDispatcherTestCase
         $this->assertSame('Basic auth_token', $this->http->headers['Authorization']);
         $this->assertSame('application/json', $this->http->headers['Content-Type']);
 
-        $this->assertPropertyEquals('auth_token', 'auth_token');
+        $this->assertPropertyEquals('authToken', 'auth_token');
     }
 
     /**

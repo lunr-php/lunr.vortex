@@ -34,14 +34,14 @@ class JPushResponseAddBatchResponseTest extends JPushResponseTestCase
 
         $this->setReflectionPropertyValue('statuses', $statuses);
 
-        $this->batch_response->expects($this->once())
-                             ->method('get_message_id')
-                             ->willReturn(NULL);
+        $this->batchResponse->expects($this->once())
+                            ->method('get_message_id')
+                            ->willReturn(NULL);
 
-        $this->batch_response->expects($this->never())
-                             ->method('get_status');
+        $this->batchResponse->expects($this->never())
+                            ->method('get_status');
 
-        $this->class->add_batch_response($this->batch_response, []);
+        $this->class->add_batch_response($this->batchResponse, []);
 
         $this->assertPropertySame('statuses', $statuses);
     }
@@ -66,7 +66,7 @@ class JPushResponseAddBatchResponseTest extends JPushResponseTestCase
 
         $endpoints = [ 'endpoint2', 'endpoint3', 'endpoint4' ];
 
-        $expected_statuses = [
+        $expectedStatuses = [
             'endpoint1' => [
                 'status'     => PushNotificationStatus::Error,
                 'message_id' => '165468151',
@@ -87,23 +87,23 @@ class JPushResponseAddBatchResponseTest extends JPushResponseTestCase
 
         $this->setReflectionPropertyValue('statuses', $statuses);
 
-        $this->batch_response->expects($this->once())
-                             ->method('get_message_id')
-                             ->willReturn(165468564);
+        $this->batchResponse->expects($this->once())
+                            ->method('get_message_id')
+                            ->willReturn(165468564);
 
-        $this->batch_response->expects($this->exactly(3))
-                             ->method('get_status')
-                             ->willReturnMap(
-                                 [
-                                     [ 'endpoint2', PushNotificationStatus::InvalidEndpoint ],
-                                     [ 'endpoint3', PushNotificationStatus::Unknown ],
-                                     [ 'endpoint4', PushNotificationStatus::Success ],
-                                 ]
-                             );
+        $this->batchResponse->expects($this->exactly(3))
+                            ->method('get_status')
+                            ->willReturnMap(
+                                [
+                                    [ 'endpoint2', PushNotificationStatus::InvalidEndpoint ],
+                                    [ 'endpoint3', PushNotificationStatus::Unknown ],
+                                    [ 'endpoint4', PushNotificationStatus::Success ],
+                                ]
+                            );
 
-        $this->class->add_batch_response($this->batch_response, $endpoints);
+        $this->class->add_batch_response($this->batchResponse, $endpoints);
 
-        $this->assertPropertySame('statuses', $expected_statuses);
+        $this->assertPropertySame('statuses', $expectedStatuses);
     }
 
 }

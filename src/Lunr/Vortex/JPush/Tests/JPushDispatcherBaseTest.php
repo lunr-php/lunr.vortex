@@ -36,7 +36,7 @@ class JPushDispatcherBaseTest extends JPushDispatcherTestCase
      */
     public function testAuthTokenIsEmptyString(): void
     {
-        $this->assertPropertyEquals('auth_token', '');
+        $this->assertPropertyEquals('authToken', '');
     }
 
     /**

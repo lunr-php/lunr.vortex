@@ -26,10 +26,10 @@ class JPushBatchResponseGetMessageIdTest extends JPushBatchResponseTestCase
      */
     public function testGetMessageIdWhenBatchFails(): void
     {
-        $http_code = 400;
-        $content   = '{"error": {"message": "Field \"collapse_key\" must be a JSON string: 1463565451"}}';
+        $httpCode = 400;
+        $content  = '{"error": {"message": "Field \"collapse_key\" must be a JSON string: 1463565451"}}';
 
-        $this->response->status_code = $http_code;
+        $this->response->status_code = $httpCode;
         $this->response->body        = $content;
 
         $this->class = new JPushBatchResponse($this->http, $this->logger, $this->response, [], '[]');

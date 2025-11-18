@@ -96,8 +96,8 @@ class JPushNotificationPayload extends JPushPayload
      */
     public function set_priority(int $priority): static
     {
-        $priority_class = new ReflectionClass('\Lunr\Vortex\JPush\JPushPriority');
-        $priorities     = array_values($priority_class->getConstants());
+        $priorityClass = new ReflectionClass('\Lunr\Vortex\JPush\JPushPriority');
+        $priorities    = array_values($priorityClass->getConstants());
         if (in_array($priority, $priorities, TRUE))
         {
             $this->set_notification_data('priority', $priority, [ 'android' ]);

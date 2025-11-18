@@ -45,7 +45,7 @@ class JPushReport
      * Push Notification authentication token.
      * @var string|null
      */
-    protected ?string $auth_token;
+    protected ?string $authToken;
 
     /**
      * The statuses per endpoint.
@@ -61,10 +61,10 @@ class JPushReport
      */
     public function __construct(Session $http, LoggerInterface $logger)
     {
-        $this->statuses   = [];
-        $this->http       = $http;
-        $this->logger     = $logger;
-        $this->auth_token = NULL;
+        $this->statuses  = [];
+        $this->http      = $http;
+        $this->logger    = $logger;
+        $this->authToken = NULL;
     }
 
     /**
@@ -75,27 +75,27 @@ class JPushReport
         unset($this->http);
         unset($this->logger);
         unset($this->statuses);
-        unset($this->auth_token);
+        unset($this->authToken);
     }
 
     /**
      * Fetch report from JPush and set statuses when report is fetched successfully
      *
-     * @param int      $message_id JPush Batch ID
-     * @param string[] $endpoints  The endpoints the message was sent to (in the same order as sent).
+     * @param int      $messageID JPush Batch ID
+     * @param string[] $endpoints The endpoints the message was sent to (in the same order as sent).
      *
      * @return void
      */
-    public function get_report(int $message_id, array $endpoints): void
+    public function get_report(int $messageID, array $endpoints): void
     {
         $payload = [
-            'msg_id'           => $message_id,
+            'msg_id'           => $messageID,
             'registration_ids' => $endpoints,
         ];
 
         $headers = [
             'Content-Type'  => 'application/json',
-            'Authorization' => 'Basic ' . $this->auth_token,
+            'Authorization' => 'Basic ' . $this->authToken,
         ];
 
         try
@@ -160,44 +160,46 @@ class JPushReport
      */
     private function report_error(Response $response, array &$endpoints): void
     {
-        $upstream_msg  = NULL;
-        $upstream_code = NULL;
+        $upstreamMessage = NULL;
+        $upstreamCode    = NULL;
 
         if (!empty($response->body))
         {
-            $body          = json_decode($response->body, TRUE);
-            $upstream_msg  = $body['error']['message'] ?? NULL;
-            $upstream_code = $body['error']['code'] ?? NULL;
+            $body            = json_decode($response->body, TRUE);
+            $upstreamMessage = $body['error']['message'] ?? NULL;
+            $upstreamCode    = $body['error']['code'] ?? NULL;
         }
 
         $status = PushNotificationStatus::Error;
 
+        // phpcs:ignore Lunr.NamingConventions.CamelCapsVariableName
         switch ($response->status_code)
         {
             case 400:
-                if ($upstream_code === 3002)
+                if ($upstreamCode === 3002)
                 {
                     $status = PushNotificationStatus::Deferred;
                 }
 
-                $error_message = $upstream_msg ?? 'Invalid request';
+                $errorMessage = $upstreamMessage ?? 'Invalid request';
                 break;
             case 401:
-                $error_message = $upstream_msg ?? 'Error with authentication';
+                $errorMessage = $upstreamMessage ?? 'Error with authentication';
                 break;
             case 403:
-                $error_message = $upstream_msg ?? 'Error with configuration';
+                $errorMessage = $upstreamMessage ?? 'Error with configuration';
                 break;
             default:
-                $error_message = $upstream_msg ?? 'Unknown error';
-                $status        = PushNotificationStatus::Unknown;
+                $errorMessage = $upstreamMessage ?? 'Unknown error';
+                $status       = PushNotificationStatus::Unknown;
                 break;
         }
 
+        // phpcs:ignore Lunr.NamingConventions.CamelCapsVariableName
         if ($response->status_code >= 500)
         {
-            $error_message = $upstream_msg ?? 'Internal error';
-            $status        = PushNotificationStatus::TemporaryError;
+            $errorMessage = $upstreamMessage ?? 'Internal error';
+            $status       = PushNotificationStatus::TemporaryError;
         }
 
         foreach ($endpoints as $endpoint)
@@ -205,47 +207,47 @@ class JPushReport
             $this->statuses[$endpoint] = $status;
         }
 
-        $context = [ 'error' => $error_message ];
+        $context = [ 'error' => $errorMessage ];
         $this->logger->warning('Getting JPush notification report failed: {error}', $context);
     }
 
     /**
      * Report an error with the push notification for one endpoint.
      *
-     * @param string $endpoint   Endpoint for which the push failed
-     * @param string $error_code Error response code
+     * @param string $endpoint  Endpoint for which the push failed
+     * @param string $errorCode Error response code
      *
      * @see https://docs.jiguang.cn/en/jpush/server/push/rest_api_v3_report/#inquiry-of-service-status
      *
      * @return void
      */
-    private function report_endpoint_error(string $endpoint, string $error_code): void
+    private function report_endpoint_error(string $endpoint, string $errorCode): void
     {
-        switch ($error_code)
+        switch ($errorCode)
         {
             case 1:
-                $status        = PushNotificationStatus::Deferred;
-                $error_message = 'Not delivered';
+                $status       = PushNotificationStatus::Deferred;
+                $errorMessage = 'Not delivered';
                 break;
             case 2:
-                $status        = PushNotificationStatus::InvalidEndpoint;
-                $error_message = 'Registration_id does not belong to the application';
+                $status       = PushNotificationStatus::InvalidEndpoint;
+                $errorMessage = 'Registration_id does not belong to the application';
                 break;
             case 3:
-                $status        = PushNotificationStatus::Error;
-                $error_message = 'Registration_id belongs to the application, but it is not the target of the message';
+                $status       = PushNotificationStatus::Error;
+                $errorMessage = 'Registration_id belongs to the application, but it is not the target of the message';
                 break;
             case 4:
-                $status        = PushNotificationStatus::TemporaryError;
-                $error_message = 'The system is abnormal';
+                $status       = PushNotificationStatus::TemporaryError;
+                $errorMessage = 'The system is abnormal';
                 break;
             default:
-                $status        = PushNotificationStatus::Unknown;
-                $error_message = $error_code;
+                $status       = PushNotificationStatus::Unknown;
+                $errorMessage = $errorCode;
                 break;
         }
 
-        $context = [ 'endpoint' => $endpoint, 'error' => $error_message ];
+        $context = [ 'endpoint' => $endpoint, 'error' => $errorMessage ];
         $this->logger->warning('Dispatching JPush notification failed for endpoint {endpoint}: {error}', $context);
 
         $this->statuses[$endpoint] = $status;
@@ -254,13 +256,13 @@ class JPushReport
     /**
      * Set the the auth token for the http headers.
      *
-     * @param string $auth_token The auth token for the JPush push notifications
+     * @param string $authToken The auth token for the JPush push notifications
      *
      * @return void
      */
-    public function set_auth_token(string $auth_token): void
+    public function set_auth_token(string $authToken): void
     {
-        $this->auth_token = $auth_token;
+        $this->authToken = $authToken;
     }
 
 }

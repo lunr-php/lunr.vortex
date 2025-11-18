@@ -29,10 +29,10 @@ class JPushBatchResponseBasePushErrorTest extends JPushBatchResponseTestCase
      */
     public function testPushErrorInvalidJSON(): void
     {
-        $http_code = 400;
-        $content   = 'Field "collapse_key" must be a JSON string: 1463565451';
+        $httpCode = 400;
+        $content  = 'Field "collapse_key" must be a JSON string: 1463565451';
 
-        $this->response->status_code = $http_code;
+        $this->response->status_code = $httpCode;
         $this->response->body        = $content;
 
         $this->logger->expects($this->once())
@@ -57,10 +57,10 @@ class JPushBatchResponseBasePushErrorTest extends JPushBatchResponseTestCase
      */
     public function testPushErrorWithUpstreamMessage(): void
     {
-        $http_code = 400;
-        $content   = '{"error": {"message": "Field \"collapse_key\" must be a JSON string: 1463565451"}}';
+        $httpCode = 400;
+        $content  = '{"error": {"message": "Field \"collapse_key\" must be a JSON string: 1463565451"}}';
 
-        $this->response->status_code = $http_code;
+        $this->response->status_code = $httpCode;
         $this->response->body        = $content;
 
         $this->logger->expects($this->once())
@@ -85,10 +85,10 @@ class JPushBatchResponseBasePushErrorTest extends JPushBatchResponseTestCase
      */
     public function testPushErrorWithInvalidEndpoint(): void
     {
-        $http_code = 400;
-        $content   = '{"error": {"code": 1011, "message": "cannot find user by this audience or has been inactive for more than 255 days"}}';
+        $httpCode = 400;
+        $content  = '{"error": {"code": 1011, "message": "cannot find user by this audience or has been inactive for more than 255 days"}}';
 
-        $this->response->status_code = $http_code;
+        $this->response->status_code = $httpCode;
         $this->response->body        = $content;
 
         $this->logger->expects($this->once())
@@ -113,10 +113,10 @@ class JPushBatchResponseBasePushErrorTest extends JPushBatchResponseTestCase
      */
     public function testPushErrorAuthenticationError(): void
     {
-        $http_code = 401;
-        $content   = 'stuff';
+        $httpCode = 401;
+        $content  = 'stuff';
 
-        $this->response->status_code = $http_code;
+        $this->response->status_code = $httpCode;
         $this->response->body        = $content;
 
         $this->logger->expects($this->once())
@@ -141,10 +141,10 @@ class JPushBatchResponseBasePushErrorTest extends JPushBatchResponseTestCase
      */
     public function testPushErrorConfigError(): void
     {
-        $http_code = 403;
-        $content   = 'stuff';
+        $httpCode = 403;
+        $content  = 'stuff';
 
-        $this->response->status_code = $http_code;
+        $this->response->status_code = $httpCode;
         $this->response->body        = $content;
 
         $this->logger->expects($this->once())
@@ -182,16 +182,16 @@ class JPushBatchResponseBasePushErrorTest extends JPushBatchResponseTestCase
     /**
      * Test constructor behavior for error of push notification in case of internal error.
      *
-     * @param int $http_code HTTP code received
+     * @param int $httpCode HTTP code received
      *
      * @dataProvider internalErrorHTTPCodeDataProvider
      * @covers       \Lunr\Vortex\JPush\JPushBatchResponse::__construct
      */
-    public function testPushErrorInternalError(int $http_code): void
+    public function testPushErrorInternalError(int $httpCode): void
     {
         $content = 'stuff';
 
-        $this->response->status_code = $http_code;
+        $this->response->status_code = $httpCode;
         $this->response->body        = $content;
 
         $this->logger->expects($this->once())
@@ -227,16 +227,16 @@ class JPushBatchResponseBasePushErrorTest extends JPushBatchResponseTestCase
     /**
      * Test constructor behavior for error of push notification in case of unknown error.
      *
-     * @param int $http_code HTTP code received
+     * @param int $httpCode HTTP code received
      *
      * @dataProvider unknownErrorHTTPCodeDataProvider
      * @covers       \Lunr\Vortex\JPush\JPushBatchResponse::__construct
      */
-    public function testPushErrorUnknownError(int $http_code): void
+    public function testPushErrorUnknownError(int $httpCode): void
     {
         $content = 'stuff';
 
-        $this->response->status_code = $http_code;
+        $this->response->status_code = $httpCode;
         $this->response->body        = $content;
 
         $this->logger->expects($this->once())
@@ -261,7 +261,6 @@ class JPushBatchResponseBasePushErrorTest extends JPushBatchResponseTestCase
      */
     public function testPushErrorReportingAPI(): void
     {
-
         $this->logger->expects($this->once())
                      ->method('warning')
                      ->with(

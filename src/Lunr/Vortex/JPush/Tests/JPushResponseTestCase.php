@@ -26,7 +26,7 @@ abstract class JPushResponseTestCase extends LunrBaseTestCase
      * Mock instance of the JPushBatchResponse class.
      * @var Lunr\Vortex\JPush\JPushBatchResponse
      */
-    protected $batch_response;
+    protected $batchResponse;
 
     /**
      * Instance of the tested class.
@@ -41,9 +41,9 @@ abstract class JPushResponseTestCase extends LunrBaseTestCase
      */
     public function setUp(): void
     {
-        $this->batch_response = $this->getMockBuilder('Lunr\Vortex\JPush\JPushBatchResponse')
-                                     ->disableOriginalConstructor()
-                                     ->getMock();
+        $this->batchResponse = $this->getMockBuilder('Lunr\Vortex\JPush\JPushBatchResponse')
+                                    ->disableOriginalConstructor()
+                                    ->getMock();
 
         $this->class = new JPushResponse();
 
@@ -55,7 +55,7 @@ abstract class JPushResponseTestCase extends LunrBaseTestCase
      */
     public function tearDown(): void
     {
-        unset($this->batch_response);
+        unset($this->batchResponse);
         unset($this->class);
 
         parent::tearDown();
