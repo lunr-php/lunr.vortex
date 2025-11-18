@@ -44,25 +44,25 @@ class JPushResponse implements PushNotificationDeferredResponseInterface
     /**
      * Add the results of a batch response.
      *
-     * @param JPushBatchResponse $batch_response Batch response
-     * @param string[]           $endpoints      Endpoints of the batch
+     * @param JPushBatchResponse $batchResponse Batch response
+     * @param string[]           $endpoints     Endpoints of the batch
      *
      * @return void
      */
-    public function add_batch_response(JPushBatchResponse $batch_response, array $endpoints): void
+    public function add_batch_response(JPushBatchResponse $batchResponse, array $endpoints): void
     {
-        $message_id = $batch_response->get_message_id();
+        $messageID = $batchResponse->get_message_id();
 
-        if ($message_id !== NULL)
+        if ($messageID !== NULL)
         {
-            $message_id = (string) $message_id;
+            $messageID = (string) $messageID;
         }
 
         foreach ($endpoints as $endpoint)
         {
             $this->statuses[$endpoint] = [
-                'status'     => $batch_response->get_status($endpoint),
-                'message_id' => $message_id
+                'status'     => $batchResponse->get_status($endpoint),
+                'message_id' => $messageID
             ];
         }
     }

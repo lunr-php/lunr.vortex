@@ -49,7 +49,7 @@ class JPushBatchResponse
      * Message ID.
      * @var int
      */
-    protected int $message_id;
+    protected int $messageID;
 
     /**
      * Notification endpoints.
@@ -80,15 +80,15 @@ class JPushBatchResponse
             return;
         }
 
-        $json_content = json_decode($response->body, TRUE);
+        $jsonContent = json_decode($response->body, TRUE);
 
-        if (!isset($json_content['msg_id']))
+        if (!isset($jsonContent['msg_id']))
         {
             $this->report_error($this->endpoints, $response);
             return;
         }
 
-        $this->message_id = (int) $json_content['msg_id'];
+        $this->messageID = (int) $jsonContent['msg_id'];
     }
 
     /**
@@ -101,7 +101,7 @@ class JPushBatchResponse
         unset($this->statuses);
         unset($this->payload);
         unset($this->endpoints);
-        unset($this->message_id);
+        unset($this->messageID);
     }
 
     /**
@@ -123,7 +123,7 @@ class JPushBatchResponse
      */
     public function get_message_id(): ?int
     {
-        return $this->message_id ?? NULL;
+        return $this->messageID ?? NULL;
     }
 
     /**
@@ -138,44 +138,46 @@ class JPushBatchResponse
      */
     private function report_error(array &$endpoints, Response $response): void
     {
-        $upstream_msg  = NULL;
-        $upstream_code = NULL;
+        $upstreamMessage = NULL;
+        $upstreamCode    = NULL;
 
         if (!empty($response->body))
         {
-            $body          = json_decode($response->body, TRUE);
-            $upstream_msg  = $body['error']['message'] ?? NULL;
-            $upstream_code = $body['error']['code'] ?? NULL;
+            $body            = json_decode($response->body, TRUE);
+            $upstreamMessage = $body['error']['message'] ?? NULL;
+            $upstreamCode    = $body['error']['code'] ?? NULL;
         }
 
         $status = PushNotificationStatus::Error;
 
+        // phpcs:ignore Lunr.NamingConventions.CamelCapsVariableName
         switch ($response->status_code)
         {
             case 400:
-                if ($upstream_code === 1011)
+                if ($upstreamCode === 1011)
                 {
                     $status = PushNotificationStatus::InvalidEndpoint;
                 }
 
-                $error_message = $upstream_msg ?? 'Invalid request';
+                $errorMessage = $upstreamMessage ?? 'Invalid request';
                 break;
             case 401:
-                $error_message = $upstream_msg ?? 'Error with authentication';
+                $errorMessage = $upstreamMessage ?? 'Error with authentication';
                 break;
             case 403:
-                $error_message = $upstream_msg ?? 'Error with configuration';
+                $errorMessage = $upstreamMessage ?? 'Error with configuration';
                 break;
             default:
-                $error_message = $upstream_msg ?? 'Unknown error';
-                $status        = PushNotificationStatus::Unknown;
+                $errorMessage = $upstreamMessage ?? 'Unknown error';
+                $status       = PushNotificationStatus::Unknown;
                 break;
         }
 
+        // phpcs:ignore Lunr.NamingConventions.CamelCapsVariableName
         if ($response->status_code >= 500)
         {
-            $error_message = $upstream_msg ?? 'Internal error';
-            $status        = PushNotificationStatus::TemporaryError;
+            $errorMessage = $upstreamMessage ?? 'Internal error';
+            $status       = PushNotificationStatus::TemporaryError;
         }
 
         foreach ($endpoints as $endpoint)
@@ -183,7 +185,7 @@ class JPushBatchResponse
             $this->statuses[$endpoint] = $status;
         }
 
-        $context = [ 'error' => $error_message ];
+        $context = [ 'error' => $errorMessage ];
         $this->logger->warning('Dispatching JPush notification failed: {error}', $context);
     }
 

@@ -78,7 +78,7 @@ class JPushBatchResponseBasePushSuccessTest extends JPushBatchResponseTestCase
 
         $this->assertPropertySame('logger', $this->logger);
         $this->assertPropertyEquals('statuses', []);
-        $this->assertPropertyEquals('message_id', 121654513215);
+        $this->assertPropertyEquals('messageID', 121654513215);
     }
 
     /**
@@ -104,7 +104,7 @@ class JPushBatchResponseBasePushSuccessTest extends JPushBatchResponseTestCase
 
         $this->assertPropertySame('logger', $this->logger);
         $this->assertPropertyEquals('statuses', []);
-        $this->assertPropertyEquals('message_id', 121654513215);
+        $this->assertPropertyEquals('messageID', 121654513215);
     }
 
 }

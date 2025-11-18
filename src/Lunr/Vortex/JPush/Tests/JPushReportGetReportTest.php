@@ -28,9 +28,10 @@ class JPushReportGetReportTest extends JPushReportTestCase
      */
     public function testGetReportReturnsWhenHttpRequestFails(): void
     {
+        // phpcs:ignore Lunr.NamingConventions.CamelCapsVariableName
         $this->mockMethod([ $this->class, 'report_error' ], function ($response) { echo $response->status_code; });
 
-        $this->setReflectionPropertyValue('auth_token', 'auth_token_24412');
+        $this->setReflectionPropertyValue('authToken', 'auth_token_24412');
 
         $headers = [
             'Content-Type'  => 'application/json',
@@ -64,7 +65,7 @@ class JPushReportGetReportTest extends JPushReportTestCase
      */
     public function testGetReportWithCurlErrors(): void
     {
-        $this->setReflectionPropertyValue('auth_token', 'auth_token_24412');
+        $this->setReflectionPropertyValue('authToken', 'auth_token_24412');
 
         $headers = [
             'Content-Type'  => 'application/json',
@@ -102,21 +103,21 @@ class JPushReportGetReportTest extends JPushReportTestCase
     {
         $endpoints = [ 'endpoint1', 'endpoint2', 'endpoint3', 'endpoint4', 'endpoint5', 'endpoint6', 'endpoint7' ];
 
-        $report_content  = '{"endpoint1": {"status":1},"endpoint2": {"status":2},"endpoint3": {"status":3},';
-        $report_content .= '"endpoint4": {"status":4},"endpoint5": {"status":5},"endpoint6": {"status":6},';
-        $report_content .= '"endpoint7": {"status":0}}';
+        $reportContent  = '{"endpoint1": {"status":1},"endpoint2": {"status":2},"endpoint3": {"status":3},';
+        $reportContent .= '"endpoint4": {"status":4},"endpoint5": {"status":5},"endpoint6": {"status":6},';
+        $reportContent .= '"endpoint7": {"status":0}}';
 
         $this->response->success = TRUE;
-        $this->response->body    = $report_content;
+        $this->response->body    = $reportContent;
 
-        $this->setReflectionPropertyValue('auth_token', 'auth_token_24412');
+        $this->setReflectionPropertyValue('authToken', 'auth_token_24412');
 
         $headers = [
             'Content-Type'  => 'application/json',
             'Authorization' => 'Basic auth_token_24412',
         ];
 
-        $request_body = [
+        $requestBody = [
             'msg_id'           => 1453658564165,
             'registration_ids' => [
                 'endpoint1',
@@ -131,16 +132,16 @@ class JPushReportGetReportTest extends JPushReportTestCase
 
         $this->http->expects($this->once())
                    ->method('post')
-                   ->with('https://report.jpush.cn/v3/status/message', $headers, json_encode($request_body), [])
+                   ->with('https://report.jpush.cn/v3/status/message', $headers, json_encode($requestBody), [])
                    ->willReturn($this->response);
 
         $this->response->expects($this->once())
                        ->method('throw_for_status');
 
-        $log_message = 'Dispatching JPush notification failed for endpoint {endpoint}: {error}';
+        $logMessage = 'Dispatching JPush notification failed for endpoint {endpoint}: {error}';
         $this->logger->expects('warning')
                      ->once()
-                     ->with($log_message,
+                     ->with($logMessage,
                         [
                             'endpoint' => 'endpoint1',
                             'error'    => 'Not delivered'
@@ -149,7 +150,7 @@ class JPushReportGetReportTest extends JPushReportTestCase
 
         $this->logger->expects('warning')
                      ->once()
-                     ->with($log_message,
+                     ->with($logMessage,
                         [
                             'endpoint' => 'endpoint2',
                             'error'    => 'Registration_id does not belong to the application'
@@ -158,7 +159,7 @@ class JPushReportGetReportTest extends JPushReportTestCase
 
         $this->logger->expects('warning')
                      ->once()
-                     ->with($log_message,
+                     ->with($logMessage,
                         [
                             'endpoint' => 'endpoint3',
                             'error'    => 'Registration_id belongs to the application, but it is not the target of the message'
@@ -167,7 +168,7 @@ class JPushReportGetReportTest extends JPushReportTestCase
 
         $this->logger->expects('warning')
                      ->once()
-                     ->with($log_message,
+                     ->with($logMessage,
                         [
                             'endpoint' => 'endpoint4',
                             'error'    => 'The system is abnormal'
@@ -176,7 +177,7 @@ class JPushReportGetReportTest extends JPushReportTestCase
 
         $this->logger->expects('warning')
                      ->once()
-                     ->with($log_message,
+                     ->with($logMessage,
                         [
                             'endpoint' => 'endpoint5',
                             'error'    => 5
@@ -185,7 +186,7 @@ class JPushReportGetReportTest extends JPushReportTestCase
 
         $this->logger->expects('warning')
                      ->once()
-                     ->with($log_message,
+                     ->with($logMessage,
                         [
                             'endpoint' => 'endpoint6',
                             'error'    => 6

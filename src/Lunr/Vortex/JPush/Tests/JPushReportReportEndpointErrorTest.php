@@ -65,17 +65,17 @@ class JPushReportReportEndpointErrorTest extends JPushReportTestCase
     /**
      * Test the report_endpoint_error() succeeds.
      *
-     * @param string                 $endpoint   Endpoint of the notification
-     * @param int                    $error_code Error response code
-     * @param PushNotificationStatus $status     Lunr status
-     * @param string                 $message    Reported message
+     * @param string                 $endpoint  Endpoint of the notification
+     * @param int                    $errorCode Error response code
+     * @param PushNotificationStatus $status    Lunr status
+     * @param string                 $message   Reported message
      *
      * @dataProvider endpointErrorProvider
      * @covers       \Lunr\Vortex\JPush\JPushReport::report_endpoint_error
      */
-    public function testReportEndpointErrorSucceeds(string $endpoint, int $error_code, PushNotificationStatus $status, string $message): void
+    public function testReportEndpointErrorSucceeds(string $endpoint, int $errorCode, PushNotificationStatus $status, string $message): void
     {
-        $log_message = 'Dispatching JPush notification failed for endpoint {endpoint}: {error}';
+        $logMessage = 'Dispatching JPush notification failed for endpoint {endpoint}: {error}';
 
         $context = [
             'endpoint' => $endpoint,
@@ -84,10 +84,10 @@ class JPushReportReportEndpointErrorTest extends JPushReportTestCase
 
         $this->logger->expects('warning')
                      ->once()
-                     ->with($log_message, $context);
+                     ->with($logMessage, $context);
 
         $method = $this->getReflectionMethod('report_endpoint_error');
-        $method->invokeArgs($this->class, [ $endpoint, $error_code ]);
+        $method->invokeArgs($this->class, [ $endpoint, $errorCode ]);
 
         $this->assertPropertyEquals('statuses', [ $endpoint => $status ]);
     }

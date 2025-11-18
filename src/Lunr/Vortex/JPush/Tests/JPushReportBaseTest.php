@@ -42,7 +42,7 @@ class JPushReportBaseTest extends JPushReportTestCase
      */
     public function testAuthTokenIsInitializedAsNull(): void
     {
-        $this->assertNull($this->getReflectionPropertyValue('auth_token'));
+        $this->assertNull($this->getReflectionPropertyValue('authToken'));
     }
 
     /**
@@ -54,7 +54,7 @@ class JPushReportBaseTest extends JPushReportTestCase
     {
         $this->class->set_auth_token('auth_token_24412');
 
-        $this->assertPropertySame('auth_token', 'auth_token_24412');
+        $this->assertPropertySame('authToken', 'auth_token_24412');
     }
 
 }

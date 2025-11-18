@@ -83,7 +83,7 @@ class JPushBatchResponseGetStatusTest extends JPushBatchResponseTestCase
     public function testGetStatus(array $statuses, PushNotificationStatus $status): void
     {
         $this->setReflectionPropertyValue('statuses', $statuses);
-        $this->setReflectionPropertyValue('message_id', 1453658564165);
+        $this->setReflectionPropertyValue('messageID', 1453658564165);
 
         $result = $this->class->get_status('endpoint_param');
 

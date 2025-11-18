@@ -38,7 +38,7 @@ abstract class JPushNotification3rdPayloadTestCase extends LunrBaseTestCase
      */
     public function setUp(): void
     {
-        $elements_array = [
+        $elementsArray = [
             'registration_ids' => [ 'one', 'two', 'three' ],
             'collapse_key'     => 'test',
             'data'             => [
@@ -48,7 +48,7 @@ abstract class JPushNotification3rdPayloadTestCase extends LunrBaseTestCase
             'time_to_live'     => 10,
         ];
 
-        $this->payload = json_encode($elements_array);
+        $this->payload = json_encode($elementsArray);
 
         $this->class = new JPushNotification3rdPayload();
 
