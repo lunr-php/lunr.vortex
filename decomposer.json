@@ -1,7 +1,7 @@
 {
     "Lunr.Halo": {
         "url": "https://github.com/lunr-php/lunr.halo.git",
-        "version": "0.11.0",
+        "version": "0.12.0",
         "revision": "master",
         "psr4": {
             "prefix": "Lunr\\Halo",
@@ -11,7 +11,7 @@
     },
     "Psr-Log": {
         "url": "https://github.com/php-fig/log.git",
-        "version": "3.0.0",
+        "version": "3.0.2",
         "psr4": {
             "prefix": "Psr\\Log",
             "search-path": "/src/"
@@ -19,14 +19,14 @@
     },
     "ApnsPHP": {
         "url": "https://github.com/move-backend/apnsphp.git",
-        "version": "4.0.0rc2",
+        "version": "4.0.0",
         "psr0": {
             "path": "/"
         }
     },
     "JWT": {
         "url": "https://github.com/lcobucci/JWT.git",
-        "version": "5.3.0",
+        "version": "5.6.0",
         "psr4": {
             "prefix": "Lcobucci\\JWT",
             "search-path": "/src/"
@@ -34,7 +34,7 @@
     },
     "PHPMailer": {
         "url": "https://github.com/PHPMailer/PHPMailer.git",
-        "version": "6.9.1",
+        "version": "7.0.0",
         "psr4": {
             "prefix": "PHPMailer\\PHPMailer",
             "search-path": "/src/"
@@ -42,7 +42,7 @@
     },
     "Requests": {
         "url": "https://github.com/WordPress/Requests.git",
-        "version": "2.0.11",
+        "version": "2.0.15",
         "psr4": {
             "prefix": "WpOrg\\Requests",
             "search-path": "/src/"
