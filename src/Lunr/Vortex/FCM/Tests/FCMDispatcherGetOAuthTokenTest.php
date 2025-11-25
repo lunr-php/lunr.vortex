@@ -37,8 +37,8 @@ class FCMDispatcherGetOAuthTokenTest extends FCMDispatcherTestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid oauth lifetime!');
 
-        $this->token_builder->shouldReceive('issuedBy')
-                            ->never();
+        $this->tokenBuilder->shouldReceive('issuedBy')
+                           ->never();
 
         $this->http->expects($this->never())
                    ->method('post');
@@ -50,7 +50,7 @@ class FCMDispatcherGetOAuthTokenTest extends FCMDispatcherTestCase
     }
 
     /**
-     * Test get_oauth_token fails when client_email is NULL.
+     * Test get_oauth_token fails when clientEmail is NULL.
      *
      * @covers Lunr\Vortex\FCM\FCMDispatcher::get_oauth_token
      */
@@ -59,8 +59,8 @@ class FCMDispatcherGetOAuthTokenTest extends FCMDispatcherTestCase
         $this->expectException(BadMethodCallException::class);
         $this->expectExceptionMessage('Requesting token failed: No client email provided');
 
-        $this->token_builder->shouldReceive('issuedBy')
-                            ->never();
+        $this->tokenBuilder->shouldReceive('issuedBy')
+                           ->never();
 
         $this->http->expects($this->never())
                    ->method('post');
@@ -72,19 +72,19 @@ class FCMDispatcherGetOAuthTokenTest extends FCMDispatcherTestCase
     }
 
     /**
-     * Test get_oauth_token fails when private_key is NULL.
+     * Test get_oauth_token fails when privateKey is NULL.
      *
      * @covers Lunr\Vortex\FCM\FCMDispatcher::get_oauth_token
      */
     public function testGetOAuthTokenFailsWhenPrivateKeyIsNull(): void
     {
-        $this->setReflectionPropertyValue('client_email', 'email_client');
+        $this->setReflectionPropertyValue('clientEmail', 'email_client');
 
         $this->expectException(BadMethodCallException::class);
         $this->expectExceptionMessage('Requesting token failed: No private key provided');
 
-        $this->token_builder->shouldReceive('issuedBy')
-                            ->never();
+        $this->tokenBuilder->shouldReceive('issuedBy')
+                           ->never();
 
         $this->http->expects($this->never())
                    ->method('post');
@@ -107,55 +107,55 @@ class FCMDispatcherGetOAuthTokenTest extends FCMDispatcherTestCase
             $this->markTestSkipped('The uopz extension is not available.');
         }
 
-        $this->setReflectionPropertyValue('client_email', 'email_client');
-        $this->setReflectionPropertyValue('private_key', 'secret_key');
+        $this->setReflectionPropertyValue('clientEmail', 'email_client');
+        $this->setReflectionPropertyValue('privateKey', 'secret_key');
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Fetching OAuth token for FCM notification(s) failed');
 
-        $issued_at  = Mockery::mock(DateTimeImmutable::class);
-        $expires_at = Mockery::mock(DateTimeImmutable::class);
+        $issuedAt  = Mockery::mock(DateTimeImmutable::class);
+        $expiresAt = Mockery::mock(DateTimeImmutable::class);
 
-        $issued_at->expects()
-                  ->modify('+10 minutes')
-                  ->andReturn($expires_at);
+        $issuedAt->expects()
+                 ->modify('+10 minutes')
+                 ->andReturn($expiresAt);
 
-        uopz_set_mock(DateTimeImmutable::class, $issued_at);
-        uopz_set_mock(Builder::class, $this->token_builder);
+        uopz_set_mock(DateTimeImmutable::class, $issuedAt);
+        uopz_set_mock(Builder::class, $this->tokenBuilder);
 
-        $this->token_builder->expects()
-                            ->issuedBy('email_client')
-                            ->andReturnSelf();
+        $this->tokenBuilder->expects()
+                           ->issuedBy('email_client')
+                           ->andReturnSelf();
 
-        $this->token_builder->expects()
-                            ->permittedFor('https://oauth2.googleapis.com/token')
-                            ->andReturnSelf();
+        $this->tokenBuilder->expects()
+                           ->permittedFor('https://oauth2.googleapis.com/token')
+                           ->andReturnSelf();
 
-        $this->token_builder->expects()
-                            ->issuedAt($issued_at)
-                            ->andReturnSelf();
+        $this->tokenBuilder->expects()
+                           ->issuedAt($issuedAt)
+                           ->andReturnSelf();
 
-        $this->token_builder->expects()
-                            ->expiresAt($expires_at)
-                            ->andReturnSelf();
+        $this->tokenBuilder->expects()
+                           ->expiresAt($expiresAt)
+                           ->andReturnSelf();
 
-        $this->token_builder->expects()
-                            ->withClaim('scope', 'https://www.googleapis.com/auth/firebase.messaging')
-                            ->andReturnSelf();
+        $this->tokenBuilder->expects()
+                           ->withClaim('scope', 'https://www.googleapis.com/auth/firebase.messaging')
+                           ->andReturnSelf();
 
-        $this->token_builder->expects()
-                            ->withHeader('alg', 'RS2256')
-                            ->andReturnSelf();
+        $this->tokenBuilder->expects()
+                           ->withHeader('alg', 'RS2256')
+                           ->andReturnSelf();
 
-        $this->token_builder->expects()
-                            ->withHeader('typ', 'JWT')
-                            ->andReturnSelf();
+        $this->tokenBuilder->expects()
+                           ->withHeader('typ', 'JWT')
+                           ->andReturnSelf();
 
-        uopz_set_return($this->token_builder::class, 'getToken', $this->token_plain);
+        uopz_set_return($this->tokenBuilder::class, 'getToken', $this->tokenPlain);
 
-        $this->token_plain->expects($this->once())
-                          ->method('toString')
-                          ->willReturn('jwt_token');
+        $this->tokenPlain->expects($this->once())
+                         ->method('toString')
+                         ->willReturn('jwt_token');
 
         $headers = [
             'Content-Type'  => 'application/json'
@@ -177,7 +177,7 @@ class FCMDispatcherGetOAuthTokenTest extends FCMDispatcherTestCase
 
         $this->class->get_oauth_token();
 
-        uopz_unset_return($this->token_builder::class, 'getToken');
+        uopz_unset_return($this->tokenBuilder::class, 'getToken');
         uopz_unset_mock(DateTimeImmutable::class);
         uopz_unset_mock(Builder::class);
     }
@@ -194,55 +194,55 @@ class FCMDispatcherGetOAuthTokenTest extends FCMDispatcherTestCase
             $this->markTestSkipped('The uopz extension is not available.');
         }
 
-        $this->setReflectionPropertyValue('client_email', 'email_client');
-        $this->setReflectionPropertyValue('private_key', 'secret_key');
+        $this->setReflectionPropertyValue('clientEmail', 'email_client');
+        $this->setReflectionPropertyValue('privateKey', 'secret_key');
 
         $this->expectException(UnexpectedValueException::class);
         $this->expectExceptionMessage('Processing json response for fetching OAuth token for FCM notification(s) failed: Syntax error');
 
-        $issued_at  = Mockery::mock(DateTimeImmutable::class);
-        $expires_at = Mockery::mock(DateTimeImmutable::class);
+        $issuedAt  = Mockery::mock(DateTimeImmutable::class);
+        $expiresAt = Mockery::mock(DateTimeImmutable::class);
 
-        $issued_at->expects()
-                  ->modify('+10 minutes')
-                  ->andReturn($expires_at);
+        $issuedAt->expects()
+                 ->modify('+10 minutes')
+                 ->andReturn($expiresAt);
 
-        uopz_set_mock(DateTimeImmutable::class, $issued_at);
-        uopz_set_mock(Builder::class, $this->token_builder);
+        uopz_set_mock(DateTimeImmutable::class, $issuedAt);
+        uopz_set_mock(Builder::class, $this->tokenBuilder);
 
-        $this->token_builder->expects()
-                            ->issuedBy('email_client')
-                            ->andReturnSelf();
+        $this->tokenBuilder->expects()
+                           ->issuedBy('email_client')
+                           ->andReturnSelf();
 
-        $this->token_builder->expects()
-                            ->permittedFor('https://oauth2.googleapis.com/token')
-                            ->andReturnSelf();
+        $this->tokenBuilder->expects()
+                           ->permittedFor('https://oauth2.googleapis.com/token')
+                           ->andReturnSelf();
 
-        $this->token_builder->expects()
-                            ->issuedAt($issued_at)
-                            ->andReturnSelf();
+        $this->tokenBuilder->expects()
+                           ->issuedAt($issuedAt)
+                           ->andReturnSelf();
 
-        $this->token_builder->expects()
-                            ->expiresAt($expires_at)
-                            ->andReturnSelf();
+        $this->tokenBuilder->expects()
+                           ->expiresAt($expiresAt)
+                           ->andReturnSelf();
 
-        $this->token_builder->expects()
-                            ->withClaim('scope', 'https://www.googleapis.com/auth/firebase.messaging')
-                            ->andReturnSelf();
+        $this->tokenBuilder->expects()
+                           ->withClaim('scope', 'https://www.googleapis.com/auth/firebase.messaging')
+                           ->andReturnSelf();
 
-        $this->token_builder->expects()
-                            ->withHeader('alg', 'RS2256')
-                            ->andReturnSelf();
+        $this->tokenBuilder->expects()
+                           ->withHeader('alg', 'RS2256')
+                           ->andReturnSelf();
 
-        $this->token_builder->expects()
-                            ->withHeader('typ', 'JWT')
-                            ->andReturnSelf();
+        $this->tokenBuilder->expects()
+                           ->withHeader('typ', 'JWT')
+                           ->andReturnSelf();
 
-        uopz_set_return($this->token_builder::class, 'getToken', $this->token_plain);
+        uopz_set_return($this->tokenBuilder::class, 'getToken', $this->tokenPlain);
 
-        $this->token_plain->expects($this->once())
-                          ->method('toString')
-                          ->willReturn('jwt_token');
+        $this->tokenPlain->expects($this->once())
+                         ->method('toString')
+                         ->willReturn('jwt_token');
 
         $headers = [
             'Content-Type'  => 'application/json'
@@ -271,7 +271,7 @@ class FCMDispatcherGetOAuthTokenTest extends FCMDispatcherTestCase
 
         $this->class->get_oauth_token();
 
-        uopz_unset_return($this->token_builder::class, 'getToken');
+        uopz_unset_return($this->tokenBuilder::class, 'getToken');
         uopz_unset_mock(DateTimeImmutable::class);
         uopz_unset_mock(Builder::class);
     }
@@ -288,55 +288,55 @@ class FCMDispatcherGetOAuthTokenTest extends FCMDispatcherTestCase
             $this->markTestSkipped('The uopz extension is not available.');
         }
 
-        $this->setReflectionPropertyValue('client_email', 'email_client');
-        $this->setReflectionPropertyValue('private_key', 'secret_key');
+        $this->setReflectionPropertyValue('clientEmail', 'email_client');
+        $this->setReflectionPropertyValue('privateKey', 'secret_key');
 
         $this->expectException(UnexpectedValueException::class);
         $this->expectExceptionMessage('Fetching OAuth token for FCM notification(s) failed: No access token in the response body');
 
-        $issued_at  = Mockery::mock(DateTimeImmutable::class);
-        $expires_at = Mockery::mock(DateTimeImmutable::class);
+        $issuedAt  = Mockery::mock(DateTimeImmutable::class);
+        $expiresAt = Mockery::mock(DateTimeImmutable::class);
 
-        $issued_at->expects()
-                  ->modify('+10 minutes')
-                  ->andReturn($expires_at);
+        $issuedAt->expects()
+                 ->modify('+10 minutes')
+                 ->andReturn($expiresAt);
 
-        uopz_set_mock(DateTimeImmutable::class, $issued_at);
-        uopz_set_mock(Builder::class, $this->token_builder);
+        uopz_set_mock(DateTimeImmutable::class, $issuedAt);
+        uopz_set_mock(Builder::class, $this->tokenBuilder);
 
-        $this->token_builder->expects()
-                            ->issuedBy('email_client')
-                            ->andReturnSelf();
+        $this->tokenBuilder->expects()
+                           ->issuedBy('email_client')
+                           ->andReturnSelf();
 
-        $this->token_builder->expects()
-                            ->permittedFor('https://oauth2.googleapis.com/token')
-                            ->andReturnSelf();
+        $this->tokenBuilder->expects()
+                           ->permittedFor('https://oauth2.googleapis.com/token')
+                           ->andReturnSelf();
 
-        $this->token_builder->expects()
-                            ->issuedAt($issued_at)
-                            ->andReturnSelf();
+        $this->tokenBuilder->expects()
+                           ->issuedAt($issuedAt)
+                           ->andReturnSelf();
 
-        $this->token_builder->expects()
-                            ->expiresAt($expires_at)
-                            ->andReturnSelf();
+        $this->tokenBuilder->expects()
+                           ->expiresAt($expiresAt)
+                           ->andReturnSelf();
 
-        $this->token_builder->expects()
-                            ->withClaim('scope', 'https://www.googleapis.com/auth/firebase.messaging')
-                            ->andReturnSelf();
+        $this->tokenBuilder->expects()
+                           ->withClaim('scope', 'https://www.googleapis.com/auth/firebase.messaging')
+                           ->andReturnSelf();
 
-        $this->token_builder->expects()
-                            ->withHeader('alg', 'RS2256')
-                            ->andReturnSelf();
+        $this->tokenBuilder->expects()
+                           ->withHeader('alg', 'RS2256')
+                           ->andReturnSelf();
 
-        $this->token_builder->expects()
-                            ->withHeader('typ', 'JWT')
-                            ->andReturnSelf();
+        $this->tokenBuilder->expects()
+                           ->withHeader('typ', 'JWT')
+                           ->andReturnSelf();
 
-        uopz_set_return($this->token_builder::class, 'getToken', $this->token_plain);
+        uopz_set_return($this->tokenBuilder::class, 'getToken', $this->tokenPlain);
 
-        $this->token_plain->expects($this->once())
-                          ->method('toString')
-                          ->willReturn('jwt_token');
+        $this->tokenPlain->expects($this->once())
+                         ->method('toString')
+                         ->willReturn('jwt_token');
 
         $headers = [
             'Content-Type'  => 'application/json'
@@ -365,7 +365,7 @@ class FCMDispatcherGetOAuthTokenTest extends FCMDispatcherTestCase
 
         $this->class->get_oauth_token();
 
-        uopz_unset_return($this->token_builder::class, 'getToken');
+        uopz_unset_return($this->tokenBuilder::class, 'getToken');
         uopz_unset_mock(DateTimeImmutable::class);
         uopz_unset_mock(Builder::class);
     }
@@ -382,58 +382,58 @@ class FCMDispatcherGetOAuthTokenTest extends FCMDispatcherTestCase
             $this->markTestSkipped('The uopz extension is not available.');
         }
 
-        $this->setReflectionPropertyValue('client_email', 'email_client');
-        $this->setReflectionPropertyValue('private_key', 'secret_key');
+        $this->setReflectionPropertyValue('clientEmail', 'email_client');
+        $this->setReflectionPropertyValue('privateKey', 'secret_key');
 
-        $content   = file_get_contents(TEST_STATICS . '/Vortex/fcm/oauth_error.json');
-        $error_msg = json_decode($content, TRUE)['error_description'];
+        $content      = file_get_contents(TEST_STATICS . '/Vortex/fcm/oauth_error.json');
+        $errorMessage = json_decode($content, TRUE)['error_description'];
 
         $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage('Fetching OAuth token for FCM notification(s) failed: ' . $error_msg);
+        $this->expectExceptionMessage('Fetching OAuth token for FCM notification(s) failed: ' . $errorMessage);
 
-        $issued_at  = Mockery::mock(DateTimeImmutable::class);
-        $expires_at = Mockery::mock(DateTimeImmutable::class);
+        $issuedAt  = Mockery::mock(DateTimeImmutable::class);
+        $expiresAt = Mockery::mock(DateTimeImmutable::class);
 
-        $issued_at->expects()
-                  ->modify('+10 minutes')
-                  ->andReturn($expires_at);
+        $issuedAt->expects()
+                 ->modify('+10 minutes')
+                 ->andReturn($expiresAt);
 
-        uopz_set_mock(DateTimeImmutable::class, $issued_at);
-        uopz_set_mock(Builder::class, $this->token_builder);
+        uopz_set_mock(DateTimeImmutable::class, $issuedAt);
+        uopz_set_mock(Builder::class, $this->tokenBuilder);
 
-        $this->token_builder->expects()
-                            ->issuedBy('email_client')
-                            ->andReturnSelf();
+        $this->tokenBuilder->expects()
+                           ->issuedBy('email_client')
+                           ->andReturnSelf();
 
-        $this->token_builder->expects()
-                            ->permittedFor('https://oauth2.googleapis.com/token')
-                            ->andReturnSelf();
+        $this->tokenBuilder->expects()
+                           ->permittedFor('https://oauth2.googleapis.com/token')
+                           ->andReturnSelf();
 
-        $this->token_builder->expects()
-                            ->issuedAt($issued_at)
-                            ->andReturnSelf();
+        $this->tokenBuilder->expects()
+                           ->issuedAt($issuedAt)
+                           ->andReturnSelf();
 
-        $this->token_builder->expects()
-                            ->expiresAt($expires_at)
-                            ->andReturnSelf();
+        $this->tokenBuilder->expects()
+                           ->expiresAt($expiresAt)
+                           ->andReturnSelf();
 
-        $this->token_builder->expects()
-                            ->withClaim('scope', 'https://www.googleapis.com/auth/firebase.messaging')
-                            ->andReturnSelf();
+        $this->tokenBuilder->expects()
+                           ->withClaim('scope', 'https://www.googleapis.com/auth/firebase.messaging')
+                           ->andReturnSelf();
 
-        $this->token_builder->expects()
-                            ->withHeader('alg', 'RS2256')
-                            ->andReturnSelf();
+        $this->tokenBuilder->expects()
+                           ->withHeader('alg', 'RS2256')
+                           ->andReturnSelf();
 
-        $this->token_builder->expects()
-                            ->withHeader('typ', 'JWT')
-                            ->andReturnSelf();
+        $this->tokenBuilder->expects()
+                           ->withHeader('typ', 'JWT')
+                           ->andReturnSelf();
 
-        uopz_set_return($this->token_builder::class, 'getToken', $this->token_plain);
+        uopz_set_return($this->tokenBuilder::class, 'getToken', $this->tokenPlain);
 
-        $this->token_plain->expects($this->once())
-                          ->method('toString')
-                          ->willReturn('jwt_token');
+        $this->tokenPlain->expects($this->once())
+                         ->method('toString')
+                         ->willReturn('jwt_token');
 
         $headers = [
             'Content-Type'  => 'application/json'
@@ -457,12 +457,12 @@ class FCMDispatcherGetOAuthTokenTest extends FCMDispatcherTestCase
                      ->once()
                      ->with(
                          'Fetching OAuth token for FCM notification(s) failed: {error}',
-                         [ 'error' => $error_msg ]
+                         [ 'error' => $errorMessage ]
                      );
 
         $this->class->get_oauth_token();
 
-        uopz_unset_return($this->token_builder::class, 'getToken');
+        uopz_unset_return($this->tokenBuilder::class, 'getToken');
         uopz_unset_mock(DateTimeImmutable::class);
         uopz_unset_mock(Builder::class);
     }
@@ -479,52 +479,52 @@ class FCMDispatcherGetOAuthTokenTest extends FCMDispatcherTestCase
             $this->markTestSkipped('The uopz extension is not available.');
         }
 
-        $this->setReflectionPropertyValue('client_email', 'email_client');
-        $this->setReflectionPropertyValue('private_key', 'secret_key');
+        $this->setReflectionPropertyValue('clientEmail', 'email_client');
+        $this->setReflectionPropertyValue('privateKey', 'secret_key');
 
-        $issued_at  = Mockery::mock(DateTimeImmutable::class);
-        $expires_at = Mockery::mock(DateTimeImmutable::class);
+        $issuedAt  = Mockery::mock(DateTimeImmutable::class);
+        $expiresAt = Mockery::mock(DateTimeImmutable::class);
 
-        $issued_at->expects()
-                  ->modify('+10 minutes')
-                  ->andReturn($expires_at);
+        $issuedAt->expects()
+                 ->modify('+10 minutes')
+                 ->andReturn($expiresAt);
 
-        uopz_set_mock(DateTimeImmutable::class, $issued_at);
-        uopz_set_mock(Builder::class, $this->token_builder);
+        uopz_set_mock(DateTimeImmutable::class, $issuedAt);
+        uopz_set_mock(Builder::class, $this->tokenBuilder);
 
-        $this->token_builder->expects()
-                            ->issuedBy('email_client')
-                            ->andReturnSelf();
+        $this->tokenBuilder->expects()
+                           ->issuedBy('email_client')
+                           ->andReturnSelf();
 
-        $this->token_builder->expects()
-                            ->permittedFor('https://oauth2.googleapis.com/token')
-                            ->andReturnSelf();
+        $this->tokenBuilder->expects()
+                           ->permittedFor('https://oauth2.googleapis.com/token')
+                           ->andReturnSelf();
 
-        $this->token_builder->expects()
-                            ->issuedAt($issued_at)
-                            ->andReturnSelf();
+        $this->tokenBuilder->expects()
+                           ->issuedAt($issuedAt)
+                           ->andReturnSelf();
 
-        $this->token_builder->expects()
-                            ->expiresAt($expires_at)
-                            ->andReturnSelf();
+        $this->tokenBuilder->expects()
+                           ->expiresAt($expiresAt)
+                           ->andReturnSelf();
 
-        $this->token_builder->expects()
-                            ->withClaim('scope', 'https://www.googleapis.com/auth/firebase.messaging')
-                            ->andReturnSelf();
+        $this->tokenBuilder->expects()
+                           ->withClaim('scope', 'https://www.googleapis.com/auth/firebase.messaging')
+                           ->andReturnSelf();
 
-        $this->token_builder->expects()
-                            ->withHeader('alg', 'RS2256')
-                            ->andReturnSelf();
+        $this->tokenBuilder->expects()
+                           ->withHeader('alg', 'RS2256')
+                           ->andReturnSelf();
 
-        $this->token_builder->expects()
-                            ->withHeader('typ', 'JWT')
-                            ->andReturnSelf();
+        $this->tokenBuilder->expects()
+                           ->withHeader('typ', 'JWT')
+                           ->andReturnSelf();
 
-        uopz_set_return($this->token_builder::class, 'getToken', $this->token_plain);
+        uopz_set_return($this->tokenBuilder::class, 'getToken', $this->tokenPlain);
 
-        $this->token_plain->expects($this->once())
-                          ->method('toString')
-                          ->willReturn('jwt_token');
+        $this->tokenPlain->expects($this->once())
+                         ->method('toString')
+                         ->willReturn('jwt_token');
 
         $headers = [
             'Content-Type'  => 'application/json'
@@ -546,7 +546,7 @@ class FCMDispatcherGetOAuthTokenTest extends FCMDispatcherTestCase
 
         $this->assertSame('oauth_token1', $this->class->get_oauth_token());
 
-        uopz_unset_return($this->token_builder::class, 'getToken');
+        uopz_unset_return($this->tokenBuilder::class, 'getToken');
         uopz_unset_mock(DateTimeImmutable::class);
         uopz_unset_mock(Builder::class);
     }

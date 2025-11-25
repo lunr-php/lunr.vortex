@@ -88,7 +88,7 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
     {
         $endpoints = [ 'endpoint' ];
 
-        $this->setReflectionPropertyValue('oauth_token', NULL);
+        $this->setReflectionPropertyValue('oauthToken', NULL);
 
         $this->logger->expects('warning')
                      ->once()
@@ -114,7 +114,7 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
     {
         $endpoints = [ 'endpoint', 'endpoint1', 'endpoint2' ];
 
-        $this->setReflectionPropertyValue('oauth_token', NULL);
+        $this->setReflectionPropertyValue('oauthToken', NULL);
 
         $this->logger->expects('warning')
                      ->once()
@@ -152,8 +152,8 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
     {
         $endpoints = [ 'endpoint' ];
 
-        $this->setReflectionPropertyValue('oauth_token', 'test');
-        $this->setReflectionPropertyValue('project_id', NULL);
+        $this->setReflectionPropertyValue('oauthToken', 'test');
+        $this->setReflectionPropertyValue('projectID', NULL);
 
         $this->logger->expects('warning')
                      ->once()
@@ -179,8 +179,8 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
     {
         $endpoints = [ 'endpoint', 'endpoint1', 'endpoint2' ];
 
-        $this->setReflectionPropertyValue('oauth_token', 'test');
-        $this->setReflectionPropertyValue('project_id', NULL);
+        $this->setReflectionPropertyValue('oauthToken', 'test');
+        $this->setReflectionPropertyValue('projectID', NULL);
 
         $this->logger->expects('warning')
                      ->once()
@@ -231,8 +231,8 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
                       ->once()
                       ->andReturn('{"collapse_key":"abcde-12345"}');
 
-        $this->setReflectionPropertyValue('oauth_token', 'oauth_token');
-        $this->setReflectionPropertyValue('project_id', 'fcm-project');
+        $this->setReflectionPropertyValue('oauthToken', 'oauth_token');
+        $this->setReflectionPropertyValue('projectID', 'fcm-project');
 
         $response = $this->getMockBuilder(Response::class)->getMock();
 
@@ -246,8 +246,8 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
 
         $this->class->push($this->payload, $endpoints);
 
-        $this->assertPropertyEquals('oauth_token', 'oauth_token');
-        $this->assertPropertyEquals('project_id', 'fcm-project');
+        $this->assertPropertyEquals('oauthToken', 'oauth_token');
+        $this->assertPropertyEquals('projectID', 'fcm-project');
     }
 
     /**
@@ -257,8 +257,8 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
      */
     public function testPushWithFailedRequest(): void
     {
-        $this->setReflectionPropertyValue('oauth_token', 'oauth_token');
-        $this->setReflectionPropertyValue('project_id', 'fcm-project');
+        $this->setReflectionPropertyValue('oauthToken', 'oauth_token');
+        $this->setReflectionPropertyValue('projectID', 'fcm-project');
 
         $this->mockFunction('curl_errno', function () { return 10; });
 
@@ -317,8 +317,8 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
      */
     public function testPushWithTimeoutRequest()
     {
-        $this->setReflectionPropertyValue('oauth_token', 'oauth_token');
-        $this->setReflectionPropertyValue('project_id', 'fcm-project');
+        $this->setReflectionPropertyValue('oauthToken', 'oauth_token');
+        $this->setReflectionPropertyValue('projectID', 'fcm-project');
 
         $this->mockFunction('curl_errno', function () { return 28; });
 
@@ -377,8 +377,8 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
      */
     public function testPushRequestWithDefaultValues(): void
     {
-        $this->setReflectionPropertyValue('oauth_token', 'oauth_token');
-        $this->setReflectionPropertyValue('project_id', 'fcm-project');
+        $this->setReflectionPropertyValue('oauthToken', 'oauth_token');
+        $this->setReflectionPropertyValue('projectID', 'fcm-project');
 
         $endpoints = [ 'endpoint' ];
 
@@ -430,8 +430,8 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
      */
     public function testPushRequestWithSingleEndpoint(): void
     {
-        $this->setReflectionPropertyValue('oauth_token', 'oauth_token');
-        $this->setReflectionPropertyValue('project_id', 'fcm-project');
+        $this->setReflectionPropertyValue('oauthToken', 'oauth_token');
+        $this->setReflectionPropertyValue('projectID', 'fcm-project');
 
         $endpoints = [ 'endpoint' ];
 
@@ -483,8 +483,8 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
      */
     public function testPushRequestWithMultibyteCharacters(): void
     {
-        $this->setReflectionPropertyValue('oauth_token', 'oauth_token');
-        $this->setReflectionPropertyValue('project_id', 'fcm-project');
+        $this->setReflectionPropertyValue('oauthToken', 'oauth_token');
+        $this->setReflectionPropertyValue('projectID', 'fcm-project');
 
         $endpoints = [ 'endpoint' ];
 
@@ -536,18 +536,18 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
      */
     public function testPushRequestWithMultipleEndpoints(): void
     {
-        $this->setReflectionPropertyValue('oauth_token', 'oauth_token');
-        $this->setReflectionPropertyValue('project_id', 'fcm-project');
+        $this->setReflectionPropertyValue('oauthToken', 'oauth_token');
+        $this->setReflectionPropertyValue('projectID', 'fcm-project');
 
         $this->mockFunction('curl_errno', function () { return 28; });
 
         $endpoints = [ 'endpoint', 'endpoint1', 'endpoint2', 'endpoint3' ];
 
-        $response_200 = $this->getMockBuilder(Response::class)->getMock();
-        $response_403 = $this->getMockBuilder(Response::class)->getMock();
+        $response200 = $this->getMockBuilder(Response::class)->getMock();
+        $response403 = $this->getMockBuilder(Response::class)->getMock();
 
-        $response_200->status_code = 200;
-        $response_403->status_code = 403;
+        $response200->status_code = 200; // phpcs:ignore Lunr.NamingConventions.CamelCapsVariableName
+        $response403->status_code = 403; // phpcs:ignore Lunr.NamingConventions.CamelCapsVariableName
 
         $headers = [
             'Content-Type'  => 'application/json',
@@ -564,9 +564,9 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
         ];
 
         $responses = [
-            'endpoint'  => $response_200,
+            'endpoint'  => $response200,
             'endpoint1' => new RequestsException('cURL error 28: Request timed out', 'curlerror', NULL),
-            'endpoint2' => $response_403,
+            'endpoint2' => $response403,
             'endpoint3' => new RequestsException('cURL error 28: Request timed out', 'curlerror', NULL),
         ];
 
@@ -629,14 +629,15 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
      */
     public function testPushRequestWithNoEndpointsToTopic(): void
     {
-        $this->setReflectionPropertyValue('oauth_token', 'oauth_token');
-        $this->setReflectionPropertyValue('project_id', 'fcm-project');
+        $this->setReflectionPropertyValue('oauthToken', 'oauth_token');
+        $this->setReflectionPropertyValue('projectID', 'fcm-project');
 
         $endpoints = [];
 
-        $response_200 = $this->getMockBuilder(Response::class)->getMock();
+        $response200 = $this->getMockBuilder(Response::class)->getMock();
 
-        $response_200->status_code = 200;
+        // phpcs:ignore Lunr.NamingConventions.CamelCapsVariableName
+        $response200->status_code = 200;
 
         $headers = [
             'Content-Type'  => 'application/json',
@@ -665,7 +666,7 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
         $this->http->expects($this->once())
                    ->method('post')
                    ->with($url, $headers, $post, $options)
-                   ->willReturn($response_200);
+                   ->willReturn($response200);
 
         $this->class->push($this->payload, $endpoints);
     }
@@ -677,14 +678,15 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
      */
     public function testPushRequestWithMultipleEndpointsToTopic(): void
     {
-        $this->setReflectionPropertyValue('oauth_token', 'oauth_token');
-        $this->setReflectionPropertyValue('project_id', 'fcm-project');
+        $this->setReflectionPropertyValue('oauthToken', 'oauth_token');
+        $this->setReflectionPropertyValue('projectID', 'fcm-project');
 
         $endpoints = [ 'endpoint', 'endpoint1', 'endpoint2', 'endpoint3' ];
 
-        $response_200 = $this->getMockBuilder(Response::class)->getMock();
+        $response200 = $this->getMockBuilder(Response::class)->getMock();
 
-        $response_200->status_code = 200;
+        // phpcs:ignore Lunr.NamingConventions.CamelCapsVariableName
+        $response200->status_code = 200;
 
         $headers = [
             'Content-Type'  => 'application/json',
@@ -717,7 +719,7 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
         $this->http->expects($this->once())
                    ->method('post')
                    ->with($url, $headers, $post, $options)
-                   ->willReturn($response_200);
+                   ->willReturn($response200);
 
         $this->class->push($this->payload, $endpoints);
     }
@@ -729,14 +731,15 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
      */
     public function testPushRequestWithNoEndpointsToCondition(): void
     {
-        $this->setReflectionPropertyValue('oauth_token', 'oauth_token');
-        $this->setReflectionPropertyValue('project_id', 'fcm-project');
+        $this->setReflectionPropertyValue('oauthToken', 'oauth_token');
+        $this->setReflectionPropertyValue('projectID', 'fcm-project');
 
         $endpoints = [];
 
-        $response_200 = $this->getMockBuilder(Response::class)->getMock();
+        $response200 = $this->getMockBuilder(Response::class)->getMock();
 
-        $response_200->status_code = 200;
+        // phpcs:ignore Lunr.NamingConventions.CamelCapsVariableName
+        $response200->status_code = 200;
 
         $headers = [
             'Content-Type'  => 'application/json',
@@ -766,7 +769,7 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
         $this->http->expects($this->once())
                    ->method('post')
                    ->with($url, $headers, $post, $options)
-                   ->willReturn($response_200);
+                   ->willReturn($response200);
 
         $this->class->push($this->payload, $endpoints);
     }
@@ -778,14 +781,15 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
      */
     public function testPushRequestWithMultipleEndpointsToCondition(): void
     {
-        $this->setReflectionPropertyValue('oauth_token', 'oauth_token');
-        $this->setReflectionPropertyValue('project_id', 'fcm-project');
+        $this->setReflectionPropertyValue('oauthToken', 'oauth_token');
+        $this->setReflectionPropertyValue('projectID', 'fcm-project');
 
         $endpoints = [ 'endpoint', 'endpoint1', 'endpoint2', 'endpoint3' ];
 
-        $response_200 = $this->getMockBuilder(Response::class)->getMock();
+        $response200 = $this->getMockBuilder(Response::class)->getMock();
 
-        $response_200->status_code = 200;
+        // phpcs:ignore Lunr.NamingConventions.CamelCapsVariableName
+        $response200->status_code = 200;
 
         $headers = [
             'Content-Type'  => 'application/json',
@@ -819,7 +823,7 @@ class FCMDispatcherPushTest extends FCMDispatcherTestCase
         $this->http->expects($this->once())
                    ->method('post')
                    ->with($url, $headers, $post, $options)
-                   ->willReturn($response_200);
+                   ->willReturn($response200);
 
         $this->class->push($this->payload, $endpoints);
     }

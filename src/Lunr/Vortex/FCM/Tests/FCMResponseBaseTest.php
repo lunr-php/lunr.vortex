@@ -46,7 +46,7 @@ class FCMResponseBaseTest extends FCMResponseTestCase
      */
     public function testGetBroadcastStatusWhenSet(): void
     {
-        $this->setReflectionPropertyValue('broadcast_status', PushNotificationStatus::Success);
+        $this->setReflectionPropertyValue('broadcastStatus', PushNotificationStatus::Success);
 
         $this->assertSame(PushNotificationStatus::Success, $this->class->get_broadcast_status());
     }
@@ -58,15 +58,15 @@ class FCMResponseBaseTest extends FCMResponseTestCase
      */
     public function testAddBroadcastResponseSetsStatus(): void
     {
-        $this->setReflectionPropertyValue('broadcast_status', PushNotificationStatus::Unknown);
+        $this->setReflectionPropertyValue('broadcastStatus', PushNotificationStatus::Unknown);
 
-        $this->batch_response->expects($this->once())
-                             ->method('get_broadcast_status')
-                             ->willReturn(PushNotificationStatus::Success);
+        $this->batchResponse->expects($this->once())
+                            ->method('get_broadcast_status')
+                            ->willReturn(PushNotificationStatus::Success);
 
-        $this->class->add_broadcast_response($this->batch_response);
+        $this->class->add_broadcast_response($this->batchResponse);
 
-        $this->assertSame(PushNotificationStatus::Success, $this->getReflectionPropertyValue('broadcast_status'));
+        $this->assertSame(PushNotificationStatus::Success, $this->getReflectionPropertyValue('broadcastStatus'));
     }
 
 }

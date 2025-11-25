@@ -52,7 +52,7 @@ class FCMBatchResponse implements PushNotificationResponseInterface, PushNotific
      * The status for a broadcast.
      * @var PushNotificationStatus
      */
-    protected PushNotificationStatus $broadcast_status;
+    protected PushNotificationStatus $broadcastStatus;
 
     /**
      * Set of error types that indicate a curl error.
@@ -104,7 +104,7 @@ class FCMBatchResponse implements PushNotificationResponseInterface, PushNotific
         unset($this->responses);
         unset($this->statuses);
         unset($this->endpoints);
-        unset($this->broadcast_status);
+        unset($this->broadcastStatus);
     }
 
     /**
@@ -135,6 +135,7 @@ class FCMBatchResponse implements PushNotificationResponseInterface, PushNotific
                 continue;
             }
 
+            // phpcs:ignore Lunr.NamingConventions.CamelCapsVariableName
             if ($response->status_code === 200)
             {
                 $this->statuses[$endpoint] = PushNotificationStatus::Success;
@@ -173,55 +174,56 @@ class FCMBatchResponse implements PushNotificationResponseInterface, PushNotific
      */
     private function report_endpoint_error(string $endpoint, Response $response): void
     {
-        $json_content = json_decode($response->body, TRUE);
+        $jsonContent = json_decode($response->body, TRUE);
 
-        $error_message = $json_content['error']['message'] ?? NULL;
-        $error_code    = $json_content['error']['details'][0]['errorCode'] ?? NULL;
+        $errorMessage = $jsonContent['error']['message'] ?? NULL;
+        $errorCode    = $jsonContent['error']['details'][0]['errorCode'] ?? NULL;
 
+        // phpcs:ignore Lunr.NamingConventions.CamelCapsVariableName
         switch ($response->status_code)
         {
             case 400:
-                if ($error_message == 'The registration token is not a valid FCM registration token')
+                if ($errorMessage == 'The registration token is not a valid FCM registration token')
                 {
                     $status = PushNotificationStatus::InvalidEndpoint;
                 }
                 else
                 {
-                    $status          = PushNotificationStatus::Error;
-                    $error_message ??= 'Invalid argument';
+                    $status         = PushNotificationStatus::Error;
+                    $errorMessage ??= 'Invalid argument';
                 }
                 break;
             case 401:
-                $status          = PushNotificationStatus::Error;
-                $error_message ??= 'Error with authentication';
+                $status         = PushNotificationStatus::Error;
+                $errorMessage ??= 'Error with authentication';
                 break;
             case 403:
-                $status          = PushNotificationStatus::InvalidEndpoint;
-                $error_message ??= 'Mismatched sender';
+                $status         = PushNotificationStatus::InvalidEndpoint;
+                $errorMessage ??= 'Mismatched sender';
                 break;
             case 404:
-                $status          = PushNotificationStatus::InvalidEndpoint;
-                $error_message ??= 'Unregistered or missing token';
+                $status         = PushNotificationStatus::InvalidEndpoint;
+                $errorMessage ??= 'Unregistered or missing token';
                 break;
             case 429:
-                $status          = PushNotificationStatus::TemporaryError;
-                $error_message ??= 'Exceeded qouta error';
+                $status         = PushNotificationStatus::TemporaryError;
+                $errorMessage ??= 'Exceeded qouta error';
                 break;
             case 500:
-                $status          = PushNotificationStatus::TemporaryError;
-                $error_message ??= 'Internal error';
+                $status         = PushNotificationStatus::TemporaryError;
+                $errorMessage ??= 'Internal error';
                 break;
             case 503:
-                $status          = PushNotificationStatus::TemporaryError;
-                $error_message ??= 'Timeout';
+                $status         = PushNotificationStatus::TemporaryError;
+                $errorMessage ??= 'Timeout';
                 break;
             default:
-                $status          = PushNotificationStatus::Unknown;
-                $error_message ??= $error_code ?? 'Unknown error';
+                $status         = PushNotificationStatus::Unknown;
+                $errorMessage ??= $errorCode ?? 'Unknown error';
                 break;
         }
 
-        $context = [ 'endpoint' => $endpoint, 'error' => $error_message ];
+        $context = [ 'endpoint' => $endpoint, 'error' => $errorMessage ];
         $this->logger->warning('Dispatching FCM notification failed for endpoint {endpoint}: {error}', $context);
 
         $this->statuses[$endpoint] = $status;
@@ -234,7 +236,7 @@ class FCMBatchResponse implements PushNotificationResponseInterface, PushNotific
      */
     public function get_broadcast_status(): PushNotificationStatus
     {
-        return $this->broadcast_status ?? PushNotificationStatus::Unknown;
+        return $this->broadcastStatus ?? PushNotificationStatus::Unknown;
     }
 
     /**
@@ -255,54 +257,55 @@ class FCMBatchResponse implements PushNotificationResponseInterface, PushNotific
 
             if (in_array($response->getType(), self::CURL_ERROR_TYPES))
             {
-                $this->broadcast_status = PushNotificationStatus::TemporaryError;
+                $this->broadcastStatus = PushNotificationStatus::TemporaryError;
                 return;
             }
 
-            $this->broadcast_status = PushNotificationStatus::Unknown;
+            $this->broadcastStatus = PushNotificationStatus::Unknown;
             return;
         }
 
-        $json_content = json_decode($response->body, TRUE);
+        $jsonContent = json_decode($response->body, TRUE);
 
-        $error_message = $json_content['error']['message'] ?? NULL;
-        $error_code    = $json_content['error']['details'][0]['errorCode'] ?? NULL;
+        $errorMessage = $jsonContent['error']['message'] ?? NULL;
+        $errorCode    = $jsonContent['error']['details'][0]['errorCode'] ?? NULL;
 
+        // phpcs:ignore Lunr.NamingConventions.CamelCapsVariableName
         switch ($response->status_code)
         {
             case 200:
-                $this->broadcast_status = PushNotificationStatus::Success;
+                $this->broadcastStatus = PushNotificationStatus::Success;
                 return;
             case 400:
-                $status          = PushNotificationStatus::Error;
-                $error_message ??= 'Invalid argument';
+                $status         = PushNotificationStatus::Error;
+                $errorMessage ??= 'Invalid argument';
                 break;
             case 401:
-                $status          = PushNotificationStatus::Error;
-                $error_message ??= 'Error with authentication';
+                $status         = PushNotificationStatus::Error;
+                $errorMessage ??= 'Error with authentication';
                 break;
             case 429:
-                $status          = PushNotificationStatus::TemporaryError;
-                $error_message ??= 'Exceeded qouta error';
+                $status         = PushNotificationStatus::TemporaryError;
+                $errorMessage ??= 'Exceeded qouta error';
                 break;
             case 500:
-                $status          = PushNotificationStatus::TemporaryError;
-                $error_message ??= 'Internal error';
+                $status         = PushNotificationStatus::TemporaryError;
+                $errorMessage ??= 'Internal error';
                 break;
             case 503:
-                $status          = PushNotificationStatus::TemporaryError;
-                $error_message ??= 'Timeout';
+                $status         = PushNotificationStatus::TemporaryError;
+                $errorMessage ??= 'Timeout';
                 break;
             default:
-                $status          = PushNotificationStatus::Unknown;
-                $error_message ??= $error_code ?? 'Unknown error';
+                $status         = PushNotificationStatus::Unknown;
+                $errorMessage ??= $errorCode ?? 'Unknown error';
                 break;
         }
 
-        $context = [ 'error' => $error_message ];
+        $context = [ 'error' => $errorMessage ];
         $this->logger->warning('Dispatching FCM broadcast failed: {error}', $context);
 
-        $this->broadcast_status = $status;
+        $this->broadcastStatus = $status;
     }
 
 }
