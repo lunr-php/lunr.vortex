@@ -128,7 +128,7 @@ class JPushDispatcherPushTest extends JPushDispatcherTestCase
                       ->method('get_payload')
                       ->willReturn([ 'collapse_key' => 'abcde-12345' ]);
 
-        $this->setReflectionPropertyValue('auth_token', 'auth_token');
+        $this->setReflectionPropertyValue('authToken', 'auth_token');
 
         $response = $this->getMockBuilder(Response::class)->getMock();
 
@@ -142,7 +142,7 @@ class JPushDispatcherPushTest extends JPushDispatcherTestCase
 
         $this->class->push($this->payload, $endpoints);
 
-        $this->assertPropertyEquals('auth_token', 'auth_token');
+        $this->assertPropertyEquals('authToken', 'auth_token');
     }
 
     /**
@@ -248,7 +248,7 @@ class JPushDispatcherPushTest extends JPushDispatcherTestCase
 
         $response              = $this->getMockBuilder(Response::class)->getMock();
         $response->success     = FALSE;
-        $response->status_code = 400;
+        $response->status_code = 400; // phpcs:ignore Lunr.NamingConventions.CamelCapsVariableName
 
         $this->http->expects('post')
                    ->once()
@@ -317,7 +317,7 @@ class JPushDispatcherPushTest extends JPushDispatcherTestCase
                       ->method('get_payload')
                       ->willReturn($payload);
 
-        $this->setReflectionPropertyValue('auth_token', 'auth_token');
+        $this->setReflectionPropertyValue('authToken', 'auth_token');
 
         $response = $this->getMockBuilder(Response::class)->getMock();
 
@@ -350,7 +350,7 @@ class JPushDispatcherPushTest extends JPushDispatcherTestCase
                       ->method('get_payload')
                       ->willReturn($payload);
 
-        $this->setReflectionPropertyValue('auth_token', 'auth_token');
+        $this->setReflectionPropertyValue('authToken', 'auth_token');
 
         $response = $this->getMockBuilder(Response::class)->getMock();
 
@@ -382,7 +382,7 @@ class JPushDispatcherPushTest extends JPushDispatcherTestCase
                       ->method('get_payload')
                       ->willReturn($payload);
 
-        $this->setReflectionPropertyValue('auth_token', 'auth_token');
+        $this->setReflectionPropertyValue('authToken', 'auth_token');
 
         $response = $this->getMockBuilder(Response::class)->getMock();
 
@@ -412,7 +412,7 @@ class JPushDispatcherPushTest extends JPushDispatcherTestCase
     {
         $endpoints = [ 'endpoint1', 'endpoint2', 'endpoint3', 'endpoint4', 'endpoint5' ];
 
-        $this->setReflectionPropertyValue('auth_token', 'auth_token');
+        $this->setReflectionPropertyValue('authToken', 'auth_token');
 
         $response = $this->getMockBuilder(Response::class)->getMock();
 
