@@ -50,6 +50,7 @@ abstract class WNSResponseTestCase extends LunrBaseTestCase
 
         $response = $this->getMockBuilder(Response::class)->getMock();
 
+        // phpcs:ignore Lunr.NamingConventions.CamelCapsVariableName
         $response->status_code = FALSE;
         $response->url         = 'http://localhost/';
 
@@ -77,6 +78,7 @@ abstract class WNSResponseTestCase extends LunrBaseTestCase
             'X-WNS-Debug-Trace'            => 'Some Trace',
         ]);
 
+        // phpcs:ignore Lunr.NamingConventions.CamelCapsVariableName
         $response->status_code = 200;
         $response->url         = 'http://localhost/';
 

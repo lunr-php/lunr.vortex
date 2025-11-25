@@ -22,15 +22,15 @@ class WNSDispatcherConfigureOAuthTokenTest extends WNSDispatcherTestCase
     /**
      * Prepares the configuration for a $config call.
      *
-     * @param string $client_id     The client_id you want returned from the config
-     * @param string $client_secret The client_secret you want returned
+     * @param string $clientID     The client_id you want returned from the config
+     * @param string $clientSecret The client_secret you want returned
      *
      * @return void
      */
-    private function expectFromConfig($client_id, $client_secret): void
+    private function expectFromConfig($clientID, $clientSecret): void
     {
-        $this->setReflectionPropertyValue('client_id', $client_id);
-        $this->setReflectionPropertyValue('client_secret', $client_secret);
+        $this->setReflectionPropertyValue('clientID', $clientID);
+        $this->setReflectionPropertyValue('clientSecret', $clientSecret);
     }
 
     /**
@@ -40,7 +40,7 @@ class WNSDispatcherConfigureOAuthTokenTest extends WNSDispatcherTestCase
      */
     public function testConfigureOauthTokenMakesCorrectRequest(): void
     {
-        $request_post = [
+        $requestPost = [
             'grant_type'    => 'client_credentials',
             'client_id'     => '012345',
             'client_secret' => '012345678',
@@ -57,12 +57,12 @@ class WNSDispatcherConfigureOAuthTokenTest extends WNSDispatcherTestCase
 
         $this->http->expects($this->once())
                    ->method('post')
-                   ->with($url, $headers, $request_post)
+                   ->with($url, $headers, $requestPost)
                    ->willReturn($this->response);
 
         $this->class->configure_oauth_token();
 
-        $this->assertPropertySame('oauth_token', 'access_token');
+        $this->assertPropertySame('oauthToken', 'access_token');
     }
 
     /**
@@ -72,7 +72,7 @@ class WNSDispatcherConfigureOAuthTokenTest extends WNSDispatcherTestCase
      */
     public function testConfigureOauthTokenRespondsFalseIfRequestError(): void
     {
-        $request_post = [
+        $requestPost = [
             'grant_type'    => 'client_credentials',
             'client_id'     => '012345',
             'client_secret' => '012345678',
@@ -86,7 +86,7 @@ class WNSDispatcherConfigureOAuthTokenTest extends WNSDispatcherTestCase
 
         $this->http->expects($this->once())
                    ->method('post')
-                   ->with($url, $headers, $request_post)
+                   ->with($url, $headers, $requestPost)
                    ->willThrowException(new RequestsException('Network error!', 'curlerror', NULL));
 
         $this->logger->expects($this->once())
@@ -106,7 +106,7 @@ class WNSDispatcherConfigureOAuthTokenTest extends WNSDispatcherTestCase
      */
     public function testConfigureOauthTokenRespondsFalseIfInvalidJSON(): void
     {
-        $request_post = [
+        $requestPost = [
             'grant_type'    => 'client_credentials',
             'client_id'     => '012345',
             'client_secret' => '012345678',
@@ -123,7 +123,7 @@ class WNSDispatcherConfigureOAuthTokenTest extends WNSDispatcherTestCase
 
         $this->http->expects($this->once())
                    ->method('post')
-                   ->with($url, $headers, $request_post)
+                   ->with($url, $headers, $requestPost)
                    ->willReturn($this->response);
 
         $this->logger->expects($this->once())
@@ -143,7 +143,7 @@ class WNSDispatcherConfigureOAuthTokenTest extends WNSDispatcherTestCase
      */
     public function testConfigureOauthTokenRespondsFalseIfIncompleteJSON(): void
     {
-        $request_post = [
+        $requestPost = [
             'grant_type'    => 'client_credentials',
             'client_id'     => '012345',
             'client_secret' => '012345678',
@@ -160,7 +160,7 @@ class WNSDispatcherConfigureOAuthTokenTest extends WNSDispatcherTestCase
 
         $this->http->expects($this->once())
                    ->method('post')
-                   ->with($url, $headers, $request_post)
+                   ->with($url, $headers, $requestPost)
                    ->willReturn($this->response);
 
         $this->logger->expects($this->once())
@@ -180,7 +180,7 @@ class WNSDispatcherConfigureOAuthTokenTest extends WNSDispatcherTestCase
      */
     public function testConfigureOauthTokenRespondsCorrectly(): void
     {
-        $request_post = [
+        $requestPost = [
             'grant_type'    => 'client_credentials',
             'client_id'     => '012345',
             'client_secret' => '012345678',
@@ -197,12 +197,12 @@ class WNSDispatcherConfigureOAuthTokenTest extends WNSDispatcherTestCase
 
         $this->http->expects($this->once())
                    ->method('post')
-                   ->with($url, $headers, $request_post)
+                   ->with($url, $headers, $requestPost)
                    ->willReturn($this->response);
 
         $this->class->configure_oauth_token();
 
-        $this->assertPropertySame('oauth_token', 'access_token');
+        $this->assertPropertySame('oauthToken', 'access_token');
     }
 
 }

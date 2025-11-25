@@ -63,7 +63,7 @@ class WNSResponseSuccessTest extends WNSResponseTestCase
      */
     public function testHttpCodeIsSetCorrectly(): void
     {
-        $this->assertEquals(200, $this->getReflectionPropertyValue('http_code'));
+        $this->assertEquals(200, $this->getReflectionPropertyValue('httpCode'));
     }
 
     /**

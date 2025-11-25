@@ -29,7 +29,7 @@ class WNSDispatcherSetTest extends WNSDispatcherTestCase
     {
         $this->class->set_client_id('client_id');
 
-        $this->assertPropertyEquals('client_id', 'client_id');
+        $this->assertPropertyEquals('clientID', 'client_id');
     }
 
     /**
@@ -51,7 +51,7 @@ class WNSDispatcherSetTest extends WNSDispatcherTestCase
     {
         $this->class->set_client_id('client_id');
 
-        $this->assertPropertyEquals('client_id', 'client_id');
+        $this->assertPropertyEquals('clientID', 'client_id');
     }
 
     /**
@@ -73,7 +73,7 @@ class WNSDispatcherSetTest extends WNSDispatcherTestCase
     {
         $this->class->set_oauth_token('token');
 
-        $this->assertPropertyEquals('oauth_token', 'token');
+        $this->assertPropertyEquals('oauthToken', 'token');
     }
 
     /**
