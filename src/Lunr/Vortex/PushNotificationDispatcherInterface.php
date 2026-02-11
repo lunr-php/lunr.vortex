@@ -20,8 +20,8 @@ interface PushNotificationDispatcherInterface
     /**
      * Push the notification.
      *
-     * @param object $payload   Payload object
-     * @param array  $endpoints Endpoints to sent it to in this batch
+     * @param object   $payload   Payload object
+     * @param string[] $endpoints Endpoints to sent it to in this batch
      *
      * @return PushNotificationResponseInterface Response object
      */
